@@ -1,8 +1,7 @@
 ---
 output:
   html_document:
-    mathjax: local
-    self_contained: false
+    keep_md: yes
 ---
 
 ```{r, include = FALSE}

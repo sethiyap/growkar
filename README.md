@@ -1,13 +1,20 @@
+---
+output:
+  html_document:
+    keep_md: yes
+---
 
-growkar
-=======
 
-`growkar` is an R-package to visualize and analyze growth curve data from timely recorded optical density by spectrophotometers.
 
-Install
--------
+# growkar
 
-``` r
+`growkar` is an R-package to visualize and analyze growth curve data from timely 
+recorded optical density by spectrophotometers.
+
+## Install
+
+
+```r
 if(require("devtools")){
         devtools::install_github("sethiyap/growkar")
 } else{
@@ -16,12 +23,11 @@ if(require("devtools")){
 }
 ```
 
-Plot growth curve
------------------
+## Plot growth curve
 
 #### *Individual replicate*
 
-``` r
+```r
 growkar::plot_growth_curve(dat_growth_curve = growkar::yeast_growth_data)
 ```
 
@@ -29,7 +35,7 @@ growkar::plot_growth_curve(dat_growth_curve = growkar::yeast_growth_data)
 
 #### *With specific replicates*
 
-``` r
+```r
 growkar::plot_growth_curve(dat_growth_curve = growkar::yeast_growth_data, average_replicates = FALSE, select_replicates = c("R1", "R2"))
 ```
 
@@ -37,7 +43,7 @@ growkar::plot_growth_curve(dat_growth_curve = growkar::yeast_growth_data, averag
 
 #### *Average of replicates*
 
-``` r
+```r
 # Vertical lines represent standard deviation
 
 growkar::plot_growth_curve(dat_growth_curve = growkar::yeast_growth_data, average_replicates = TRUE)
@@ -45,30 +51,36 @@ growkar::plot_growth_curve(dat_growth_curve = growkar::yeast_growth_data, averag
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
 
-Computation of growth rate and generation time
-----------------------------------------------
+## Computation of growth rate and generation time
 
-Growth rates have often been used to evaluate the measure of fitness. Logarithmic phase of the curve is used to determine the growth-rate. Here we define late lag-phase and early stationary-phase as actively dividing log-phase (as shown in figure).
+Growth rates have often been used to evaluate the measure of fitness. Logarithmic phase of the curve is used to determine the growth-rate. Here we define late lag-phase and early stationary-phase as actively dividing log-phase  (as shown in figure). 
+
+
+```r
+knitr::include_graphics(path = "CgFlu.png")
+```
 
 <img src="CgFlu.png" width="100%" />
 
-Log-phase start `(T1)`: Time-point at which cells show OD `(OD1)` double to initial time-point. Log-phase end `(T2)`: Time-point from which cells OD `(OD2)` remains consistent.
+Log-phase start `(T1)`: Time-point at which cells show OD `(OD1)` double to initial time-point.
+Log-phase end `(T2)`: Time-point from which cells OD `(OD2)` remains consistent.
 
 Growth rate is calculated as
 
-"
 $$
-  growthrate = \\frac{(OD2 - OD1) \* multiplicative\_factor}{(T2  - T1)}
+  growthrate = \frac{(OD2 - OD1) * multiplicative_factor}{(T2  - T1)}
+$$ 
+
+Where multipicative_factor: number of cells at OD=1
+    for instance: for yeast cells with OD=1
+    
 $$
- "
-
-Where multipicative\_factor: number of cells at OD=1 for instance: for yeast cells with OD=1
-
-1 = 3 \* 10<sup>7</sup>*c**e**l**l**s*
+  {1 = 3*10^7 cells}
+$$ 
 
 #### *Individual replicate*
 
-``` r
+```r
 
 cc <-  growkar::calculate_growth_rate(dat_growth_curve = growkar::yeast_growth_data)
 
@@ -79,214 +91,95 @@ knitr::kable(cc,"html", align = "l") %>%
 ```
 
 <table class="table table-striped table-condensed table-responsive" style="font-size: 14px; width: auto !important; margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-condition
-</th>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-replicate
-</th>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-logphase\_start
-</th>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-logphase\_end
-</th>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-growth\_rate
-</th>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-generation\_time
-</th>
-</tr>
-</thead>
+ <thead>
+  <tr>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> condition </th>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> replicate </th>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> logphase_start </th>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> logphase_end </th>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> growth_rate </th>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> generation_time </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:left;color: blue !important;">
-Cg
-</td>
-<td style="text-align:left;">
-R1
-</td>
-<td style="text-align:left;">
-4.0
-</td>
-<td style="text-align:left;">
-13.5
-</td>
-<td style="text-align:left;color: blue !important;">
-1.428
-</td>
-<td style="text-align:left;color: blue !important;">
-42.025
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: blue !important;">
-Cg
-</td>
-<td style="text-align:left;">
-R2
-</td>
-<td style="text-align:left;">
-4.0
-</td>
-<td style="text-align:left;">
-13.0
-</td>
-<td style="text-align:left;color: blue !important;">
-1.495
-</td>
-<td style="text-align:left;color: blue !important;">
-40.122
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: blue !important;">
-Cg
-</td>
-<td style="text-align:left;">
-R3
-</td>
-<td style="text-align:left;">
-4.5
-</td>
-<td style="text-align:left;">
-12.0
-</td>
-<td style="text-align:left;color: blue !important;">
-1.746
-</td>
-<td style="text-align:left;color: blue !important;">
-34.371
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: blue !important;">
-CgFlu
-</td>
-<td style="text-align:left;">
-R1
-</td>
-<td style="text-align:left;">
-4.0
-</td>
-<td style="text-align:left;">
-14.0
-</td>
-<td style="text-align:left;color: blue !important;">
-1.281
-</td>
-<td style="text-align:left;color: blue !important;">
-46.845
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: blue !important;">
-CgFlu
-</td>
-<td style="text-align:left;">
-R2
-</td>
-<td style="text-align:left;">
-4.0
-</td>
-<td style="text-align:left;">
-14.0
-</td>
-<td style="text-align:left;color: blue !important;">
-1.265
-</td>
-<td style="text-align:left;color: blue !important;">
-47.426
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: blue !important;">
-CgFlu
-</td>
-<td style="text-align:left;">
-R3
-</td>
-<td style="text-align:left;">
-4.0
-</td>
-<td style="text-align:left;">
-13.5
-</td>
-<td style="text-align:left;color: blue !important;">
-1.283
-</td>
-<td style="text-align:left;color: blue !important;">
-46.768
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: blue !important;">
-YPD
-</td>
-<td style="text-align:left;">
-R1
-</td>
-<td style="text-align:left;">
-0.0
-</td>
-<td style="text-align:left;">
-0.0
-</td>
-<td style="text-align:left;color: blue !important;">
-NaN
-</td>
-<td style="text-align:left;color: blue !important;">
-NaN
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: blue !important;">
-YPD
-</td>
-<td style="text-align:left;">
-R2
-</td>
-<td style="text-align:left;">
-0.0
-</td>
-<td style="text-align:left;">
-0.0
-</td>
-<td style="text-align:left;color: blue !important;">
-NaN
-</td>
-<td style="text-align:left;color: blue !important;">
-NaN
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: blue !important;">
-YPD
-</td>
-<td style="text-align:left;">
-R3
-</td>
-<td style="text-align:left;">
-0.0
-</td>
-<td style="text-align:left;">
-0.0
-</td>
-<td style="text-align:left;color: blue !important;">
-NaN
-</td>
-<td style="text-align:left;color: blue !important;">
-NaN
-</td>
-</tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> Cg </td>
+   <td style="text-align:left;"> R1 </td>
+   <td style="text-align:left;"> 4.0 </td>
+   <td style="text-align:left;"> 13.5 </td>
+   <td style="text-align:left;color: blue !important;"> 1.428 </td>
+   <td style="text-align:left;color: blue !important;"> 42.025 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> Cg </td>
+   <td style="text-align:left;"> R2 </td>
+   <td style="text-align:left;"> 4.0 </td>
+   <td style="text-align:left;"> 13.0 </td>
+   <td style="text-align:left;color: blue !important;"> 1.495 </td>
+   <td style="text-align:left;color: blue !important;"> 40.122 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> Cg </td>
+   <td style="text-align:left;"> R3 </td>
+   <td style="text-align:left;"> 4.5 </td>
+   <td style="text-align:left;"> 12.0 </td>
+   <td style="text-align:left;color: blue !important;"> 1.746 </td>
+   <td style="text-align:left;color: blue !important;"> 34.371 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> CgFlu </td>
+   <td style="text-align:left;"> R1 </td>
+   <td style="text-align:left;"> 4.0 </td>
+   <td style="text-align:left;"> 14.0 </td>
+   <td style="text-align:left;color: blue !important;"> 1.281 </td>
+   <td style="text-align:left;color: blue !important;"> 46.845 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> CgFlu </td>
+   <td style="text-align:left;"> R2 </td>
+   <td style="text-align:left;"> 4.0 </td>
+   <td style="text-align:left;"> 14.0 </td>
+   <td style="text-align:left;color: blue !important;"> 1.265 </td>
+   <td style="text-align:left;color: blue !important;"> 47.426 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> CgFlu </td>
+   <td style="text-align:left;"> R3 </td>
+   <td style="text-align:left;"> 4.0 </td>
+   <td style="text-align:left;"> 13.5 </td>
+   <td style="text-align:left;color: blue !important;"> 1.283 </td>
+   <td style="text-align:left;color: blue !important;"> 46.768 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> YPD </td>
+   <td style="text-align:left;"> R1 </td>
+   <td style="text-align:left;"> 0.0 </td>
+   <td style="text-align:left;"> 0.0 </td>
+   <td style="text-align:left;color: blue !important;"> NaN </td>
+   <td style="text-align:left;color: blue !important;"> NaN </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> YPD </td>
+   <td style="text-align:left;"> R2 </td>
+   <td style="text-align:left;"> 0.0 </td>
+   <td style="text-align:left;"> 0.0 </td>
+   <td style="text-align:left;color: blue !important;"> NaN </td>
+   <td style="text-align:left;color: blue !important;"> NaN </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> YPD </td>
+   <td style="text-align:left;"> R3 </td>
+   <td style="text-align:left;"> 0.0 </td>
+   <td style="text-align:left;"> 0.0 </td>
+   <td style="text-align:left;color: blue !important;"> NaN </td>
+   <td style="text-align:left;color: blue !important;"> NaN </td>
+  </tr>
 </tbody>
 </table>
+
 #### *With specific replicates*
 
-``` r
+```r
 
 cc <- growkar::calculate_growth_rate(dat_growth_curve =     growkar::yeast_growth_data, average_replicates = FALSE, select_replicates = c("R1", "R2"))
 
@@ -297,154 +190,71 @@ knitr::kable(cc,"html", align = "l") %>%
 ```
 
 <table class="table table-striped table-condensed table-responsive" style="font-size: 14px; width: auto !important; margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-condition
-</th>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-replicate
-</th>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-logphase\_start
-</th>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-logphase\_end
-</th>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-growth\_rate
-</th>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-generation\_time
-</th>
-</tr>
-</thead>
+ <thead>
+  <tr>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> condition </th>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> replicate </th>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> logphase_start </th>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> logphase_end </th>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> growth_rate </th>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> generation_time </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:left;color: blue !important;">
-Cg
-</td>
-<td style="text-align:left;">
-R1
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-13.5
-</td>
-<td style="text-align:left;color: blue !important;">
-1.428
-</td>
-<td style="text-align:left;color: blue !important;">
-42.025
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: blue !important;">
-Cg
-</td>
-<td style="text-align:left;">
-R2
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-13.0
-</td>
-<td style="text-align:left;color: blue !important;">
-1.495
-</td>
-<td style="text-align:left;color: blue !important;">
-40.122
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: blue !important;">
-CgFlu
-</td>
-<td style="text-align:left;">
-R1
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-14.0
-</td>
-<td style="text-align:left;color: blue !important;">
-1.281
-</td>
-<td style="text-align:left;color: blue !important;">
-46.845
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: blue !important;">
-CgFlu
-</td>
-<td style="text-align:left;">
-R2
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-14.0
-</td>
-<td style="text-align:left;color: blue !important;">
-1.265
-</td>
-<td style="text-align:left;color: blue !important;">
-47.426
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: blue !important;">
-YPD
-</td>
-<td style="text-align:left;">
-R1
-</td>
-<td style="text-align:left;">
-0
-</td>
-<td style="text-align:left;">
-0.0
-</td>
-<td style="text-align:left;color: blue !important;">
-NaN
-</td>
-<td style="text-align:left;color: blue !important;">
-NaN
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: blue !important;">
-YPD
-</td>
-<td style="text-align:left;">
-R2
-</td>
-<td style="text-align:left;">
-0
-</td>
-<td style="text-align:left;">
-0.0
-</td>
-<td style="text-align:left;color: blue !important;">
-NaN
-</td>
-<td style="text-align:left;color: blue !important;">
-NaN
-</td>
-</tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> Cg </td>
+   <td style="text-align:left;"> R1 </td>
+   <td style="text-align:left;"> 4 </td>
+   <td style="text-align:left;"> 13.5 </td>
+   <td style="text-align:left;color: blue !important;"> 1.428 </td>
+   <td style="text-align:left;color: blue !important;"> 42.025 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> Cg </td>
+   <td style="text-align:left;"> R2 </td>
+   <td style="text-align:left;"> 4 </td>
+   <td style="text-align:left;"> 13.0 </td>
+   <td style="text-align:left;color: blue !important;"> 1.495 </td>
+   <td style="text-align:left;color: blue !important;"> 40.122 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> CgFlu </td>
+   <td style="text-align:left;"> R1 </td>
+   <td style="text-align:left;"> 4 </td>
+   <td style="text-align:left;"> 14.0 </td>
+   <td style="text-align:left;color: blue !important;"> 1.281 </td>
+   <td style="text-align:left;color: blue !important;"> 46.845 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> CgFlu </td>
+   <td style="text-align:left;"> R2 </td>
+   <td style="text-align:left;"> 4 </td>
+   <td style="text-align:left;"> 14.0 </td>
+   <td style="text-align:left;color: blue !important;"> 1.265 </td>
+   <td style="text-align:left;color: blue !important;"> 47.426 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> YPD </td>
+   <td style="text-align:left;"> R1 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0.0 </td>
+   <td style="text-align:left;color: blue !important;"> NaN </td>
+   <td style="text-align:left;color: blue !important;"> NaN </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> YPD </td>
+   <td style="text-align:left;"> R2 </td>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> 0.0 </td>
+   <td style="text-align:left;color: blue !important;"> NaN </td>
+   <td style="text-align:left;color: blue !important;"> NaN </td>
+  </tr>
 </tbody>
 </table>
+
 #### *Average of replicates*
 
-``` r
+```r
 
 cc <- growkar::calculate_growth_rate(dat_growth_curve = growkar::yeast_growth_data, average_replicates = TRUE)
 
@@ -455,76 +265,38 @@ knitr::kable(cc,"html", align = "l") %>%
 ```
 
 <table class="table table-striped table-condensed table-responsive" style="font-size: 14px; width: auto !important; margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-condition
-</th>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-logphase\_start
-</th>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-logphase\_end
-</th>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-growth\_rate
-</th>
-<th style="text-align:left;font-weight: bold;color: black !important;">
-generation\_time
-</th>
-</tr>
-</thead>
+ <thead>
+  <tr>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> condition </th>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> logphase_start </th>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> logphase_end </th>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> growth_rate </th>
+   <th style="text-align:left;font-weight: bold;color: black !important;"> generation_time </th>
+  </tr>
+ </thead>
 <tbody>
-<tr>
-<td style="text-align:left;color: blue !important;">
-Cg
-</td>
-<td style="text-align:left;">
-4.5
-</td>
-<td style="text-align:left;">
-13.0
-</td>
-<td style="text-align:left;color: blue !important;">
-1.544
-</td>
-<td style="text-align:left;color: blue !important;">
-38.858
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: blue !important;">
-CgFlu
-</td>
-<td style="text-align:left;">
-4.0
-</td>
-<td style="text-align:left;">
-13.5
-</td>
-<td style="text-align:left;color: blue !important;">
-1.317
-</td>
-<td style="text-align:left;color: blue !important;">
-45.566
-</td>
-</tr>
-<tr>
-<td style="text-align:left;color: blue !important;">
-YPD
-</td>
-<td style="text-align:left;">
-0.0
-</td>
-<td style="text-align:left;">
-0.0
-</td>
-<td style="text-align:left;color: blue !important;">
-NaN
-</td>
-<td style="text-align:left;color: blue !important;">
-NaN
-</td>
-</tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> Cg </td>
+   <td style="text-align:left;"> 4.5 </td>
+   <td style="text-align:left;"> 13.0 </td>
+   <td style="text-align:left;color: blue !important;"> 1.544 </td>
+   <td style="text-align:left;color: blue !important;"> 38.858 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> CgFlu </td>
+   <td style="text-align:left;"> 4.0 </td>
+   <td style="text-align:left;"> 13.5 </td>
+   <td style="text-align:left;color: blue !important;"> 1.317 </td>
+   <td style="text-align:left;color: blue !important;"> 45.566 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: blue !important;"> YPD </td>
+   <td style="text-align:left;"> 0.0 </td>
+   <td style="text-align:left;"> 0.0 </td>
+   <td style="text-align:left;color: blue !important;"> NaN </td>
+   <td style="text-align:left;color: blue !important;"> NaN </td>
+  </tr>
 </tbody>
 </table>
+
+
