@@ -96,10 +96,12 @@ knitr::kable(cc,"html", align = "l") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "condensed", "responsive"), full_width = F,font_size =14,  stripe_color = "aquamarine3") %>%
     kableExtra::row_spec(0,bold = TRUE, italic = FALSE, color = "black") %>%
     kableExtra::column_spec(c(1, 5:6), bold=FALSE, color="blue")
+
 ```
 
 
-#### *With specific replicates*
+
+####  *With specific replicates*
 ```{r, echo=TRUE, message = FALSE, warning = FALSE,message=FALSE} 
 
 cc <- growkar::calculate_growth_rate(dat_growth_curve =     growkar::yeast_growth_data, average_replicates = FALSE, select_replicates = c("R1", "R2"))
@@ -108,10 +110,12 @@ knitr::kable(cc,"html", align = "l") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "condensed", "responsive"), full_width = F,font_size =14,  stripe_color = "aquamarine3") %>%
     kableExtra::row_spec(0,bold = TRUE, italic = FALSE, color = "black") %>%
     kableExtra::column_spec(c(1,5:6), bold=FALSE, color="blue")
+
 ```
 
 
-#### *Average of replicates*
+
+####  *Average of replicates*
 ```{r, echo=TRUE, message = FALSE, warning = FALSE,message=FALSE}  
 
 cc <- growkar::calculate_growth_rate(dat_growth_curve = growkar::yeast_growth_data, average_replicates = TRUE)
