@@ -2,7 +2,7 @@
 growkar
 =======
 
-`growkar` is a package to visualize and analyze growth curve data from timely recorded optical density by spectrophotometers.
+`growkar` is an R-package to visualize and analyze growth curve data from timely recorded optical density by spectrophotometers.
 
 Install
 -------
@@ -22,8 +22,7 @@ Plot growth curve
 #### *Individual replicate*
 
 ``` r
-
- growkar::plot_growth_curve(dat_growth_curve = growkar::yeast_growth_data)
+growkar::plot_growth_curve(dat_growth_curve = growkar::yeast_growth_data)
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
@@ -31,8 +30,7 @@ Plot growth curve
 #### *With specific replicates*
 
 ``` r
-
- growkar::plot_growth_curve(dat_growth_curve = growkar::yeast_growth_data, average_replicates = FALSE, select_replicates = c("R1", "R2"))
+growkar::plot_growth_curve(dat_growth_curve = growkar::yeast_growth_data, average_replicates = FALSE, select_replicates = c("R1", "R2"))
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
@@ -40,7 +38,6 @@ Plot growth curve
 #### *Average of replicates*
 
 ``` r
-
 # Vertical lines represent standard deviation
 
 growkar::plot_growth_curve(dat_growth_curve = growkar::yeast_growth_data, average_replicates = TRUE)
@@ -53,6 +50,12 @@ Computation of growth rate and generation time
 
 Growth rates have often been used to evaluate the measure of fitness. Logarithmic phase of the curve is used to determine the growth-rate. Here we define late lag-phase and early stationary-phase as actively dividing log-phase (as shown in figure).
 
+``` r
+knitr::include_graphics(path = "CgFlu.png")
+```
+
+<img src="CgFlu.png" width="100%" />
+
 Log-phase start `(T1)`: Time-point at which cells show OD `(OD1)` double to initial time-point. Log-phase end `(T2)`: Time-point from which cells OD `(OD2)` remains consistent.
 
 Growth rate is calculated as
@@ -60,8 +63,6 @@ Growth rate is calculated as
 $$
   growthrate = \\frac{(OD2 - OD1) \* multiplicative\_factor}{(T2  - T1)}
 $$
-
-$$\\chi^2\_{n-1} = \\sum^n\_{i=1} { \\frac{ ( O\_i - E\_i ) ^2} {E\_i} }$$
 
 Where multipicative\_factor: number of cells at OD=1 for instance: for yeast cells with OD=1
 

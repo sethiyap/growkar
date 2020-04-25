@@ -8,14 +8,14 @@ calculate_growth_rate(
   dat_growth_curve,
   average_replicates = FALSE,
   first_timepoint = 0,
-  select_replicate = NULL,
+  select_replicates = NULL,
   cells_at_OD_1 = 3e+07
 )
 }
 \arguments{
 \item{dat_growth_curve}{a tibble, with first column as `Time` and after that
 columns as samples. If the samples have replicates mention them as
-`sampleName_replicate`, for example `ScPH4_R1` , `ScPH4_R2`, `ScPH4_R3`}
+`sampleName_replicate`, for example `CgFlu_R1` , `CgFlu_R2`, `CgFlu_R3`}
 
 \item{average_replicates}{logical, to plot average and standard deviation of
 replicates, Default: FALSE}
@@ -23,9 +23,9 @@ replicates, Default: FALSE}
 \item{first_timepoint}{numeric, first time-point from where to calculate the
 lag-phase;, Default: 0}
 
-\item{select_replicate}{a vector, define replicates to be selected to plot,
+\item{select_replicates}{a vector, define replicates to be selected to plot,
 it should be anything after `_`. for eg. if only replicate R1 and R2 need
-to be plotted from samples ScPH4_R1, ScPH4_R2; the vector should be
+to be plotted from samples CgFlu_R1, CgFlu_R2; the vector should be
 `c("R1", "R2")`, Default: NULL}
 
 \item{cells_at_OD_1}{numeric, a mutplication factor to use absolute cell
@@ -48,8 +48,10 @@ Start and End-point are computed as; Start time-point: is time at which OD is ap
 \examples{
 \dontrun{
 if(interactive()){
- calculate_growth_rate(dat_growth_curve, average_replicates = TRUE, select_replicate = c("R1", "R2", "R4"))
- }
+
+ calculate_growth_rate(dat_growth_curve=yeast_growth_data, average_replicates = TRUE, select_replicates = c("R1", "R2", "R4"))
+
+  }
 }
 }
 \seealso{
