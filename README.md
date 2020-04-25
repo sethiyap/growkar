@@ -54,10 +54,6 @@ Computation of growth rate and generation time
 
 Growth rates have often been used to evaluate the measure of fitness. Logarithmic phase of the curve is used to determine the growth-rate. Here we define late lag-phase and early stationary-phase as actively dividing log-phase (as shown in figure).
 
-``` r
-knitr::include_graphics(path = "CgFlu.png")
-```
-
 <img src="CgFlu.png" width="100%" />
 
 Log-phase start `(T1)`: Time-point at which cells show OD `(OD1)` double to initial time-point. Log-phase end `(T2)`: Time-point from which cells OD `(OD2)` remains consistent.

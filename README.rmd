@@ -57,7 +57,7 @@ growkar::plot_growth_curve(dat_growth_curve = growkar::yeast_growth_data, averag
 
 Growth rates have often been used to evaluate the measure of fitness. Logarithmic phase of the curve is used to determine the growth-rate. Here we define late lag-phase and early stationary-phase as actively dividing log-phase  (as shown in figure). 
 
-```{r, echo=TRUE, message = FALSE, warning = FALSE,message=FALSE, fig.width=5,fig.height=2.5} 
+```{r, echo=FALSE, message = FALSE, warning = FALSE,message=FALSE, fig.width=5,fig.height=2.5} 
 knitr::include_graphics(path = "CgFlu.png")
 ```
 
