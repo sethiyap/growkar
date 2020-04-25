@@ -3,14 +3,14 @@
 #'   log-phase start and end time.
 #' @param dat_growth_curve a tibble, with first column as `Time` and after that
 #'   columns as samples. If the samples have replicates mention them as
-#'   `sampleName_replicate`, for example `ScPH4_R1` , `ScPH4_R2`, `ScPH4_R3`
+#'   `sampleName_replicate`, for example `CgFlu_R1` , `CgFlu_R2`, `CgFlu_R3`
 #' @param average_replicates logical, to plot average and standard deviation of
 #'   replicates, Default: FALSE
 #' @param first_timepoint numeric, first time-point from where to calculate the
 #'   lag-phase;, Default: 0
 #' @param select_replicates a vector, define replicates to be selected to plot,
 #'   it should be anything after `_`. for eg. if only replicate R1 and R2 need
-#'   to be plotted from samples ScPH4_R1, ScPH4_R2; the vector should be
+#'   to be plotted from samples CgFlu_R1, CgFlu_R2; the vector should be
 #'   `c("R1", "R2")`, Default: NULL
 #' @param cells_at_OD_1 numeric, a mutplication factor to use absolute cell
 #'   number at OD=1, for instance OD600=1 represents 3e+07 yeast cells. Default:
@@ -23,8 +23,10 @@
 #' @examples
 #' \dontrun{
 #' if(interactive()){
+#'
 #'  calculate_growth_rate(dat_growth_curve=yeast_growth_data, average_replicates = TRUE, select_replicates = c("R1", "R2", "R4"))
-#'  }
+#'
+#'   }
 #' }
 #' @seealso \code{\link[tidyr]{gather}},\code{\link[tidyr]{separate}}
 #'   \code{\link[dplyr]{mutate}},\code{\link[dplyr]{filter}},\code{\link[dplyr]{group_by}},\code{\link[dplyr]{select}},\code{\link[dplyr]{join}},\code{\link[dplyr]{slice}},\code{\link[dplyr]{summarise}},\code{\link[dplyr]{bind}}
@@ -97,7 +99,8 @@ calculate_growth_rate <- function(dat_growth_curve, average_replicates=FALSE, fi
                                         dplyr::rename(logphase_start=Time, logphase_end=Time1)
 
               growth_rate_summ <- dplyr::bind_cols(logphase_summ,growth_rate_dat) %>%
-                                        dplyr::select(c(condition,logphase_start,logphase_end,growth_rate,generation_time))
+                                        dplyr::select(c(condition,logphase_start,logphase_end,growth_rate,generation_time)) %>%
+                                        dplyr::mutate(growth_rate=round(growth_rate,3),generation_time=round(generation_time,3) )
   }
 
     else{
@@ -132,7 +135,8 @@ calculate_growth_rate <- function(dat_growth_curve, average_replicates=FALSE, fi
                                 dplyr::rename(logphase_start=Time, logphase_end=Time1)
 
           growth_rate_summ <- dplyr::bind_cols(logphase_summ,growth_rate_dat) %>%
-                                dplyr::select(c(condition,replicate, logphase_start,logphase_end,growth_rate,generation_time))
+                                dplyr::select(c(condition,replicate, logphase_start,logphase_end,growth_rate,generation_time))%>%
+                                dplyr::mutate(growth_rate=round(growth_rate,3),generation_time=round(generation_time,3) )
     }
 
   return(growth_rate_summ)
