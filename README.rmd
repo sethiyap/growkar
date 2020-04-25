@@ -87,8 +87,6 @@ knitr::include_graphics(path = "Equation2.png")
 The generation time is the reciprocal of the growth rate.
 
 
-
-
 #### *Individual replicate*
 ```{r, echo=TRUE, message = FALSE, warning = FALSE,message=FALSE}
 

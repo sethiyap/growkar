@@ -4,7 +4,7 @@ growkar
 
 <!-- <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental) 
-[![platform](https://img.shields.io/badge/R-%3E%20v3.5.1-brightgreen)](https://shields.io/category/platform-support) 
+ [![platform](https://img.shields.io/badge/R-%3E%20v3.5.1-brightgreen)](https://shields.io/category/platform-support)
 <!-- <!-- badges: end -->
 `growkar` is an R-package to visualize and analyze growth curve data from timely recorded optical density by spectrophotometers.
 
