@@ -1,6 +1,8 @@
 ---
-output: github_document
-always_allow_html: yes
+output:
+  html_document:
+    mathjax: local
+    self_contained: false
 ---
 
 ```{r, include = FALSE}
