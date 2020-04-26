@@ -290,6 +290,8 @@ NaN
 </tr>
 </tbody>
 </table>
+
+
 #### *With specific replicates*
 
 ``` r
@@ -448,6 +450,8 @@ NaN
 </tr>
 </tbody>
 </table>
+
+
 #### *Average of replicates*
 
 ``` r
