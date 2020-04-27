@@ -1,10 +1,10 @@
 
 growkar
 =======
- 
+
 <!-- <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![platform](https://img.shields.io/badge/R-%3E%20v3.5.1-brightgreen)](https://shields.io/category/platform-support)
+[![platform](https://img.shields.io/badge/R-%3E%20v3.5.1-brightgreen)](https://shields.io/category/platform-support) 
 <!-- <!-- badges: end -->
 `growkar` is an R-package to visualize and analyze growth curve data from timely recorded optical density by spectrophotometers.
 
@@ -54,13 +54,13 @@ Computation of growth rate and generation time
 
 Growth rates have often been used to evaluate the measure of fitness. Logarithmic phase of the curve is used to determine the growth-rate. Here we define late lag-phase and early stationary-phase as actively dividing log-phase (as shown in figure).
 
-<img src="CgFlu.png" width="100%" />
+<img src="man/figures/CgFlu.png" width="100%" style="display: block; margin: auto;" />
 
 Log-phase start `(T1)`: Time-point at which cells show OD `(OD1)` double to initial time-point. Log-phase end `(T2)`: Time-point from which cells OD `(OD2)` remains consistent.
 
 Growth rate is calculated as
 
-<img src="Equation1.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/Equation1.png" width="100%" style="display: block; margin: auto;" />
 
 Growth rate which is the number of generations (doublings) per hour; Where, `multipicative_factor` determines number of cells at OD=1 for instance: for yeast cells with OD=1
 
@@ -68,7 +68,7 @@ Growth rate which is the number of generations (doublings) per hour; Where, `mul
 
 And Generation time; which is the time taken by the population to double:
 
-<img src="Equation2.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/Equation2.png" width="100%" style="display: block; margin: auto;" />
 
 The generation time is the reciprocal of the growth rate.
 
@@ -291,7 +291,6 @@ NaN
 </tbody>
 </table>
 
-
 #### *With specific replicates*
 
 ``` r
@@ -450,7 +449,6 @@ NaN
 </tr>
 </tbody>
 </table>
-
 
 #### *Average of replicates*
 

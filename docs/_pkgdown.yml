@@ -1,0 +1,10 @@
+title: growkar
+url: https://sethiyap.github.io/growkar
+template:
+  params:
+    bootswatch: flatly
+right:
+  menu:
+    - icon: fa-github fa-lg
+      text: "github"
+      href: https://github.com/sethiyap/growkar
