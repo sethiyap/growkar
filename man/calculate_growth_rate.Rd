@@ -9,15 +9,18 @@ calculate_growth_rate(
   average_replicates = FALSE,
   first_timepoint = 0,
   select_replicates = NULL,
-  cells_at_OD_1 = 3e+07
+  cells_at_OD_1 = 3e+07,
+  end_timepoint = NULL
 )
 }
 \arguments{
 \item{dat_growth_curve}{a tibble, with first column as `Time` and after that
-columns as samples. If the samples have replicates mention them as
-`sampleName_replicate`, for example `CgFlu_R1` , `CgFlu_R2`, `CgFlu_R3`}
+columns as samples. Samples should be named as `sampleName_replicate`, for
+example `CgFlu_R1` , `CgFlu_R2`, `CgFlu_R3`. If data does not contain
+replicates then sample name should be `CgFlu_R1`, `Cg_R1`, `YPD_R1` The
+function assumes that data contains OD values in increasing order.}
 
-\item{average_replicates}{logical, to plot average and standard deviation of
+\item{average_replicates}{logical, to calculate growth rates as average of
 replicates, Default: FALSE}
 
 \item{first_timepoint}{numeric, first time-point from where to calculate the
@@ -31,19 +34,23 @@ to be plotted from samples CgFlu_R1, CgFlu_R2; the vector should be
 \item{cells_at_OD_1}{numeric, a mutplication factor to use absolute cell
 number at OD=1, for instance OD600=1 represents 3e+07 yeast cells. Default:
 3e+07}
+
+\item{end_timepoint}{numeric, end time-point to be considered. Specifically
+useful for appropriate growth curve calculation when the stationary phase
+OD is very fluctuating.  Default:NULL (end-timepoint from data)}
 }
 \value{
-a table with growth rate (generations/hour) and generation time
-  (minutes/generation)
+a tibble, containing growth rate (generation/hour) and generation
+  time or doubling time (minutes/generation)
 }
 \description{
 calculates growth rate and generation time by computing the
   log-phase start and end time.
 }
 \details{
-Start and End-point are computed as; Start time-point: is time at which OD is appx
-  double of the first-time point and end time-point: is time from which stationary
-  phase is beginning.
+Start and End-point are computed as; Start time-point: is time at
+  which OD is appx double of the first-time point and end time-point: is time
+  from which stationary phase is beginning.
 }
 \examples{
 \dontrun{
@@ -53,9 +60,4 @@ if(interactive()){
 
   }
 }
-}
-\seealso{
-\code{\link[tidyr]{gather}},\code{\link[tidyr]{separate}}
-  \code{\link[dplyr]{mutate}},\code{\link[dplyr]{filter}},\code{\link[dplyr]{group_by}},\code{\link[dplyr]{select}},\code{\link[dplyr]{join}},\code{\link[dplyr]{slice}},\code{\link[dplyr]{summarise}},\code{\link[dplyr]{bind}}
-   \code{\link[forcats]{as_factor}}
 }

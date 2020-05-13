@@ -9,6 +9,18 @@
 #'   it should be anything after `_`. for eg. if only replicate R1 and R2 need
 #'   to be plotted from samples CgFlu_R1, CgFlu_R2; the vector should be
 #'   `c("R1", "R2")`, Default: NULL
+#' @param end_timepoint numeric, the end time-point to be considered. Default:NULL (end-timepoint from data)
+#' @param palette_name character,name palettes Default: 'all_colors'
+#' For individual palette;
+#'  \itemize{
+#'  \item {Accent: }{8}
+#'  \item {Dark2: }{8}
+#'  \item {Paired: }{12}
+#'  \item {Pastel1: }{9}
+#'  \item {Pastel2: }{8}
+#'  \item {Set1: }{9}
+#'  \item {Set2: }{8}
+#'  \item {Set3: }{12} }
 #' @return a plot of growth curve
 #' @details DETAILS
 #' @examples
@@ -33,9 +45,20 @@
 #' @importFrom ggplot2 ggplot aes geom_point geom_line geom_errorbar position_dodge ylab facet_grid theme element_blank element_text theme_bw xlab scale_color_manual
 #' @importFrom RColorBrewer brewer.pal
 #' @import magrittr
-plot_growth_curve <- function(dat_growth_curve, average_replicates=FALSE, select_replicates=NULL){
+plot_growth_curve <- function(dat_growth_curve, average_replicates=FALSE, select_replicates=NULL, palette_name="all_colors", end_timepoint=NULL){
 
-        library(magrittr)
+            column1 <- dat_growth_curve %>% colnames() %>% .[1]
+
+            dat_growth_curve <- dat_growth_curve %>%
+                            dplyr::rename(Time= column1)
+
+          if(is.null(end_timepoint)==FALSE){
+            dat_growth_curve <- dat_growth_curve %>%
+              dplyr::filter(Time <= end_timepoint)
+          }
+          else{
+            dat_growth_curve <- dat_growth_curve
+          }
 
          dat_melt <- dat_growth_curve %>%
                           tidyr::gather(key="sample", value="OD", -Time) %>%
@@ -88,7 +111,7 @@ plot_growth_curve <- function(dat_growth_curve, average_replicates=FALSE, select
                                      legend.text = ggplot2::element_text(size = 12, colour = "black", face = "bold"),
                                      legend.title = ggplot2::element_blank(),
                         panel.grid.minor = ggplot2::element_blank())+
-                      ggplot2::scale_color_manual(values = RColorBrewer::brewer.pal(length(unique(summ_dat$condition)), "Set1"))
+                      ggplot2::scale_color_manual(values = growkar:::select_palette(num_of_colors = length(unique(summ_dat$condition)), palette_name = palette_name))
 
 
 

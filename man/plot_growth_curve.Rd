@@ -7,7 +7,9 @@
 plot_growth_curve(
   dat_growth_curve,
   average_replicates = FALSE,
-  select_replicates = NULL
+  select_replicates = NULL,
+  palette_name = "all_colors",
+  end_timepoint = NULL
 )
 }
 \arguments{
@@ -17,6 +19,20 @@ columns as samples. If the samples have replicates mention them as
 
 \item{average_replicates}{logical, to plot average and standard deviation of
 replicates, Default: FALSE}
+
+\item{palette_name}{character,name palettes Default: 'all_colors'
+For individual palette;
+ \itemize{
+ \item {Accent: }{8}
+ \item {Dark2: }{8}
+ \item {Paired: }{12}
+ \item {Pastel1: }{9}
+ \item {Pastel2: }{8}
+ \item {Set1: }{9}
+ \item {Set2: }{8}
+ \item {Set3: }{12} }}
+
+\item{end_timepoint}{numeric, the end time-point to be considered. Default:NULL (end-timepoint from data)}
 
 \item{select_replicate}{a vector, define replicates to be selected to plot,
 it should be anything after `_`. for eg. if only replicate R1 and R2 need

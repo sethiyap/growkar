@@ -124,7 +124,8 @@
   <span class='kw'>average_replicates</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>first_timepoint</span> <span class='kw'>=</span> <span class='fl'>0</span>,
   <span class='kw'>select_replicates</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>cells_at_OD_1</span> <span class='kw'>=</span> <span class='fl'>3e+07</span>
+  <span class='kw'>cells_at_OD_1</span> <span class='kw'>=</span> <span class='fl'>3e+07</span>,
+  <span class='kw'>end_timepoint</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -133,12 +134,14 @@
     <tr>
       <th>dat_growth_curve</th>
       <td><p>a tibble, with first column as `Time` and after that
-columns as samples. If the samples have replicates mention them as
-`sampleName_replicate`, for example `CgFlu_R1` , `CgFlu_R2`, `CgFlu_R3`</p></td>
+columns as samples. Samples should be named as `sampleName_replicate`, for
+example `CgFlu_R1` , `CgFlu_R2`, `CgFlu_R3`. If data does not contain
+replicates then sample name should be `CgFlu_R1`, `Cg_R1`, `YPD_R1` The
+function assumes that data contains OD values in increasing order.</p></td>
     </tr>
     <tr>
       <th>average_replicates</th>
-      <td><p>logical, to plot average and standard deviation of
+      <td><p>logical, to calculate growth rates as average of
 replicates, Default: FALSE</p></td>
     </tr>
     <tr>
@@ -159,22 +162,23 @@ to be plotted from samples CgFlu_R1, CgFlu_R2; the vector should be
 number at OD=1, for instance OD600=1 represents 3e+07 yeast cells. Default:
 3e+07</p></td>
     </tr>
+    <tr>
+      <th>end_timepoint</th>
+      <td><p>numeric, end time-point to be considered. Specifically
+useful for appropriate growth curve calculation when the stationary phase
+OD is very fluctuating.  Default:NULL (end-timepoint from data)</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a table with growth rate (generations/hour) and generation time
-  (minutes/generation)</p>
+    <p>a tibble, containing growth rate (generation/hour) and generation
+  time or doubling time (minutes/generation)</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Start and End-point are computed as; Start time-point: is time at which OD is appx
-  double of the first-time point and end time-point: is time from which stationary
-  phase is beginning.</p>
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='https://tidyr.tidyverse.org/reference/gather.html'>gather</a></code>,<code><a href='https://tidyr.tidyverse.org/reference/separate.html'>separate</a></code>
-  <code><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></code>,<code><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></code>,<code><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></code>,<code><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></code>,<code><a href='https://dplyr.tidyverse.org/reference/join.html'>join</a></code>,<code><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice</a></code>,<code><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarise</a></code>,<code><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind</a></code>
-   <code><a href='https://forcats.tidyverse.org/reference/as_factor.html'>as_factor</a></code></p></div>
+    <p>Start and End-point are computed as; Start time-point: is time at
+  which OD is appx double of the first-time point and end time-point: is time
+  from which stationary phase is beginning.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
