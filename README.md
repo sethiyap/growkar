@@ -1,11 +1,12 @@
 
-growkar
-=======
+growkar <a href='https://github.com/sethiyap/growkar/blob/master/hexasticker.jpg' target="_blank"><img src='https://github.com/sethiyap/growkar/blob/master/hexasticker.jpg' align ="right" height="250" /></a>
+===============================================================================================================================================================================================================
 
-<!-- <!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+<!-- badges: start -->
+ [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![platform](https://img.shields.io/badge/R-%3E%20v3.5.1-brightgreen)](https://shields.io/category/platform-support) 
 <!-- <!-- badges: end -->
+
 
 
 `growkar` is an R-package to visualize and analyze growth curve data from timely recorded optical density by spectrophotometers.
@@ -92,10 +93,10 @@ knitr::kable(cc,"html", align = "l") %>%
 <thead>
 <tr>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-condition
+condition1
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-replicate
+replicate1
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
 logphase\_start
@@ -294,8 +295,6 @@ NaN
 </tr>
 </tbody>
 </table>
-
-
 #### *With specific replicates*
 
 ``` r
@@ -312,22 +311,22 @@ knitr::kable(cc,"html", align = "l") %>%
 <thead>
 <tr>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-condition
+condition1
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-replicate
+replicate1
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-logphase\_start
+logphase_start
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-logphase\_end
+logphase_end
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-growth\_rate
+growth_rate
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-generation\_time
+generation_time
 </th>
 </tr>
 </thead>
@@ -454,8 +453,6 @@ NaN
 </tr>
 </tbody>
 </table>
-
-
 #### *Average of replicates*
 
 ``` r
@@ -472,19 +469,19 @@ knitr::kable(cc,"html", align = "l") %>%
 <thead>
 <tr>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-condition
+condition1
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-logphase\_start
+logphase_start
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-logphase\_end
+logphase_end
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-growth\_rate
+growth_rate
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-generation\_time
+generation_time
 </th>
 </tr>
 </thead>
@@ -542,7 +539,6 @@ NaN
 </tr>
 </tbody>
 </table>
-
 ### calculate_growthrate_from_defined_logphase
 
 Using user defined logphase start and end time-point growth rate and generation time can be computed.
@@ -770,7 +766,6 @@ NaN
 </tr>
 </tbody>
 </table>
-
 #### *Average of replicates*
 
 ``` r
@@ -801,10 +796,10 @@ start
 end
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-growth\_rate
+growth_rate
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-generation\_time
+generation_time
 </th>
 </tr>
 </thead>

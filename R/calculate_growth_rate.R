@@ -37,7 +37,7 @@
 #' @export
 #' @importFrom tidyr gather separate
 #' @importFrom dplyr mutate filter group_by select rename left_join slice
-#'   summarise bind_cols
+#'   summarise bind_cols all_of
 #' @importFrom forcats as_factor
 #' @import magrittr
 calculate_growth_rate <- function(dat_growth_curve, average_replicates=FALSE, first_timepoint=0, select_replicates=NULL, cells_at_OD_1=3e+07, end_timepoint=NULL){
@@ -45,124 +45,126 @@ calculate_growth_rate <- function(dat_growth_curve, average_replicates=FALSE, fi
   column1 <- dat_growth_curve %>% colnames() %>% .[1]
 
   dat_growth_curve <- dat_growth_curve %>%
-                        dplyr::rename(Time= column1)
+    dplyr::rename(Time= dplyr::all_of(column1))
 
   if(is.null(end_timepoint)==FALSE){
-              dat_growth_curve <- dat_growth_curve %>%
-                                      dplyr::filter(Time <= end_timepoint)
+    dat_growth_curve <- dat_growth_curve %>%
+      dplyr::filter(Time <= end_timepoint)
   }
   else{
     dat_growth_curve <- dat_growth_curve
   }
 
   dat_melt <- dat_growth_curve %>%
-                            tidyr::gather(key="sample", value="OD", -Time) %>%
-                            tidyr::separate(col = sample,into = c("condition","replicate"),sep="_") %>%
-                            dplyr::mutate(condition=forcats::as_factor(condition))
+    tidyr::gather(key="sample", value="OD", -Time) %>%
+    tidyr::separate(col = sample,into = c("condition","replicate"),sep="_") %>%
+    dplyr::mutate(condition=forcats::as_factor(condition))
 
-        if(is.null(select_replicates)==FALSE){
-                        dat_melt <- dat_melt %>%
-                        dplyr::filter(replicate %in% select_replicates)
-        }
-        else{
-          dat_melt <- dat_melt
-        }
+  if(is.null(select_replicates)==FALSE){
+    dat_melt <- dat_melt %>%
+      dplyr::filter(replicate %in% select_replicates)
+  }
+  else{
+    dat_melt <- dat_melt
+  }
 
-        multiplicative_factor <- log10(cells_at_OD_1)
+  multiplicative_factor <- log10(cells_at_OD_1)
 
   if(average_replicates==TRUE){
 
-                summ_dat <- dat_melt %>%
-                                    dplyr::group_by(.dots = c("Time", "condition"))  %>%
-                                    dplyr::mutate( mean=mean(OD)) %>%
-                                    dplyr::filter(replicate==min(replicate)) %>%
-                                    dplyr::select(-c(replicate, OD)) %>%
-                                    dplyr::rename(OD=mean)
+    summ_dat <- dat_melt %>%
+      dplyr::group_by(.dots = c("Time", "condition"))  %>%
+      dplyr::mutate( mean=mean(OD)) %>%
+      dplyr::filter(replicate==min(replicate)) %>%
+      dplyr::select(-c(replicate, OD)) %>%
+      dplyr::rename(OD=mean)
 
 
-              min_point   <- summ_dat %>%
-                                        dplyr::group_by(condition) %>%
-                                        dplyr::filter(Time==first_timepoint) %>%
-                                        dplyr::rename(min=OD) %>%
-                                        dplyr::select(-c(Time))
+    min_point   <- summ_dat %>%
+      dplyr::group_by(condition) %>%
+      dplyr::filter(Time==first_timepoint) %>%
+      dplyr::rename(min=OD) %>%
+      dplyr::select(-c(Time))
 
-              min_logphase <- summ_dat %>%
-                                        dplyr::left_join(min_point) %>%
-                                        dplyr::group_by(condition) %>%
-                                        dplyr::slice(which.min(abs(OD - (min)*2)))
-
-
-              max_point   <- summ_dat %>%
-                                        dplyr::group_by(condition) %>%
-                                        dplyr::summarise(max = max(OD))
+    min_logphase <- summ_dat %>%
+      dplyr::left_join(min_point) %>%
+      dplyr::group_by(condition) %>%
+      dplyr::slice(which.min(abs(OD - (min)*2))) %>%
+      dplyr::rename(Time1=Time, condition1=condition, OD1=OD)
 
 
-              max_logphase <- summ_dat %>%
-                                        dplyr::left_join(max_point) %>%
-                                        dplyr::group_by(condition) %>%
-                                        dplyr::filter(OD >= floor(max*100)/100)  %>%
-                                        dplyr::filter(Time==min(Time))
+    max_point   <- summ_dat %>%
+      dplyr::group_by(condition) %>%
+      dplyr::summarise(max = max(OD))
+
+
+    max_logphase <- summ_dat %>%
+      dplyr::left_join(max_point) %>%
+      dplyr::group_by(condition) %>%
+      dplyr::filter(OD >= floor(max*100)/100)  %>%
+      dplyr::filter(Time==min(Time))
 
 
 
-              growth_rate_dat <- dplyr::bind_cols(max_logphase, min_logphase) %>%
-                                        dplyr::mutate(Time1=ifelse(Time1>Time, 0,Time1),
-                                                      Time=ifelse(Time <= Time1,0,Time )) %>%
-                                        dplyr::summarise(time_diff=abs(Time-Time1), OD_diff=abs(OD-OD1)*multiplicative_factor) %>%
-                                        dplyr::mutate(growth_rate=OD_diff/time_diff, generation_time=(1/growth_rate)*60)
+    growth_rate_dat <- dplyr::bind_cols(max_logphase, min_logphase) %>%
+      dplyr::mutate(Time1=ifelse(Time1>Time, 0,Time1),
+                    Time=ifelse(Time <= Time1,0,Time )) %>%
+      dplyr::summarise(time_diff=abs(Time-Time1), OD_diff=abs(OD-OD1)*multiplicative_factor) %>%
+      dplyr::mutate(growth_rate=OD_diff/time_diff, generation_time=(1/growth_rate)*60)
 
-              logphase_summ <- dplyr::bind_cols(max_logphase,min_logphase) %>%
-                                    dplyr::mutate(Time1=ifelse(Time1>Time, 0,Time1),
-                                                  Time=ifelse(Time <= Time1,0,Time )) %>%
-                                        dplyr::select(c(condition, Time, Time1)) %>%
-                                        dplyr::rename(logphase_start=Time1, logphase_end=Time)
+    logphase_summ <- dplyr::bind_cols(max_logphase,min_logphase) %>%
+      dplyr::mutate(Time1=ifelse(Time1>Time, 0,Time1),
+                    Time=ifelse(Time <= Time1,0,Time )) %>%
+      dplyr::select(c(condition, Time, Time1)) %>%
+      dplyr::rename(logphase_start=Time1, logphase_end=Time, condition1=condition)
 
-              growth_rate_summ <- dplyr::bind_cols(logphase_summ,growth_rate_dat) %>%
-                                        dplyr::select(c(condition,logphase_start,logphase_end,growth_rate,generation_time)) %>%
-                                        dplyr::mutate(growth_rate=round(growth_rate,3),generation_time=round(generation_time,3) )
+    growth_rate_summ <- dplyr::bind_cols(logphase_summ,growth_rate_dat) %>%
+      dplyr::select(c(condition1,logphase_start,logphase_end,growth_rate,generation_time)) %>%
+      dplyr::mutate(growth_rate=round(growth_rate,3),generation_time=round(generation_time,3) )
   }
 
-    else{
-          min_point   <- dat_melt %>%
-                              dplyr::group_by(condition, replicate) %>%
-                              dplyr::filter(Time==first_timepoint) %>%
-                              dplyr::rename(min=OD) %>%
-                              dplyr::select(-c(Time))
+  else{
+    min_point   <- dat_melt %>%
+      dplyr::group_by(condition, replicate) %>%
+      dplyr::filter(Time==first_timepoint) %>%
+      dplyr::rename(min=OD) %>%
+      dplyr::select(-c(Time))
 
-          min_logphase <- dat_melt %>%
-                              dplyr::left_join(min_point) %>%
-                              dplyr::group_by(condition, replicate) %>%
-                              dplyr::slice(which.min(abs(OD - (min)*2)))
+    min_logphase <- dat_melt %>%
+      dplyr::left_join(min_point) %>%
+      dplyr::group_by(condition, replicate) %>%
+      dplyr::slice(which.min(abs(OD - (min)*2))) %>%
+      dplyr::rename(Time1=Time, condition1=condition, replicate1=replicate, OD1=OD)
 
 
-          max_point   <- dat_melt %>%
-                              dplyr::group_by(condition, replicate) %>%
-                              dplyr::summarise(max = max(OD))
+    max_point   <- dat_melt %>%
+      dplyr::group_by(condition, replicate) %>%
+      dplyr::summarise(max = max(OD))
 
-          max_logphase <- dat_melt %>%
-                              dplyr::left_join(max_point) %>%
-                              dplyr::group_by(condition, replicate) %>%
-                              # to remove last two digits from max
-                              #dplyr::mutate(max=as.character(max), max=stringr::str_sub(max, end=stringr::str_length(max) - 2), max=as.numeric(max)) %>%
-                              dplyr::filter(OD >= floor(max*100)/100)  %>%
-                              dplyr::filter(Time==min(Time))
+    max_logphase <- dat_melt %>%
+      dplyr::left_join(max_point) %>%
+      dplyr::group_by(condition, replicate) %>%
+      # to remove last two digits from max
+      #dplyr::mutate(max=as.character(max), max=stringr::str_sub(max, end=stringr::str_length(max) - 2), max=as.numeric(max)) %>%
+      dplyr::filter(OD >= floor(max*100)/100)  %>%
+      dplyr::filter(Time==min(Time))
 
-          growth_rate_dat <- dplyr::bind_cols(max_logphase, min_logphase) %>%
-                                    dplyr::mutate(Time1=ifelse(Time1>Time, 0,Time1),
-                                                  Time=ifelse(Time <= Time1,0,Time )) %>%
-                                dplyr::summarise(time_diff=abs(Time-Time1), OD_diff=abs(OD-OD1)*multiplicative_factor) %>%
-                                dplyr::mutate(growth_rate=OD_diff/time_diff, generation_time=(1/growth_rate)*60)
+    growth_rate_dat <- dplyr::bind_cols(max_logphase, min_logphase) %>%
+      dplyr::mutate(Time1=ifelse(Time1>Time, 0,Time1),
+                    Time=ifelse(Time <= Time1,0,Time )) %>%
+      dplyr::summarise(time_diff=abs(Time-Time1), OD_diff=abs(OD-OD1)*multiplicative_factor) %>%
+      dplyr::mutate(growth_rate=OD_diff/time_diff, generation_time=(1/growth_rate)*60)
 
-          logphase_summ <- dplyr::bind_cols(max_logphase, min_logphase) %>%
-                                dplyr::mutate(Time1=ifelse(Time1>Time, 0,Time1),
-                                              Time=ifelse(Time <= Time1,0,Time )) %>%
-                                dplyr::select(c(condition,replicate, Time, Time1)) %>%
-                                dplyr::rename(logphase_start=Time1, logphase_end=Time)
+    logphase_summ <- dplyr::bind_cols(max_logphase, min_logphase) %>%
+      dplyr::mutate(Time1=ifelse(Time1>Time, 0,Time1),
+                    Time=ifelse(Time <= Time1,0,Time )) %>%
+      dplyr::select(c(condition,replicate, Time, Time1)) %>%
+      dplyr::rename(logphase_start=Time1, logphase_end=Time, condition1=condition, replicate1=replicate)
 
-          growth_rate_summ <- dplyr::bind_cols(logphase_summ,growth_rate_dat) %>%
-                                dplyr::select(c(condition,replicate, logphase_start,logphase_end,growth_rate,generation_time))%>%
-                                dplyr::mutate(growth_rate=round(growth_rate,3),generation_time=round(generation_time,3) )
-    }
+    growth_rate_summ <- dplyr::bind_cols(logphase_summ,growth_rate_dat) %>%
+      dplyr::select(c(condition1,replicate1, logphase_start,logphase_end,growth_rate,generation_time))%>%
+      dplyr::mutate(growth_rate=round(growth_rate,3),generation_time=round(generation_time,3) )
+  }
 
   return(growth_rate_summ)
 }

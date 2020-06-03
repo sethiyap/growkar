@@ -39,88 +39,89 @@
 #' @rdname calculate_growthrate_from_defined_logphase
 #' @export
 #' @importFrom dplyr rename mutate select pull left_join filter bind_cols
-#'   group_by summarise
+#'   group_by summarise all_of
 #' @importFrom tidyr gather separate
 #' @importFrom forcats as_factor
 calculate_growthrate_from_defined_logphase <- function(dat_growth_curve, logphase_tibble, average_replicates=FALSE, select_replicates=NULL,cells_at_OD_1=3e+07){
 
-        multiplicative_factor <- log10(cells_at_OD_1)
-        column1 <- dat_growth_curve %>% colnames() %>% .[1]
+  multiplicative_factor <- log10(cells_at_OD_1)
+  column1 <- dat_growth_curve %>% colnames() %>% .[1]
 
-        dat_growth_curve <- dat_growth_curve %>%
-                                dplyr::rename(Time= column1)
+  dat_growth_curve <- dat_growth_curve %>%
+    dplyr::rename(Time= dplyr::all_of(column1))
 
-        dat_melt <- dat_growth_curve %>%
-                                tidyr::gather(key="sample", value="OD", -Time) %>%
-                                tidyr::separate(col = sample,into = c("condition","replicate"),sep="_") %>%
-                                dplyr::mutate(condition=forcats::as_factor(condition))
+  dat_melt <- dat_growth_curve %>%
+    tidyr::gather(key="sample", value="OD", -Time) %>%
+    tidyr::separate(col = sample,into = c("condition","replicate"),sep="_") %>%
+    dplyr::mutate(condition=forcats::as_factor(condition))
 
-        dat_colnames <- dat_growth_curve %>%
-                              dplyr::select(-c(column1)) %>%
-                              colnames()
+  dat_colnames <- dat_growth_curve %>%
+    dplyr::select(-c(column1)) %>%
+    colnames()
 
-         if(all(dat_colnames %in% (logphase_tibble %>%dplyr::pull(1)))){
+  if(all(dat_colnames %in% (logphase_tibble %>%dplyr::pull(1)))){
 
-          logphase_cols <- logphase_tibble %>% colnames()
+    logphase_cols <- logphase_tibble %>% colnames()
 
-          logphase_tibble <- logphase_tibble %>%
-                                  dplyr::rename(condition=logphase_cols[1],
-                                  start=logphase_cols[2], end=logphase_cols[3]) %>%
-                                  tidyr::separate(col = condition,into = c("condition","replicate"),sep="_")
+    logphase_tibble <- logphase_tibble %>%
+      dplyr::rename(condition=logphase_cols[1],
+                    start=logphase_cols[2], end=logphase_cols[3]) %>%
+      tidyr::separate(col = condition,into = c("condition","replicate"),sep="_")
 
-          min_logphase <- dat_melt %>%
-                                  dplyr::left_join(logphase_tibble) %>%
-                                  dplyr::select(-c("end")) %>%
-                                  dplyr::filter(Time == start)
+    min_logphase <- dat_melt %>%
+      dplyr::left_join(logphase_tibble) %>%
+      dplyr::select(-c("end")) %>%
+      dplyr::filter(Time == start)
 
-          max_logphase <- dat_melt %>%
-                                dplyr::left_join(logphase_tibble) %>%
-                                dplyr::select(-c("start")) %>%
-                                dplyr::filter(Time == end)
+    max_logphase <- dat_melt %>%
+      dplyr::left_join(logphase_tibble) %>%
+      dplyr::select(-c("start")) %>%
+      dplyr::filter(Time == end) %>%
+      dplyr::rename(Time1=Time, condition1=condition, replicate1=replicate, OD1=OD)
 
-          dat_melt <- dplyr::bind_cols(min_logphase, max_logphase)
+    dat_melt <- dplyr::bind_cols(min_logphase, max_logphase)
 
-        } else {
+  } else {
 
-          stop("Column names from dat_growth_curve does not match with logphase_tibble conditions!!")
+    stop("Column names from dat_growth_curve does not match with logphase_tibble conditions!!")
 
-        }
+  }
 
-        if(is.null(select_replicates)==FALSE){
+  if(is.null(select_replicates)==FALSE){
 
-            dat_melt <- dat_melt %>%
-                        dplyr::filter(replicate %in% select_replicates)
-        } else{
+    dat_melt <- dat_melt %>%
+      dplyr::filter(replicate %in% select_replicates)
+  } else{
 
-            dat_melt <- dat_melt
+    dat_melt <- dat_melt
 
-        }
+  }
 
 
-        if(average_replicates==TRUE){
+  if(average_replicates==TRUE){
 
-          summ_dat <- dat_melt %>%
-                            dplyr::select(c(condition,start, end, OD, OD1)) %>%
-                            dplyr::group_by(condition) %>%
-                            dplyr::summarise(start=mean(start), end=mean(end),
-                                             OD_start=mean(OD), OD_end=mean(OD1),
-                                             time_diff=abs(end-start), OD_diff=abs(OD_end-OD_start)*multiplicative_factor) %>%
-                           dplyr::mutate(growth_rate=OD_diff/time_diff, generation_time=(1/growth_rate)*60,
-                                         start=round(start,3), end=round(end,3),
-                                         growth_rate=round(growth_rate,3), generation_time=round(generation_time,3)) %>%
-                            dplyr::select(c(condition, start, end, growth_rate, generation_time))
+    summ_dat <- dat_melt %>%
+      dplyr::select(c(condition,start, end, OD, OD1)) %>%
+      dplyr::group_by(condition) %>%
+      dplyr::summarise(start=mean(start), end=mean(end),
+                       OD_start=mean(OD), OD_end=mean(OD1),
+                       time_diff=abs(end-start), OD_diff=abs(OD_end-OD_start)*multiplicative_factor) %>%
+      dplyr::mutate(growth_rate=OD_diff/time_diff, generation_time=(1/growth_rate)*60,
+                    start=round(start,3), end=round(end,3),
+                    growth_rate=round(growth_rate,3), generation_time=round(generation_time,3)) %>%
+      dplyr::select(c(condition, start, end, growth_rate, generation_time))
 
-        } else{
+  } else{
 
-          summ_dat <- dat_melt %>%
-                            dplyr::select(c(condition,replicate, start, end, OD, OD1)) %>%
-                            dplyr::mutate(time_diff=abs(end-start), OD_diff=abs(OD1-OD)*multiplicative_factor) %>%
-                            dplyr::mutate(growth_rate=OD_diff/time_diff, generation_time=(1/growth_rate)*60,
-                                          growth_rate=round(growth_rate,3), generation_time=round(generation_time,3)) %>%
-                            dplyr::select(c(condition, replicate, start, end, growth_rate, generation_time))
+    summ_dat <- dat_melt %>%
+      dplyr::select(c(condition,replicate, start, end, OD, OD1)) %>%
+      dplyr::mutate(time_diff=abs(end-start), OD_diff=abs(OD1-OD)*multiplicative_factor) %>%
+      dplyr::mutate(growth_rate=OD_diff/time_diff, generation_time=(1/growth_rate)*60,
+                    growth_rate=round(growth_rate,3), generation_time=round(generation_time,3)) %>%
+      dplyr::select(c(condition, replicate, start, end, growth_rate, generation_time))
 
-        }
+  }
 
-        return(summ_dat)
+  return(summ_dat)
 
 }

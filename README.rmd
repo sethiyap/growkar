@@ -2,12 +2,13 @@
 output: github_document
 always_allow_html: yes
 ---
-# growkar
+# growkar <a href='https://github.com/sethiyap/growkar/blob/master/hexasticker.jpg' target="_blank"><img src='https://github.com/sethiyap/growkar/blob/master/hexasticker.jpg' align ="right" height="250" /></a>
 
 <!-- <!-- badges: start --> 
 <!-- [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- [![platform](https://img.shields.io/badge/R-%3E%20v3.5.1-brightgreen)](https://shields.io/category/platform-support) 
 <!-- <!-- badges: end --> 
+
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
