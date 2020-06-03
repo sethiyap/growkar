@@ -2,7 +2,7 @@
 output: github_document
 always_allow_html: yes
 ---
-# growkar <a href='https://github.com/sethiyap/growkar/blob/master/hexasticker.jpg' target="_blank"><img src='https://github.com/sethiyap/growkar/blob/master/hexasticker.jpg' align ="right" height="250" /></a>
+# growkar <a href='https://github.com/sethiyap/growkar/blob/master/hexasticker.jpg' target="_blank"><img src='https://github.com/sethiyap/growkar/blob/master/hexasticker.jpg' align ="right" height="190" /></a>
 
 <!-- <!-- badges: start --> 
 <!-- [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)

@@ -1,13 +1,11 @@
 
-growkar <a href='https://github.com/sethiyap/growkar/blob/master/hexasticker.jpg' target="_blank"><img src='https://github.com/sethiyap/growkar/blob/master/hexasticker.jpg' align ="right" height="250" /></a>
+growkar <a href='https://github.com/sethiyap/growkar/blob/master/hexasticker.jpg' target="_blank"><img src='https://github.com/sethiyap/growkar/blob/master/hexasticker.jpg' align ="right" height="190" /></a>
 ===============================================================================================================================================================================================================
 
-<!-- badges: start -->
- [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+<!-- <!-- badges: start -->
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![platform](https://img.shields.io/badge/R-%3E%20v3.5.1-brightgreen)](https://shields.io/category/platform-support) 
 <!-- <!-- badges: end -->
-
-
 
 `growkar` is an R-package to visualize and analyze growth curve data from timely recorded optical density by spectrophotometers.
 
@@ -99,16 +97,16 @@ condition1
 replicate1
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-logphase\_start
+logphase_start
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-logphase\_end
+logphase_end
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-growth\_rate
+growth_rate
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-generation\_time
+generation_time
 </th>
 </tr>
 </thead>
@@ -576,10 +574,10 @@ start
 end
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-growth\_rate
+growth_rate
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-generation\_time
+generation_time
 </th>
 </tr>
 </thead>
