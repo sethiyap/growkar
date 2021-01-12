@@ -1,7 +1,7 @@
 Package: growkar
 Type: Package
 Title: Growth Curve Analysis
-Version: 0.1.1
+Version: 0.1.2
 Author: Pooja Sethiya
 Authors@R: 
     person(given = "Pooja",

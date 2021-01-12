@@ -967,7 +967,7 @@ NaN
 
 </table>
 
-### calculate\_growthrate\_from\_defined\_logphase
+### calculate\_growthrate\_from\_defined\_time
 
 Using user defined logphase start and end time-point growth rate and
 generation time can be computed.

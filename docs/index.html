@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">growkar</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
       </span>
     </div>
 
@@ -66,9 +66,9 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="growkar" class="section level1">
+<div id="growkar-" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#growkar" class="anchor"></a>growkar <a href="https://github.com/sethiyap/growkar/blob/master/hexasticker.jpg" target="_blank"><img src="https://github.com/sethiyap/growkar/blob/master/hexasticker.jpg" align="right" height="190"></a>
+<a href="#growkar-" class="anchor"></a>growkar <a href="https://github.com/sethiyap/growkar/blob/master/hexasticker.jpg" target="_blank"><img src="reference/figures/hexasticker.jpg" align="right" height="190"></a>
 </h1></div>
 <!-- <!-- badges: start -->
 
@@ -76,11 +76,11 @@
 <div id="install" class="section level2">
 <h2 class="hasAnchor">
 <a href="#install" class="anchor"></a>Install</h2>
-<div class="sourceCode"><pre class="r"><span class="kw">if</span>(<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="st">"devtools"</span>)){
-        <span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">"sethiyap/growkar"</span>)
+<div class="sourceCode" id="cb1"><pre class="r"><span class="kw">if</span>(<span class="fu"><a href="https://rdrr.io/r/base/library.html">require</a></span>(<span class="st">"devtools"</span>)){
+        <span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">"sethiyap/growkar"</span>)
 } <span class="kw">else</span>{
         <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"devtools"</span>)
-        <span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">"sethiyap/growkar"</span>)
+        <span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">"sethiyap/growkar"</span>)
 }</pre></div>
 </div>
 <div id="plot-growth-curve" class="section level2">
@@ -90,21 +90,21 @@
 <h4 class="hasAnchor">
 <a href="#individual-replicate" class="anchor"></a><em>Individual replicate</em>
 </h4>
-<div class="sourceCode"><pre class="r"><span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="fu"><a href="reference/plot_growth_curve.html">plot_growth_curve</a></span>(<span class="kw">dat_growth_curve</span> <span class="kw">=</span> <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="no"><a href="reference/yeast_growth_data.html">yeast_growth_data</a></span>, <span class="kw">palette_name</span><span class="kw">=</span><span class="st">"Set1"</span>)</pre></div>
+<div class="sourceCode" id="cb2"><pre class="r"><span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="fu"><a href="reference/plot_growth_curve.html">plot_growth_curve</a></span>(<span class="kw">dat_growth_curve</span> <span class="kw">=</span> <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="no"><a href="reference/yeast_growth_data.html">yeast_growth_data</a></span>, <span class="kw">palette_name</span><span class="kw">=</span><span class="st">"Set1"</span>)</pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"></p>
 </div>
 <div id="with-specific-replicates" class="section level4">
 <h4 class="hasAnchor">
 <a href="#with-specific-replicates" class="anchor"></a><em>With specific replicates</em>
 </h4>
-<div class="sourceCode"><pre class="r"><span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="fu"><a href="reference/plot_growth_curve.html">plot_growth_curve</a></span>(<span class="kw">dat_growth_curve</span> <span class="kw">=</span> <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="no"><a href="reference/yeast_growth_data.html">yeast_growth_data</a></span>, <span class="kw">average_replicates</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">select_replicates</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"R1"</span>, <span class="st">"R2"</span>), <span class="kw">palette_name</span><span class="kw">=</span><span class="st">"Set1"</span>)</pre></div>
+<div class="sourceCode" id="cb3"><pre class="r"><span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="fu"><a href="reference/plot_growth_curve.html">plot_growth_curve</a></span>(<span class="kw">dat_growth_curve</span> <span class="kw">=</span> <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="no"><a href="reference/yeast_growth_data.html">yeast_growth_data</a></span>, <span class="kw">average_replicates</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">select_replicates</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"R1"</span>, <span class="st">"R2"</span>), <span class="kw">palette_name</span><span class="kw">=</span><span class="st">"Set1"</span>)</pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-5-1.png" width="100%"></p>
 </div>
 <div id="average-of-replicates" class="section level4">
 <h4 class="hasAnchor">
 <a href="#average-of-replicates" class="anchor"></a><em>Average of replicates</em>
 </h4>
-<div class="sourceCode"><pre class="r"><span class="co"># Vertical lines represent standard deviation</span>
+<div class="sourceCode" id="cb4"><pre class="r"><span class="co"># Vertical lines represent standard deviation</span>
 
 <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="fu"><a href="reference/plot_growth_curve.html">plot_growth_curve</a></span>(<span class="kw">dat_growth_curve</span> <span class="kw">=</span> <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="no"><a href="reference/yeast_growth_data.html">yeast_growth_data</a></span>, <span class="kw">average_replicates</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">palette_name</span><span class="kw">=</span><span class="st">"Set1"</span>)</pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-6-1.png" width="100%"></p>
@@ -113,16 +113,15 @@
 <div id="computation-of-growth-rate-and-generation-time" class="section level2">
 <h2 class="hasAnchor">
 <a href="#computation-of-growth-rate-and-generation-time" class="anchor"></a>Computation of growth rate and generation time</h2>
-<p>Growth rates have often been used to evaluate the measure of fitness. Logarithmic phase of the curve is used to determine the growth-rate. Here we define late lag-phase and early stationary-phase as actively dividing log-phase (as shown in figure).</p>
+<p>Growth rates have often been used to evaluate the measure of fitness. Logarithmic phase of the curve is used to determine the growth-rate. Here, late lag-phase and early stationary-phase is defined as actively dividing log-phase (as shown in figure).</p>
 <p><img src="reference/figures/CgFlu.png" width="100%" style="display: block; margin: auto;"></p>
-<p>Log-phase start <code>(T1)</code>: Time-point at which cells show OD <code>(OD1)</code> double to initial time-point. Log-phase end <code>(T2)</code>: Time-point from which cells OD <code>(OD2)</code> remains consistent.</p>
-<p>Growth rate is calculated as</p>
+<p>Log-phase start <code>(T1)</code>: the time-point at which OD <code>(OD1)</code> is double to that of the OD at the initial time-point (i.e., 0 hour) Log-phase end <code>(T2)</code>: the time-point at which the OD <code>(OD2)</code> becomes twice of <code>OD1</code>.</p>
+<p>Growth-rate is calculated as described in (Ng et al., 2016);</p>
 <p><img src="reference/figures/Equation1.png" width="100%" style="display: block; margin: auto;"></p>
-<p>Growth rate (generation/hour) which is the number of generations (doublings) per hour; Where, <code>multipicative_factor</code> determines number of cells at OD=1 for instance: for yeast cells with OD=1</p>
-<p>1 = 3 * 10<sup>7</sup><em>c<strong>e</strong>l<strong>l</strong>s</em></p>
-<p>And Generation time; which is the time taken by the population to double:</p>
+<p>Growth rate (generation/hour); is the number of generations (doublings) per hour.</p>
+<p>Doubling time (or generation time); is the time taken by the population to double:</p>
 <p><img src="reference/figures/Equation2.png" width="100%" style="display: block; margin: auto;"></p>
-<p>The generation time (minutes/generation) is the reciprocal of the growth rate.</p>
+<p>The doubling time (minutes/doubling) is the reciprocal of the growth rate.</p>
 <div id="calculate_growth_rate" class="section level3">
 <h3 class="hasAnchor">
 <a href="#calculate_growth_rate" class="anchor"></a>calculate_growth_rate</h3>
@@ -130,7 +129,7 @@
 <h4 class="hasAnchor">
 <a href="#individual-replicate-1" class="anchor"></a><em>Individual replicate</em>
 </h4>
-<div class="sourceCode"><pre class="r">
+<div class="sourceCode" id="cb5"><pre class="r">
 <span class="no">cc</span> <span class="kw">&lt;-</span>  <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="fu"><a href="reference/calculate_growth_rate.html">calculate_growth_rate</a></span>(<span class="kw">dat_growth_curve</span> <span class="kw">=</span> <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="no"><a href="reference/yeast_growth_data.html">yeast_growth_data</a></span>)
 
 <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">cc</span>,<span class="st">"html"</span>, <span class="kw">align</span> <span class="kw">=</span> <span class="st">"l"</span>) <span class="kw">%&gt;%</span>
@@ -140,203 +139,203 @@
 <table class="table table table-striped table-condensed table-responsive">
 <thead><tr>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-condition1
+<p>condition1</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-replicate1
+<p>replicate1</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-logphase_start
+<p>time1</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-logphase_end
+<p>time2</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-growth_rate
+<p>growth_rate</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-generation_time
+<p>doubling_time</p>
 </th>
 </tr></thead>
 <tbody>
 <tr>
 <td style="text-align:left;color: blue !important;">
-Cg
+<p>Cg</p>
 </td>
 <td style="text-align:left;">
-R1
+<p>R1</p>
 </td>
 <td style="text-align:left;">
-4.0
+<p>4.0</p>
 </td>
 <td style="text-align:left;">
-13.5
+<p>5.5</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.428
+<p>0.531</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-42.025
+<p>33.995</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-Cg
+<p>Cg</p>
 </td>
 <td style="text-align:left;">
-R2
+<p>R2</p>
 </td>
 <td style="text-align:left;">
-4.0
+<p>4.0</p>
 </td>
 <td style="text-align:left;">
-13.0
+<p>5.5</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.495
+<p>0.515</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-40.122
+<p>35.050</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-Cg
+<p>Cg</p>
 </td>
 <td style="text-align:left;">
-R3
+<p>R3</p>
 </td>
 <td style="text-align:left;">
-4.5
+<p>4.5</p>
 </td>
 <td style="text-align:left;">
-12.0
+<p>5.5</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.746
+<p>0.556</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-34.371
+<p>32.503</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-CgFlu
+<p>CgFlu</p>
 </td>
 <td style="text-align:left;">
-R1
+<p>R1</p>
 </td>
 <td style="text-align:left;">
-4.0
+<p>4.0</p>
 </td>
 <td style="text-align:left;">
-14.0
+<p>6.0</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.281
+<p>0.396</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-46.845
+<p>45.563</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-CgFlu
+<p>CgFlu</p>
 </td>
 <td style="text-align:left;">
-R2
+<p>R2</p>
 </td>
 <td style="text-align:left;">
-4.0
+<p>4.0</p>
 </td>
 <td style="text-align:left;">
-14.0
+<p>5.5</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.265
+<p>0.399</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-47.426
+<p>45.266</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-CgFlu
+<p>CgFlu</p>
 </td>
 <td style="text-align:left;">
-R3
+<p>R3</p>
 </td>
 <td style="text-align:left;">
-4.0
+<p>4.0</p>
 </td>
 <td style="text-align:left;">
-13.5
+<p>5.5</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.283
+<p>0.400</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-46.768
+<p>45.107</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-YPD
+<p>YPD</p>
 </td>
 <td style="text-align:left;">
-R1
+<p>R1</p>
 </td>
 <td style="text-align:left;">
-0.0
+<p>0.0</p>
 </td>
 <td style="text-align:left;">
-0.0
+<p>0.0</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-YPD
+<p>YPD</p>
 </td>
 <td style="text-align:left;">
-R2
+<p>R2</p>
 </td>
 <td style="text-align:left;">
-0.0
+<p>0.0</p>
 </td>
 <td style="text-align:left;">
-0.0
+<p>0.0</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-YPD
+<p>YPD</p>
 </td>
 <td style="text-align:left;">
-R3
+<p>R3</p>
 </td>
 <td style="text-align:left;">
-0.0
+<p>0.0</p>
 </td>
 <td style="text-align:left;">
-0.0
+<p>0.0</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 </tr>
 </tbody>
@@ -346,7 +345,7 @@ NaN
 <h4 class="hasAnchor">
 <a href="#with-specific-replicates-1" class="anchor"></a><em>With specific replicates</em>
 </h4>
-<div class="sourceCode"><pre class="r">
+<div class="sourceCode" id="cb6"><pre class="r">
 <span class="no">cc</span> <span class="kw">&lt;-</span> <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="fu"><a href="reference/calculate_growth_rate.html">calculate_growth_rate</a></span>(<span class="kw">dat_growth_curve</span> <span class="kw">=</span>     <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="no"><a href="reference/yeast_growth_data.html">yeast_growth_data</a></span>, <span class="kw">average_replicates</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">select_replicates</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"R1"</span>, <span class="st">"R2"</span>))
 
 <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">cc</span>,<span class="st">"html"</span>, <span class="kw">align</span> <span class="kw">=</span> <span class="st">"l"</span>) <span class="kw">%&gt;%</span>
@@ -356,143 +355,143 @@ NaN
 <table class="table table table-striped table-condensed table-responsive">
 <thead><tr>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-condition1
+<p>condition1</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-replicate1
+<p>replicate1</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-logphase_start
+<p>time1</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-logphase_end
+<p>time2</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-growth_rate
+<p>growth_rate</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-generation_time
+<p>doubling_time</p>
 </th>
 </tr></thead>
 <tbody>
 <tr>
 <td style="text-align:left;color: blue !important;">
-Cg
+<p>Cg</p>
 </td>
 <td style="text-align:left;">
-R1
+<p>R1</p>
 </td>
 <td style="text-align:left;">
-4
+<p>4</p>
 </td>
 <td style="text-align:left;">
-13.5
+<p>5.5</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.428
+<p>0.531</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-42.025
+<p>33.995</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-Cg
+<p>Cg</p>
 </td>
 <td style="text-align:left;">
-R2
+<p>R2</p>
 </td>
 <td style="text-align:left;">
-4
+<p>4</p>
 </td>
 <td style="text-align:left;">
-13.0
+<p>5.5</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.495
+<p>0.515</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-40.122
+<p>35.050</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-CgFlu
+<p>CgFlu</p>
 </td>
 <td style="text-align:left;">
-R1
+<p>R1</p>
 </td>
 <td style="text-align:left;">
-4
+<p>4</p>
 </td>
 <td style="text-align:left;">
-14.0
+<p>6.0</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.281
+<p>0.396</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-46.845
+<p>45.563</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-CgFlu
+<p>CgFlu</p>
 </td>
 <td style="text-align:left;">
-R2
+<p>R2</p>
 </td>
 <td style="text-align:left;">
-4
+<p>4</p>
 </td>
 <td style="text-align:left;">
-14.0
+<p>5.5</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.265
+<p>0.399</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-47.426
+<p>45.266</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-YPD
+<p>YPD</p>
 </td>
 <td style="text-align:left;">
-R1
+<p>R1</p>
 </td>
 <td style="text-align:left;">
-0
+<p>0</p>
 </td>
 <td style="text-align:left;">
-0.0
+<p>0.0</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-YPD
+<p>YPD</p>
 </td>
 <td style="text-align:left;">
-R2
+<p>R2</p>
 </td>
 <td style="text-align:left;">
-0
+<p>0</p>
 </td>
 <td style="text-align:left;">
-0.0
+<p>0.0</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 </tr>
 </tbody>
@@ -502,7 +501,7 @@ NaN
 <h4 class="hasAnchor">
 <a href="#average-of-replicates-1" class="anchor"></a><em>Average of replicates</em>
 </h4>
-<div class="sourceCode"><pre class="r">
+<div class="sourceCode" id="cb7"><pre class="r">
 <span class="no">cc</span> <span class="kw">&lt;-</span> <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="fu"><a href="reference/calculate_growth_rate.html">calculate_growth_rate</a></span>(<span class="kw">dat_growth_curve</span> <span class="kw">=</span> <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="no"><a href="reference/yeast_growth_data.html">yeast_growth_data</a></span>, <span class="kw">average_replicates</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
 
 <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">cc</span>,<span class="st">"html"</span>, <span class="kw">align</span> <span class="kw">=</span> <span class="st">"l"</span>) <span class="kw">%&gt;%</span>
@@ -512,92 +511,92 @@ NaN
 <table class="table table table-striped table-condensed table-responsive">
 <thead><tr>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-condition1
+<p>condition</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-logphase_start
+<p>time1</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-logphase_end
+<p>time2</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-growth_rate
+<p>growth_rate</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-generation_time
+<p>doubling_time</p>
 </th>
 </tr></thead>
 <tbody>
 <tr>
 <td style="text-align:left;color: blue !important;">
-Cg
+<p>Cg</p>
 </td>
 <td style="text-align:left;">
-4.5
+<p>4.5</p>
 </td>
 <td style="text-align:left;">
-13.0
+<p>5.5</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.544
+<p>0.560</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-38.858
+<p>32.248</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-CgFlu
+<p>CgFlu</p>
 </td>
 <td style="text-align:left;">
-4.0
+<p>4.0</p>
 </td>
 <td style="text-align:left;">
-13.5
+<p>5.5</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.317
+<p>0.397</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-45.566
+<p>45.501</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-YPD
+<p>YPD</p>
 </td>
 <td style="text-align:left;">
-0.0
+<p>0.0</p>
 </td>
 <td style="text-align:left;">
-0.0
+<p>0.0</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<div id="calculate_growthrate_from_defined_logphase" class="section level3">
+<div id="calculate_growthrate_from_defined_time" class="section level3">
 <h3 class="hasAnchor">
-<a href="#calculate_growthrate_from_defined_logphase" class="anchor"></a>calculate_growthrate_from_defined_logphase</h3>
+<a href="#calculate_growthrate_from_defined_time" class="anchor"></a>calculate_growthrate_from_defined_time</h3>
 <p>Using user defined logphase start and end time-point growth rate and generation time can be computed.</p>
 <div id="individual-replicate-2" class="section level4">
 <h4 class="hasAnchor">
 <a href="#individual-replicate-2" class="anchor"></a><em>Individual replicate</em>
 </h4>
-<div class="sourceCode"><pre class="r">
+<div class="sourceCode" id="cb8"><pre class="r">
 <span class="co"># Load logphase start-end from local file</span>
 
 <span class="no">logphase_dat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"logphase_for_replicates.txt"</span>, <span class="kw">package</span> <span class="kw">=</span> <span class="st">"growkar"</span>)
 <span class="no">logphase_tibble</span> <span class="kw">&lt;-</span> <span class="kw pkg">readr</span><span class="kw ns">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim</a></span>(<span class="no">logphase_dat</span>, <span class="kw">delim</span><span class="kw">=</span><span class="st">"\t"</span>, <span class="kw">col_names</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
 
-<span class="no">cc</span> <span class="kw">&lt;-</span>  <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="fu"><a href="reference/calculate_growthrate_from_defined_logphase.html">calculate_growthrate_from_defined_logphase</a></span>(<span class="kw">dat_growth_curve</span> <span class="kw">=</span> <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="no"><a href="reference/yeast_growth_data.html">yeast_growth_data</a></span>,<span class="no">logphase_tibble</span>, <span class="kw">average_replicates</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
+<span class="no">cc</span> <span class="kw">&lt;-</span>  <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="fu"><a href="reference/calculate_growthrate_from_defined_time.html">calculate_growthrate_from_defined_time</a></span>(<span class="kw">dat_growth_curve</span> <span class="kw">=</span> <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="no"><a href="reference/yeast_growth_data.html">yeast_growth_data</a></span>,<span class="no">logphase_tibble</span>, <span class="kw">average_replicates</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
 
 <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">cc</span>,<span class="st">"html"</span>, <span class="kw">align</span> <span class="kw">=</span> <span class="st">"l"</span>) <span class="kw">%&gt;%</span>
     <span class="kw pkg">kableExtra</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html">kable_styling</a></span>(<span class="kw">bootstrap_options</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"striped"</span>, <span class="st">"condensed"</span>, <span class="st">"responsive"</span>), <span class="kw">full_width</span> <span class="kw">=</span> <span class="no">F</span>,<span class="kw">font_size</span> <span class="kw">=</span><span class="fl">14</span>,  <span class="kw">stripe_color</span> <span class="kw">=</span> <span class="st">"aquamarine3"</span>) <span class="kw">%&gt;%</span>
@@ -606,203 +605,203 @@ NaN
 <table class="table table table-striped table-condensed table-responsive">
 <thead><tr>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-condition
+<p>condition</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-replicate
+<p>replicate</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-start
+<p>Time1</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-end
+<p>Time2</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-growth_rate
+<p>growth_rate</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-generation_time
+<p>doubling_time</p>
 </th>
 </tr></thead>
 <tbody>
 <tr>
 <td style="text-align:left;color: blue !important;">
-Cg
+<p>Cg</p>
 </td>
 <td style="text-align:left;">
-R1
+<p>R1</p>
 </td>
 <td style="text-align:left;">
-4.0
+<p>5.0</p>
 </td>
 <td style="text-align:left;">
-13.5
+<p>6.0</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.428
+<p>0.597</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-42.025
+<p>30</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-Cg
+<p>Cg</p>
 </td>
 <td style="text-align:left;">
-R2
+<p>R2</p>
 </td>
 <td style="text-align:left;">
-4.0
+<p>5.0</p>
 </td>
 <td style="text-align:left;">
-13.0
+<p>6.0</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.495
+<p>0.577</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-40.122
+<p>31</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-Cg
+<p>Cg</p>
 </td>
 <td style="text-align:left;">
-R3
+<p>R3</p>
 </td>
 <td style="text-align:left;">
-4.5
+<p>5.5</p>
 </td>
 <td style="text-align:left;">
-12.0
+<p>7.0</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.746
+<p>0.538</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-34.371
+<p>34</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-CgFlu
+<p>CgFlu</p>
 </td>
 <td style="text-align:left;">
-R1
+<p>R1</p>
 </td>
 <td style="text-align:left;">
-4.0
+<p>6.0</p>
 </td>
 <td style="text-align:left;">
-14.0
+<p>7.0</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.281
+<p>0.370</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-46.845
+<p>49</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-CgFlu
+<p>CgFlu</p>
 </td>
 <td style="text-align:left;">
-R2
+<p>R2</p>
 </td>
 <td style="text-align:left;">
-4.0
+<p>5.0</p>
 </td>
 <td style="text-align:left;">
-14.0
+<p>6.5</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.265
+<p>0.408</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-47.426
+<p>44</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-CgFlu
+<p>CgFlu</p>
 </td>
 <td style="text-align:left;">
-R3
+<p>R3</p>
 </td>
 <td style="text-align:left;">
-4.0
+<p>5.5</p>
 </td>
 <td style="text-align:left;">
-13.5
+<p>6.5</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.283
+<p>0.397</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-46.768
+<p>45</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-YPD
+<p>YPD</p>
 </td>
 <td style="text-align:left;">
-R1
+<p>R1</p>
 </td>
 <td style="text-align:left;">
-0.0
+<p>0.0</p>
 </td>
 <td style="text-align:left;">
-0.0
+<p>0.0</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-YPD
+<p>YPD</p>
 </td>
 <td style="text-align:left;">
-R2
+<p>R2</p>
 </td>
 <td style="text-align:left;">
-0.0
+<p>0.0</p>
 </td>
 <td style="text-align:left;">
-0.0
+<p>0.0</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-YPD
+<p>YPD</p>
 </td>
 <td style="text-align:left;">
-R3
+<p>R3</p>
 </td>
 <td style="text-align:left;">
-0.0
+<p>0.0</p>
 </td>
 <td style="text-align:left;">
-0.0
+<p>0.0</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 </tr>
 </tbody>
@@ -812,13 +811,13 @@ NaN
 <h4 class="hasAnchor">
 <a href="#average-of-replicates-2" class="anchor"></a><em>Average of replicates</em>
 </h4>
-<div class="sourceCode"><pre class="r">
+<div class="sourceCode" id="cb9"><pre class="r">
 <span class="co"># Load logphase start-end from local file</span>
 
 <span class="no">logphase_dat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"logphase_for_replicates.txt"</span>, <span class="kw">package</span> <span class="kw">=</span> <span class="st">"growkar"</span>)
 <span class="no">logphase_tibble</span> <span class="kw">&lt;-</span> <span class="kw pkg">readr</span><span class="kw ns">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_delim</a></span>(<span class="no">logphase_dat</span>, <span class="kw">delim</span><span class="kw">=</span><span class="st">"\t"</span>, <span class="kw">col_names</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
 
-<span class="no">cc</span> <span class="kw">&lt;-</span>  <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="fu"><a href="reference/calculate_growthrate_from_defined_logphase.html">calculate_growthrate_from_defined_logphase</a></span>(<span class="kw">dat_growth_curve</span> <span class="kw">=</span> <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="no"><a href="reference/yeast_growth_data.html">yeast_growth_data</a></span>,<span class="no">logphase_tibble</span>, <span class="kw">average_replicates</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+<span class="no">cc</span> <span class="kw">&lt;-</span>  <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="fu"><a href="reference/calculate_growthrate_from_defined_time.html">calculate_growthrate_from_defined_time</a></span>(<span class="kw">dat_growth_curve</span> <span class="kw">=</span> <span class="kw pkg">growkar</span><span class="kw ns">::</span><span class="no"><a href="reference/yeast_growth_data.html">yeast_growth_data</a></span>,<span class="no">logphase_tibble</span>, <span class="kw">average_replicates</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
 
 <span class="kw pkg">knitr</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="no">cc</span>,<span class="st">"html"</span>, <span class="kw">align</span> <span class="kw">=</span> <span class="st">"l"</span>) <span class="kw">%&gt;%</span>
     <span class="kw pkg">kableExtra</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html">kable_styling</a></span>(<span class="kw">bootstrap_options</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"striped"</span>, <span class="st">"condensed"</span>, <span class="st">"responsive"</span>), <span class="kw">full_width</span> <span class="kw">=</span> <span class="no">F</span>,<span class="kw">font_size</span> <span class="kw">=</span><span class="fl">14</span>,  <span class="kw">stripe_color</span> <span class="kw">=</span> <span class="st">"aquamarine3"</span>) <span class="kw">%&gt;%</span>
@@ -827,71 +826,71 @@ NaN
 <table class="table table table-striped table-condensed table-responsive">
 <thead><tr>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-condition
+<p>condition</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-start
+<p>Time1</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-end
+<p>Time2</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-growth_rate
+<p>growth_rate</p>
 </th>
 <th style="text-align:left;font-weight: bold;color: black !important;">
-generation_time
+<p>doubling_time</p>
 </th>
 </tr></thead>
 <tbody>
 <tr>
 <td style="text-align:left;color: blue !important;">
-Cg
+<p>Cg</p>
 </td>
 <td style="text-align:left;">
-4.167
+<p>5.167</p>
 </td>
 <td style="text-align:left;">
-12.833
+<p>6.333</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.543
+<p>0.582</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-38.888
+<p>31</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-CgFlu
+<p>CgFlu</p>
 </td>
 <td style="text-align:left;">
-4.000
+<p>5.500</p>
 </td>
 <td style="text-align:left;">
-13.833
+<p>6.667</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-1.276
+<p>0.385</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-47.015
+<p>47</p>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;color: blue !important;">
-YPD
+<p>YPD</p>
 </td>
 <td style="text-align:left;">
-0.000
+<p>0.000</p>
 </td>
 <td style="text-align:left;">
-0.000
+<p>0.000</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 <td style="text-align:left;color: blue !important;">
-NaN
+<p>NaN</p>
 </td>
 </tr>
 </tbody>
@@ -929,6 +928,7 @@ NaN
 <h2>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://www.tidyverse.org/lifecycle/#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
+<li><a href="https://shields.io/category/platform-support"><img src="https://img.shields.io/badge/R-%3E%20v3.5.1-brightgreen" alt="platform"></a></li>
 </ul>
 </div>
 </div>

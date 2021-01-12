@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>calculate_growth_rate — calculate_growth_rate • growkar</title>
+<title>calculate_growthrate_from_defined_time — calculate_growthrate_from_defined_time • growkar</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="calculate_growth_rate — calculate_growth_rate" />
-<meta property="og:description" content="calculates growth rate and generation time by computing the
+<meta property="og:title" content="calculate_growthrate_from_defined_time — calculate_growthrate_from_defined_time" />
+<meta property="og:description" content="calculates growth rate and generation time from user-defined
   log-phase start and end time." />
 
 
@@ -109,22 +109,21 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>calculate_growth_rate</h1>
-    <small class="dont-index">Source: <a href='https://github.com/sethiyap/growkar/blob/master/R/calculate_growth_rate.R'><code>R/calculate_growth_rate.R</code></a></small>
-    <div class="hidden name"><code>calculate_growth_rate.Rd</code></div>
+    <h1>calculate_growthrate_from_defined_time</h1>
+    <small class="dont-index">Source: <a href='https://github.com/sethiyap/growkar/blob/master/R/calculate_growthrate_from_defined_logphase.R'><code>R/calculate_growthrate_from_defined_logphase.R</code></a></small>
+    <div class="hidden name"><code>calculate_growthrate_from_defined_time.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>calculates growth rate and generation time by computing the
+    <p>calculates growth rate and generation time from user-defined
   log-phase start and end time.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>calculate_growth_rate</span>(
+    <pre class="usage"><span class='fu'>calculate_growthrate_from_defined_time</span>(
   <span class='no'>dat_growth_curve</span>,
+  <span class='no'>logphase_tibble</span>,
   <span class='kw'>average_replicates</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>first_timepoint</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>select_replicates</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>end_timepoint</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
+  <span class='kw'>select_replicates</span> <span class='kw'>=</span> <span class='kw'>NULL</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -139,14 +138,16 @@ replicates then sample name should be `CgFlu_R1`, `Cg_R1`, `YPD_R1` The
 function assumes that data contains OD values in increasing order.</p></td>
     </tr>
     <tr>
+      <th>logphase_tibble</th>
+      <td><p>a tibble, containing pre-defined logphase start and
+end time point. It must contain three columns with first column of
+condition or sample and second and third column of start and end. The
+condition column must match with sample names of `dat_growth_curve`</p></td>
+    </tr>
+    <tr>
       <th>average_replicates</th>
       <td><p>logical, to calculate growth rates as average of
 replicates, Default: FALSE</p></td>
-    </tr>
-    <tr>
-      <th>first_timepoint</th>
-      <td><p>numeric, first time-point from where to calculate the
-lag-phase;, Default: 0</p></td>
     </tr>
     <tr>
       <th>select_replicates</th>
@@ -156,10 +157,9 @@ to be plotted from samples CgFlu_R1, CgFlu_R2; the vector should be
 `c("R1", "R2")`, Default: NULL</p></td>
     </tr>
     <tr>
-      <th>end_timepoint</th>
-      <td><p>numeric, end time-point to be considered. Specifically
-useful for appropriate growth curve calculation when the stationary phase
-OD is very fluctuating.  Default:NULL (end-timepoint from data)</p></td>
+      <th>cells_at_OD_1</th>
+      <td><p>numeric, a mutplication factor to use absolute cell
+number at OD=1, for instance OD600=1 represents 3e+07 yeast cells. Default: 3e+07</p></td>
     </tr>
     </table>
 
@@ -169,17 +169,22 @@ OD is very fluctuating.  Default:NULL (end-timepoint from data)</p></td>
   time or doubling time (minutes/generation)</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Start and End-point are computed as; Start time-point: is time at
-  which OD is appx double of the first-time point and end time-point: is time
-  from which stationary phase is beginning.</p>
+    <p>User defined start and end logphase time-points are used to compute
+  growth_rate. For average of replicates, mean of OD and time-points is
+  computed.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
 <span class='kw'>if</span>(<span class='fu'><a href='https://rdrr.io/r/base/interactive.html'>interactive</a></span>()){
 
- <span class='fu'>calculate_growth_rate</span>(<span class='kw'>dat_growth_curve</span><span class='kw'>=</span><span class='no'>yeast_growth_data</span>, <span class='kw'>average_replicates</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>select_replicates</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"R1"</span>, <span class='st'>"R2"</span>, <span class='st'>"R4"</span>))
+ <span class='co'># Load logphase start-end from local file</span>
+ <span class='no'>logphase_dat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"extdata"</span>, <span class='st'>"logphase_for_replicates.txt"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"growkar"</span>)
+ <span class='no'>logphase_tibble</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>readr</span><span class='kw ns'>::</span><span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_delim</a></span>(<span class='no'>logphase_dat</span>, <span class='kw'>delim</span><span class='kw'>=</span><span class='st'>"\t"</span>, <span class='kw'>col_names</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
-  }
+ <span class='co'># Compute growth_rate</span>
+ <span class='fu'>calculate_growthrate_from_defined_time</span>(<span class='kw'>dat_growth_curve</span> <span class='kw'>=</span> <span class='kw pkg'>growkar</span><span class='kw ns'>::</span><span class='no'><a href='yeast_growth_data.html'>yeast_growth_data</a></span>,<span class='kw'>logphase_tibble</span> <span class='kw'>=</span> <span class='no'>logphase_tibble</span>, <span class='kw'>average_replicates</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+
+ }
 }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
