@@ -9,7 +9,6 @@ calculate_growth_rate(
   average_replicates = FALSE,
   first_timepoint = 0,
   select_replicates = NULL,
-  cells_at_OD_1 = 3e+07,
   end_timepoint = NULL
 )
 }
@@ -30,10 +29,6 @@ lag-phase;, Default: 0}
 it should be anything after `_`. for eg. if only replicate R1 and R2 need
 to be plotted from samples CgFlu_R1, CgFlu_R2; the vector should be
 `c("R1", "R2")`, Default: NULL}
-
-\item{cells_at_OD_1}{numeric, a mutplication factor to use absolute cell
-number at OD=1, for instance OD600=1 represents 3e+07 yeast cells. Default:
-3e+07}
 
 \item{end_timepoint}{numeric, end time-point to be considered. Specifically
 useful for appropriate growth curve calculation when the stationary phase

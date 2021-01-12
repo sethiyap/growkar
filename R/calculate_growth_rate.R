@@ -102,7 +102,7 @@ calculate_growth_rate <- function(dat_growth_curve, average_replicates=FALSE, fi
                             dplyr::mutate(Time1=ifelse(Time1>Time2, 0,Time1),
                                           Time2=ifelse(Time2 <= Time1,0,Time2)) %>%
                             dplyr::summarise(time_diff=abs(Time2-Time1), OD_diff=2.303*(log10(OD2)-log10(OD1))) %>%
-                            dplyr::mutate(growth_rate=OD_diff/time_diff, generation_time=(log10(2)/growth_rate)*60)
+                            dplyr::mutate(growth_rate=OD_diff/time_diff, doubling_time=(log10(2)/growth_rate)*60)
 
     logphase_summ <- dplyr::bind_cols(max_logphase,min_logphase) %>%
                             dplyr::mutate(Time1=ifelse(Time1>Time2, 0,Time1),
@@ -111,8 +111,8 @@ calculate_growth_rate <- function(dat_growth_curve, average_replicates=FALSE, fi
                             dplyr::rename(time1=Time1, time2=Time2, condition1=condition)
 
     growth_rate_summ <- dplyr::bind_cols(logphase_summ,growth_rate_dat) %>%
-                                dplyr::select(c(condition1,time1,time2,growth_rate,generation_time)) %>%
-                                dplyr::mutate(growth_rate=round(growth_rate,3),generation_time=round(generation_time,3))%>%
+                                dplyr::select(c(condition1,time1,time2,growth_rate,doubling_time)) %>%
+                                dplyr::mutate(growth_rate=round(growth_rate,3),doubling_time=round(doubling_time,3))%>%
                                 dplyr::rename(condition=condition1)
   }
 
@@ -145,7 +145,7 @@ calculate_growth_rate <- function(dat_growth_curve, average_replicates=FALSE, fi
       dplyr::mutate(Time1=ifelse(Time1>Time2, 0,Time1),
                     Time2=ifelse(Time2 <= Time1,0,Time2 )) %>%
       dplyr::summarise(time_diff=abs(Time2-Time1), OD_diff=2.303*(log10(OD2)-log10(OD1))) %>%
-      dplyr::mutate(growth_rate=OD_diff/time_diff, generation_time=(log10(2)/growth_rate)*60)
+      dplyr::mutate(growth_rate=OD_diff/time_diff, doubling_time=(log10(2)/growth_rate)*60)
 
     logphase_summ <- dplyr::bind_cols(max_logphase, min_logphase) %>%
       dplyr::mutate(Time1=ifelse(Time1>Time2, 0,Time1),
@@ -154,8 +154,8 @@ calculate_growth_rate <- function(dat_growth_curve, average_replicates=FALSE, fi
       dplyr::rename(time1=Time1, time2=Time2, condition1=condition, replicate1=replicate)
 
     growth_rate_summ <- dplyr::bind_cols(logphase_summ,growth_rate_dat) %>%
-      dplyr::select(c(condition1,replicate1, time1,time2,growth_rate,generation_time))%>%
-      dplyr::mutate(growth_rate=round(growth_rate,3),generation_time=round(generation_time,3) )
+      dplyr::select(c(condition1,replicate1, time1,time2,growth_rate,doubling_time))%>%
+      dplyr::mutate(growth_rate=round(growth_rate,3),doubling_time=round(doubling_time,3) )
   }
 
   return(growth_rate_summ)

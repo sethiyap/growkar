@@ -1,10 +1,10 @@
-condition	start	end
-Cg_R1	4	13.5
-Cg_R2	4	13
-Cg_R3	4.5	12
-CgFlu_R1	4	14
-CgFlu_R2	4	14
-CgFlu_R3	4	13.5
+condition	time1	time2
+Cg_R1	5	6
+Cg_R2	5	6
+Cg_R3	5.5	7
+CgFlu_R1	6	7
+CgFlu_R2	5	6.5
+CgFlu_R3	5.5	6.5
 YPD_R1	0	0
 YPD_R2	0	0
 YPD_R3	0	0
