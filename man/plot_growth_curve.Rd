@@ -55,7 +55,7 @@ DETAILS
 \dontrun{
 if(interactive()){
 
-  plot_growth_curve(dat_growth_curve = yeast_growth_data,average_replicates=TRUE, select_replicates=c("R1", "R2"))
+  plot_growth_curve(dat_growth_curve = yeast_growth_data,average_replicates=TRUE, select_replicates=c("R1", "R2"), custom_colors=NULL)
 
   }
 }
