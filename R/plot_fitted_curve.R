@@ -62,6 +62,14 @@ plot_fitted_curve <- function(fit,
     data <- validate_growth_data(data)
   }
 
+  if (isTRUE(average_replicates) && identical(facet_col, "replicate")) {
+    warning(
+      "`facet_col = \"replicate\"` is ignored when `average_replicates = TRUE` because replicates are averaged before fitting and plotting.",
+      call. = FALSE
+    )
+    facet_col <- NULL
+  }
+
   if (!colour_col %in% names(data)) {
     stop("`colour_col` must refer to a column in the plotting data.", call. = FALSE)
   }

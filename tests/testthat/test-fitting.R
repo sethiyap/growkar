@@ -50,3 +50,18 @@ test_that("plot_fitted_curve supports averaging selected replicates", {
 
   expect_s3_class(p, "ggplot")
 })
+
+test_that("plot_fitted_curve warns when faceting by replicate after averaging", {
+  expect_warning(
+    p <- plot_fitted_curve(
+      growkar::yeast_growth_data,
+      model = "logistic",
+      average_replicates = TRUE,
+      colour_col = "condition",
+      facet_col = "replicate"
+    ),
+    "ignored"
+  )
+
+  expect_s3_class(p, "ggplot")
+})

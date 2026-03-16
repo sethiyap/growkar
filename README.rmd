@@ -88,7 +88,12 @@ object, users can further customize it with `ggplot2`.
 **Minimal example:**
 
 ```{r}
-p <- plot_growth_curve(tidy_data, average_replicates = TRUE)
+p <- plot_growth_curve(
+  tidy_data,
+  average_replicates = TRUE,
+  colour_col = "condition"
+) +
+  ggplot2::scale_colour_brewer(palette = "Dark2")
 p
 ```
 
@@ -101,7 +106,8 @@ p_rep <- plot_growth_curve(
   average_replicates = FALSE,
   colour_col = "condition",
   facet_col = "replicate"
-)
+) +
+  ggplot2::scale_colour_brewer(palette = "Dark2")
 
 p_rep
 ```
@@ -233,6 +239,22 @@ the output is a `ggplot` object, users can further customize it with `ggplot2`.
 ```{r}
 pf <- plot_fitted_curve(fit)
 pf
+```
+
+To fit and view individual replicates as separate panels from raw data, use
+`facet_col = "replicate"` with `average_replicates = FALSE`.
+
+```{r}
+pf_rep <- plot_fitted_curve(
+  tidy_data,
+  model = "logistic",
+  average_replicates = FALSE,
+  colour_col = "condition",
+  facet_col = "replicate"
+) +
+  ggplot2::scale_colour_brewer(palette = "Dark2")
+
+pf_rep
 ```
 
 ## Workflow summary

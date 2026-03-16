@@ -105,7 +105,14 @@ output is a `ggplot` object, users can further customize it with
 **Minimal example:**
 
 ``` r
-p <- plot_growth_curve(tidy_data, average_replicates = TRUE)
+p <- plot_growth_curve(
+  tidy_data,
+  average_replicates = TRUE,
+  colour_col = "condition"
+) +
+  ggplot2::scale_colour_brewer(palette = "Dark2")
+#> Scale for colour is already present.
+#> Adding another scale for colour, which will replace the existing scale.
 p
 ```
 
@@ -120,7 +127,10 @@ p_rep <- plot_growth_curve(
   average_replicates = FALSE,
   colour_col = "condition",
   facet_col = "replicate"
-)
+) +
+  ggplot2::scale_colour_brewer(palette = "Dark2")
+#> Scale for colour is already present.
+#> Adding another scale for colour, which will replace the existing scale.
 
 p_rep
 ```
@@ -365,6 +375,24 @@ pf
 
 <img src="man/figures/README-unnamed-chunk-13-1.png" alt="" width="100%" />
 
+To fit and view individual replicates as separate panels from raw data,
+use `facet_col = "replicate"` with `average_replicates = FALSE`.
+
+``` r
+pf_rep <- plot_fitted_curve(
+  tidy_data,
+  model = "logistic",
+  average_replicates = FALSE,
+  colour_col = "condition",
+  facet_col = "replicate"
+) +
+  ggplot2::scale_colour_brewer(palette = "Dark2")
+
+pf_rep
+```
+
+<img src="man/figures/README-unnamed-chunk-14-1.png" alt="" width="100%" />
+
 ## Workflow summary
 
 A typical `growkar` v2 workflow is:
@@ -392,7 +420,7 @@ validate_growth_data(tidy_data)
 plot_growth_curve(tidy_data)
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" alt="" width="100%" />
 
 ``` r
 
@@ -426,7 +454,7 @@ extract_params(fit)
 plot_fitted_curve(fit)
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-2.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-15-2.png" alt="" width="100%" />
 
 ## Development status
 
