@@ -2,7 +2,7 @@
 output: github_document
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- README.md is generated from README.rmd. Please edit that file -->
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -11,46 +11,212 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+
+if (requireNamespace("pkgload", quietly = TRUE) && file.exists("DESCRIPTION")) {
+  pkgload::load_all(".", export_all = FALSE, helpers = FALSE, quiet = TRUE)
+}
 ```
 
-# growkar
+# growkar <img src="hexasticker.jpg" align="right" height="180" alt="growkar hex sticker" />
 
-<!-- badges: start -->
+`growkar` is an R package for microbial growth curve analysis from optical
+density (OD) time-series data. It provides a tidy workflow for converting input
+data, validating growth measurements, plotting growth curves, estimating growth
+rate and doubling time, detecting exponential phase, and fitting logistic or
+Gompertz growth models.
 
-<!-- badges: end -->
-
-The goal of growkar is to ...
+The package keeps the feel of the original `growkar` workflow while introducing
+a tidyverse-friendly v2 design built around canonical input columns:
+`sample`, `time`, and `od`.
 
 ## Installation
 
-You can install the development version of growkar from [GitHub](https://github.com/) with:
-
-``` r
-# install.packages("pak")
-pak::pak("sethiyap/growkar")
+```r
+remotes::install_github("sethiyap/growkar")
 ```
 
-## Example
+## Example dataset
 
-This is a basic example which shows you how to solve a common problem:
-
-```{r example}
+```{r}
 library(growkar)
-## basic example code
+data(yeast_growth_data)
+
+head(yeast_growth_data)
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+## Convert data to tidy format
 
-```{r cars}
-summary(cars)
+`as_tidy_growth_data()` converts growth data into the canonical tidy format
+used throughout the package. The expected columns are `sample`, `time`, and
+`od`. This is useful because the same structure can then be reused for
+validation, plotting, empirical summaries, and model fitting.
+
+```{r}
+tidy_data <- as_tidy_growth_data(yeast_growth_data)
+head(tidy_data)
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
+## Plot growth curves
 
-You can also embed plots, for example:
+`plot_growth_curve()` visualizes OD over time and returns a `ggplot` object.
+This preserves the clear ggplot-style output of the previous version of
+`growkar` while using tidy input data. It is useful for quick quality control
+and for comparing growth patterns across samples.
 
-```{r pressure, echo = FALSE}
-plot(pressure)
+Because the output is a `ggplot` object, users can further customize the figure
+with `ggplot2`.
+
+```{r}
+p <- plot_growth_curve(tidy_data)
+p
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
+## Validate tidy input
+
+`validate_growth_data()` checks that tidy growth data contains the required
+columns and valid values. This is useful before downstream analysis so that
+problems are caught early.
+
+```{r}
+validate_growth_data(tidy_data)
+```
+
+## Estimate growth rate
+
+`compute_growth_rate()` estimates the specific growth rate from `log(od)` versus
+time. It supports methods including `"rolling_window"`, `"defined_interval"`,
+and `"rule_based"`. This is useful for estimating exponential growth directly
+from observed data.
+
+For a lightweight example, the code below uses the first sample in the example
+dataset.
+
+```{r}
+library(dplyr)
+
+sample_id <- unique(tidy_data$sample)[1]
+
+gr <- compute_growth_rate(
+  filter(tidy_data, sample == sample_id),
+  method = "rolling_window"
+)
+
+gr
+```
+
+## Compute doubling time
+
+`compute_doubling_time()` calculates doubling time from growth rate as
+`log(2) / mu`. This is useful for biological interpretation of growth
+kinetics.
+
+```{r}
+compute_doubling_time(gr$mu)
+```
+
+## Summarize growth metrics across samples
+
+`summarize_growth_metrics()` computes growth rate and doubling time across all
+samples. This is useful for comparing strains, conditions, or replicates in one
+tidy summary table.
+
+```{r}
+metrics <- summarize_growth_metrics(tidy_data)
+metrics
+```
+
+## Detect exponential phase
+
+`detect_exponential_phase()` identifies likely exponential-phase windows
+automatically. This is useful for understanding which time interval was used
+for growth-rate estimation.
+
+```{r}
+phase_tbl <- detect_exponential_phase(
+  filter(tidy_data, sample == sample_id)
+)
+
+phase_tbl
+```
+
+## Fit a growth model
+
+`fit_growth_curve()` fits a logistic or Gompertz growth model to one sample.
+This is useful when a smooth model-based summary of the full growth curve is
+preferred over a purely empirical estimate.
+
+```{r}
+fit <- fit_growth_curve(
+  filter(tidy_data, sample == sample_id),
+  model = "logistic"
+)
+
+fit
+```
+
+## Extract fitted parameters
+
+`extract_params()` extracts fitted coefficients and model-derived quantities
+such as the asymptote and model-based doubling time. This is useful for
+reporting fitted summaries in a tidy format.
+
+```{r}
+params <- extract_params(fit)
+params
+```
+
+## Plot fitted curves
+
+`plot_fitted_curve()` overlays observed OD points and the fitted growth model,
+and returns a `ggplot` object. This is useful for visually checking model fit
+quality.
+
+Because the output is a `ggplot` object, users can further customize the figure
+with `ggplot2`.
+
+```{r}
+pf <- plot_fitted_curve(fit)
+pf
+```
+
+## Workflow summary
+
+A typical `growkar` v2 workflow is:
+
+```{r}
+data(yeast_growth_data)
+
+tidy_data <- as_tidy_growth_data(yeast_growth_data)
+validate_growth_data(tidy_data)
+
+plot_growth_curve(tidy_data)
+
+metrics <- summarize_growth_metrics(tidy_data)
+metrics
+
+sample_id <- unique(tidy_data$sample)[1]
+
+fit <- fit_growth_curve(
+  filter(tidy_data, sample == sample_id),
+  model = "logistic"
+)
+
+extract_params(fit)
+plot_fitted_curve(fit)
+```
+
+## Development status
+
+The `tidy_v2` branch introduces tidy input handling and model fitting while
+preserving legacy growth-rate logic through compatibility wrappers where
+practical.
+
+## Contributing and issues
+
+Bug reports, feature requests, and suggestions are welcome at:
+
+<https://github.com/sethiyap/growkar/issues>
+
+## License
+
+MIT License
