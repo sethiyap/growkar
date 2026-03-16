@@ -17,3 +17,8 @@ A numeric vector equal to \code{log(2) / mu}, with \code{NA} returned when
 \description{
 Compute doubling time from a growth rate estimate.
 }
+\details{
+This is a low-level helper for converting one or more growth-rate estimates
+into doubling times. For a convenience summary across all samples, use
+\code{summarize_growth_metrics()}.
+}

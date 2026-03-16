@@ -32,3 +32,8 @@ A tidy tibble with one row per sample.
 \description{
 Compute growth rate and doubling time per sample.
 }
+\details{
+This is the convenience wrapper for obtaining both metrics across multiple
+samples in one tidy table. Internally, doubling time is derived from the
+estimated growth rate using \code{compute_doubling_time()}.
+}

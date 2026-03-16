@@ -153,7 +153,9 @@ knitr::kable(gr, digits = 3)
 growth rate as `log(2) / mu`.
 
 **Why use it:** It converts the estimated growth rate into a more biologically
-interpretable measure of growth kinetics.
+interpretable measure of growth kinetics. This is the low-level helper when you
+already have one or more growth-rate estimates. For a combined table across all
+samples, use `summarize_growth_metrics()`.
 
 **Minimal example:**
 
@@ -173,7 +175,8 @@ knitr::kable(doubling_time_tbl, digits = 3)
 doubling time across all samples.
 
 **Why use it:** It is useful for comparing strains, conditions, or replicates
-in one tidy summary table.
+in one tidy summary table. Internally, it derives doubling time from the
+estimated growth rate using `compute_doubling_time()`.
 
 **Minimal example:**
 
@@ -197,7 +200,7 @@ phase_tbl <- detect_exponential_phase(
   filter(tidy_data, sample == sample_id)
 )
 
-phase_tbl
+knitr::kable(phase_tbl, digits = 3)
 ```
 
 ## Fit a growth model

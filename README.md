@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.rmd. Please edit that file -->
 
-# growkar <img src="hexasticker2.png" align="right" height="180" alt="growkar hex sticker" />
+# growkar <img src="hexasticker.jpg" align="right" height="180" alt="growkar hex sticker" />
 
 `growkar` is an R package for microbial growth curve analysis from
 optical density (OD) time-series data. It provides a tidy workflow for
@@ -186,7 +186,10 @@ knitr::kable(gr, digits = 3)
 from growth rate as `log(2) / mu`.
 
 **Why use it:** It converts the estimated growth rate into a more
-biologically interpretable measure of growth kinetics.
+biologically interpretable measure of growth kinetics. This is the
+low-level helper when you already have one or more growth-rate
+estimates. For a combined table across all samples, use
+`summarize_growth_metrics()`.
 
 **Minimal example:**
 
@@ -210,7 +213,8 @@ knitr::kable(doubling_time_tbl, digits = 3)
 doubling time across all samples.
 
 **Why use it:** It is useful for comparing strains, conditions, or
-replicates in one tidy summary table.
+replicates in one tidy summary table. Internally, it derives doubling
+time from the estimated growth rate using `compute_doubling_time()`.
 
 **Minimal example:**
 
@@ -247,22 +251,56 @@ phase_tbl <- detect_exponential_phase(
   filter(tidy_data, sample == sample_id)
 )
 
-phase_tbl
-#> # A tibble: 45 × 4
-#>    start_time end_time slope r_squared
-#>         <dbl>    <dbl> <dbl>     <dbl>
-#>  1        4.5      6.5 0.576     1.000
-#>  2        4        6   0.551     0.997
-#>  3        5        7   0.551     0.997
-#>  4        3.5      5.5 0.490     0.990
-#>  5        5.5      7.5 0.490     0.991
-#>  6        6        8   0.414     0.987
-#>  7        3        5   0.409     0.985
-#>  8        6.5      8.5 0.334     0.983
-#>  9        2.5      4.5 0.321     0.975
-#> 10        7        9   0.260     0.973
-#> # ℹ 35 more rows
+knitr::kable(phase_tbl, digits = 3)
 ```
+
+| start_time | end_time |  slope | r_squared |
+|-----------:|---------:|-------:|----------:|
+|        4.5 |      6.5 |  0.576 |     1.000 |
+|        4.0 |      6.0 |  0.551 |     0.997 |
+|        5.0 |      7.0 |  0.551 |     0.997 |
+|        3.5 |      5.5 |  0.490 |     0.990 |
+|        5.5 |      7.5 |  0.490 |     0.991 |
+|        6.0 |      8.0 |  0.414 |     0.987 |
+|        3.0 |      5.0 |  0.409 |     0.985 |
+|        6.5 |      8.5 |  0.334 |     0.983 |
+|        2.5 |      4.5 |  0.321 |     0.975 |
+|        7.0 |      9.0 |  0.260 |     0.973 |
+|        2.0 |      4.0 |  0.244 |     0.968 |
+|        7.5 |      9.5 |  0.194 |     0.964 |
+|        1.5 |      3.5 |  0.174 |     0.955 |
+|        8.0 |     10.0 |  0.140 |     0.966 |
+|        1.0 |      3.0 |  0.117 |     0.943 |
+|        8.5 |     10.5 |  0.102 |     0.969 |
+|        0.5 |      2.5 |  0.077 |     0.915 |
+|        9.0 |     11.0 |  0.075 |     0.971 |
+|        9.5 |     11.5 |  0.054 |     0.955 |
+|        0.0 |      2.0 |  0.045 |     0.931 |
+|       10.0 |     12.0 |  0.036 |     0.925 |
+|       10.5 |     12.5 |  0.021 |     0.875 |
+|       11.0 |     13.0 |  0.011 |     0.866 |
+|       11.5 |     13.5 |  0.005 |     0.862 |
+|       12.0 |     14.0 |  0.002 |     0.877 |
+|       12.5 |     14.5 |  0.001 |     0.859 |
+|       13.0 |     15.0 |  0.001 |     0.817 |
+|       13.5 |     15.5 |  0.000 |     0.750 |
+|       14.0 |     16.0 |  0.000 |     0.000 |
+|       21.0 |     23.0 |  0.000 |     0.125 |
+|       21.5 |     23.5 |  0.000 |     0.333 |
+|       22.0 |     24.0 |  0.000 |     0.333 |
+|       14.5 |     16.5 |  0.000 |     0.750 |
+|       15.0 |     17.0 |  0.000 |     0.750 |
+|       16.0 |     18.0 |  0.000 |     0.750 |
+|       16.5 |     18.5 |  0.000 |     0.750 |
+|       19.0 |     21.0 |  0.000 |     0.450 |
+|       20.0 |     22.0 |  0.000 |     0.750 |
+|       15.5 |     17.5 |  0.000 |     0.800 |
+|       17.5 |     19.5 |  0.000 |     0.500 |
+|       18.5 |     20.5 |  0.000 |     0.500 |
+|       20.5 |     22.5 |  0.000 |     0.800 |
+|       18.0 |     20.0 |  0.000 |     0.625 |
+|       19.5 |     21.5 |  0.000 |     0.893 |
+|       17.0 |     19.0 | -0.001 |     0.750 |
 
 ## Fit a growth model
 

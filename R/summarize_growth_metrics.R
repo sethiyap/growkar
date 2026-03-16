@@ -2,6 +2,10 @@
 #'
 #' Compute growth rate and doubling time per sample.
 #'
+#' This is the convenience wrapper for obtaining both metrics across multiple
+#' samples in one tidy table. Internally, doubling time is derived from the
+#' estimated growth rate using `compute_doubling_time()`.
+#'
 #' @param data Growth curve data in tidy or wide format.
 #' @param method Estimation method passed to `compute_growth_rate()`.
 #' @param average_replicates Logical; if `TRUE`, average replicate trajectories
