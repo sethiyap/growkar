@@ -91,9 +91,9 @@ object, users can further customize it with `ggplot2`.
 p <- plot_growth_curve(
   tidy_data,
   average_replicates = TRUE,
-  colour_col = "condition"
-) +
-  ggplot2::scale_colour_brewer(palette = "Dark2")
+  colour_col = "condition",
+  palette_name = "Dark2"
+)
 p
 ```
 
@@ -105,9 +105,9 @@ p_rep <- plot_growth_curve(
   tidy_data,
   average_replicates = FALSE,
   colour_col = "condition",
-  facet_col = "replicate"
-) +
-  ggplot2::scale_colour_brewer(palette = "Dark2")
+  facet_col = "replicate",
+  palette_name = "Dark2"
+)
 
 p_rep
 ```
@@ -135,6 +135,7 @@ Method options:
 
 ```{r}
 library(dplyr)
+library(knitr)
 
 sample_id <- unique(tidy_data$sample)[1]
 
@@ -143,7 +144,7 @@ gr <- compute_growth_rate(
   method = "rolling_window"
 )
 
-gr
+knitr::kable(gr, digits = 3)
 ```
 
 ## Compute doubling time
@@ -157,7 +158,13 @@ interpretable measure of growth kinetics.
 **Minimal example:**
 
 ```{r}
-compute_doubling_time(gr$mu)
+doubling_time_tbl <- tibble::tibble(
+  sample = gr$sample,
+  growth_rate = gr$mu,
+  doubling_time = compute_doubling_time(gr$mu)
+)
+
+knitr::kable(doubling_time_tbl, digits = 3)
 ```
 
 ## Summarize growth metrics across samples
@@ -172,7 +179,7 @@ in one tidy summary table.
 
 ```{r}
 metrics <- summarize_growth_metrics(tidy_data)
-metrics
+knitr::kable(metrics, digits = 3)
 ```
 
 ## Detect exponential phase
@@ -250,9 +257,9 @@ pf_rep <- plot_fitted_curve(
   model = "logistic",
   average_replicates = FALSE,
   colour_col = "condition",
-  facet_col = "replicate"
-) +
-  ggplot2::scale_colour_brewer(palette = "Dark2")
+  facet_col = "replicate",
+  palette_name = "Dark2"
+)
 
 pf_rep
 ```

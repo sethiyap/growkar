@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.rmd. Please edit that file -->
 
-# growkar <img src="hexasticker.jpg" align="right" height="180" alt="growkar hex sticker" />
+# growkar <img src="hexasticker2.png" align="right" height="180" alt="growkar hex sticker" />
 
 `growkar` is an R package for microbial growth curve analysis from
 optical density (OD) time-series data. It provides a tidy workflow for
@@ -108,11 +108,9 @@ output is a `ggplot` object, users can further customize it with
 p <- plot_growth_curve(
   tidy_data,
   average_replicates = TRUE,
-  colour_col = "condition"
-) +
-  ggplot2::scale_colour_brewer(palette = "Dark2")
-#> Scale for colour is already present.
-#> Adding another scale for colour, which will replace the existing scale.
+  colour_col = "condition",
+  palette_name = "Dark2"
+)
 p
 ```
 
@@ -126,11 +124,9 @@ p_rep <- plot_growth_curve(
   tidy_data,
   average_replicates = FALSE,
   colour_col = "condition",
-  facet_col = "replicate"
-) +
-  ggplot2::scale_colour_brewer(palette = "Dark2")
-#> Scale for colour is already present.
-#> Adding another scale for colour, which will replace the existing scale.
+  facet_col = "replicate",
+  palette_name = "Dark2"
+)
 
 p_rep
 ```
@@ -168,6 +164,7 @@ library(dplyr)
 #> The following objects are masked from 'package:base':
 #> 
 #>     intersect, setdiff, setequal, union
+library(knitr)
 
 sample_id <- unique(tidy_data$sample)[1]
 
@@ -176,12 +173,12 @@ gr <- compute_growth_rate(
   method = "rolling_window"
 )
 
-gr
-#> # A tibble: 1 × 6
-#>   sample    mu start_time end_time r_squared method        
-#>   <chr>  <dbl>      <dbl>    <dbl>     <dbl> <chr>         
-#> 1 Cg_R1  0.576        4.5      6.5     1.000 rolling_window
+knitr::kable(gr, digits = 3)
 ```
+
+| sample |    mu | start_time | end_time | r_squared | method         |
+|:-------|------:|-----------:|---------:|----------:|:---------------|
+| Cg_R1  | 0.576 |        4.5 |      6.5 |         1 | rolling_window |
 
 ## Compute doubling time
 
@@ -194,9 +191,18 @@ biologically interpretable measure of growth kinetics.
 **Minimal example:**
 
 ``` r
-compute_doubling_time(gr$mu)
-#> [1] 1.204352
+doubling_time_tbl <- tibble::tibble(
+  sample = gr$sample,
+  growth_rate = gr$mu,
+  doubling_time = compute_doubling_time(gr$mu)
+)
+
+knitr::kable(doubling_time_tbl, digits = 3)
 ```
+
+| sample | growth_rate | doubling_time |
+|:-------|------------:|--------------:|
+| Cg_R1  |       0.576 |         1.204 |
 
 ## Summarize growth metrics across samples
 
@@ -210,20 +216,20 @@ replicates in one tidy summary table.
 
 ``` r
 metrics <- summarize_growth_metrics(tidy_data)
-metrics
-#> # A tibble: 9 × 7
-#>   sample          mu start_time end_time r_squared method         doubling_time
-#>   <chr>        <dbl>      <dbl>    <dbl>     <dbl> <chr>                  <dbl>
-#> 1 Cg_R1     5.76e- 1        4.5      6.5     1.000 rolling_window          1.20
-#> 2 Cg_R2     5.60e- 1        4.5      6.5     1.000 rolling_window          1.24
-#> 3 Cg_R3     5.71e- 1        4.5      6.5     0.999 rolling_window          1.21
-#> 4 CgFlu_R1  4.03e- 1        4.5      6.5     1.000 rolling_window          1.72
-#> 5 CgFlu_R2  4.07e- 1        4.5      6.5     1.000 rolling_window          1.70
-#> 6 CgFlu_R3  4.03e- 1        4.5      6.5     1.000 rolling_window          1.72
-#> 7 YPD_R1   -2.78e-16       22       24       0.670 rolling_window         NA   
-#> 8 YPD_R2   -2.78e-16       22       24       0.670 rolling_window         NA   
-#> 9 YPD_R3    3.86e- 3       18       20       0.5   rolling_window        179.
+knitr::kable(metrics, digits = 3)
 ```
+
+| sample   |    mu | start_time | end_time | r_squared | method         | doubling_time |
+|:---------|------:|-----------:|---------:|----------:|:---------------|--------------:|
+| Cg_R1    | 0.576 |        4.5 |      6.5 |     1.000 | rolling_window |         1.204 |
+| Cg_R2    | 0.560 |        4.5 |      6.5 |     1.000 | rolling_window |         1.238 |
+| Cg_R3    | 0.571 |        4.5 |      6.5 |     0.999 | rolling_window |         1.214 |
+| CgFlu_R1 | 0.403 |        4.5 |      6.5 |     1.000 | rolling_window |         1.719 |
+| CgFlu_R2 | 0.407 |        4.5 |      6.5 |     1.000 | rolling_window |         1.702 |
+| CgFlu_R3 | 0.403 |        4.5 |      6.5 |     1.000 | rolling_window |         1.721 |
+| YPD_R1   | 0.000 |       22.0 |     24.0 |     0.670 | rolling_window |            NA |
+| YPD_R2   | 0.000 |       22.0 |     24.0 |     0.670 | rolling_window |            NA |
+| YPD_R3   | 0.004 |       18.0 |     20.0 |     0.500 | rolling_window |       179.350 |
 
 ## Detect exponential phase
 
@@ -384,9 +390,9 @@ pf_rep <- plot_fitted_curve(
   model = "logistic",
   average_replicates = FALSE,
   colour_col = "condition",
-  facet_col = "replicate"
-) +
-  ggplot2::scale_colour_brewer(palette = "Dark2")
+  facet_col = "replicate",
+  palette_name = "Dark2"
+)
 
 pf_rep
 ```

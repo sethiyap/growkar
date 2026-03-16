@@ -8,8 +8,11 @@
 #' @param colour_col Name of the column mapped to colour.
 #' @param facet_col Optional name of a column used for faceting.
 #' @param palette_name Name of the qualitative palette used by
-#'   [select_palette()].
-#' @param custom_colors Optional character vector of colours.
+#'   `select_palette()`. Supported values include `"all_colors"` (combined
+#'   palette), `"Accent"` (8), `"Dark2"` (8), `"Paired"` (12), `"Pastel1"` (9),
+#'   `"Pastel2"` (8), `"Set1"` (9), `"Set2"` (8), and `"Set3"` (12).
+#' @param custom_colors Optional character vector of colours. When supplied,
+#'   these user-defined colours are used instead of the selected palette.
 #'
 #' @return A `ggplot2` object.
 #' @export

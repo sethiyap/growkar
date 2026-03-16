@@ -24,9 +24,12 @@ before plotting when a \code{replicate} column is available.}
 \item{facet_col}{Optional name of a column used for faceting.}
 
 \item{palette_name}{Name of the qualitative palette used by
-\code{\link[=select_palette]{select_palette()}}.}
+\code{select_palette()}. Supported values include \code{"all_colors"} (combined
+palette), \code{"Accent"} (8), \code{"Dark2"} (8), \code{"Paired"} (12), \code{"Pastel1"} (9),
+\code{"Pastel2"} (8), \code{"Set1"} (9), \code{"Set2"} (8), and \code{"Set3"} (12).}
 
-\item{custom_colors}{Optional character vector of colours.}
+\item{custom_colors}{Optional character vector of colours. When supplied,
+these user-defined colours are used instead of the selected palette.}
 }
 \value{
 A \code{ggplot2} object.

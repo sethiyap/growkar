@@ -14,6 +14,12 @@
 #'   data.
 #' @param facet_col Optional name of a column used for faceting when plotting
 #'   from raw data.
+#' @param palette_name Name of the qualitative palette used by
+#'   `select_palette()`. Supported values include `"all_colors"` (combined
+#'   palette), `"Accent"` (8), `"Dark2"` (8), `"Paired"` (12), `"Pastel1"` (9),
+#'   `"Pastel2"` (8), `"Set1"` (9), `"Set2"` (8), and `"Set3"` (12).
+#' @param custom_colors Optional character vector of colours. When supplied,
+#'   these user-defined colours are used instead of the selected palette.
 #'
 #' @return A `ggplot2` object.
 #' @export
@@ -22,14 +28,21 @@ plot_fitted_curve <- function(fit,
                               select_replicates = NULL,
                               average_replicates = FALSE,
                               colour_col = "sample",
-                              facet_col = NULL) {
+                              facet_col = NULL,
+                              palette_name = "all_colors",
+                              custom_colors = NULL) {
   if (inherits(fit, "growkar_fit")) {
     augmented <- augment_growth_fit(fit)
+    fit_colour <- if (!is.null(custom_colors)) {
+      custom_colors[[1]]
+    } else {
+      select_palette(1, palette_name = palette_name)[[1]]
+    }
 
     return(
       ggplot2::ggplot(augmented, ggplot2::aes(x = .data$time)) +
-        ggplot2::geom_point(ggplot2::aes(y = .data$od)) +
-        ggplot2::geom_line(ggplot2::aes(y = .data$.fitted), linewidth = 0.8, colour = "#0072B2") +
+        ggplot2::geom_point(ggplot2::aes(y = .data$od), colour = fit_colour) +
+        ggplot2::geom_line(ggplot2::aes(y = .data$.fitted), linewidth = 0.8, colour = fit_colour) +
         ggplot2::theme_bw() +
         ggplot2::theme(panel.grid.minor = ggplot2::element_blank()) +
         ggplot2::xlab("Time") +
@@ -96,5 +109,11 @@ plot_fitted_curve <- function(fit,
     p <- p + ggplot2::facet_wrap(stats::as.formula(paste("~", facet_col)))
   }
 
-  p
+  colour_values <- if (!is.null(custom_colors)) {
+    custom_colors
+  } else {
+    select_palette(length(unique(augmented[[colour_col]])), palette_name = palette_name)
+  }
+
+  p + ggplot2::scale_colour_manual(values = colour_values)
 }

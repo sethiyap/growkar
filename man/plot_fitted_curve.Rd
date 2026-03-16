@@ -10,7 +10,9 @@ plot_fitted_curve(
   select_replicates = NULL,
   average_replicates = FALSE,
   colour_col = "sample",
-  facet_col = NULL
+  facet_col = NULL,
+  palette_name = "all_colors",
+  custom_colors = NULL
 )
 }
 \arguments{
@@ -31,6 +33,14 @@ data.}
 
 \item{facet_col}{Optional name of a column used for faceting when plotting
 from raw data.}
+
+\item{palette_name}{Name of the qualitative palette used by
+\code{select_palette()}. Supported values include \code{"all_colors"} (combined
+palette), \code{"Accent"} (8), \code{"Dark2"} (8), \code{"Paired"} (12), \code{"Pastel1"} (9),
+\code{"Pastel2"} (8), \code{"Set1"} (9), \code{"Set2"} (8), and \code{"Set3"} (12).}
+
+\item{custom_colors}{Optional character vector of colours. When supplied,
+these user-defined colours are used instead of the selected palette.}
 }
 \value{
 A \code{ggplot2} object.
