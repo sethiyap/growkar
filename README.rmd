@@ -61,6 +61,20 @@ tidy_data <- as_tidy_growth_data(yeast_growth_data)
 head(tidy_data)
 ```
 
+## Validate tidy input
+
+**What it does:** `validate_growth_data()` checks that tidy growth data has the
+required columns and valid values.
+
+**Why use it:** It helps catch structural or value problems before downstream
+analysis.
+
+**Minimal example:**
+
+```{r}
+validate_growth_data(tidy_data)
+```
+
 ## Plot growth curves
 
 **What it does:** `plot_growth_curve()` visualizes OD over time and returns a
@@ -78,18 +92,18 @@ p <- plot_growth_curve(tidy_data, average_replicates = TRUE)
 p
 ```
 
-## Validate tidy input
-
-**What it does:** `validate_growth_data()` checks that tidy growth data has the
-required columns and valid values.
-
-**Why use it:** It helps catch structural or value problems before downstream
-analysis.
-
-**Minimal example:**
+To view individual replicates as separate panels, use `facet_col = "replicate"`
+with `average_replicates = FALSE`.
 
 ```{r}
-validate_growth_data(tidy_data)
+p_rep <- plot_growth_curve(
+  tidy_data,
+  average_replicates = FALSE,
+  colour_col = "condition",
+  facet_col = "replicate"
+)
+
+p_rep
 ```
 
 ## Estimate growth rate

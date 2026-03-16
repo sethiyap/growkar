@@ -63,26 +63,6 @@ head(tidy_data)
 #> 6     0 CgFlu_R3 0.132 CgFlu     R3
 ```
 
-## Plot growth curves
-
-**What it does:** `plot_growth_curve()` visualizes OD over time and
-returns a `ggplot` object.
-
-**Why use it:** It preserves the clear ggplot-style growth curve display
-of the previous version of `growkar`, and it is useful for quick quality
-control and for comparing growth patterns across samples. Because the
-output is a `ggplot` object, users can further customize it with
-`ggplot2`.
-
-**Minimal example:**
-
-``` r
-p <- plot_growth_curve(tidy_data, average_replicates = TRUE)
-p
-```
-
-<img src="man/figures/README-unnamed-chunk-4-1.png" alt="" width="100%" />
-
 ## Validate tidy input
 
 **What it does:** `validate_growth_data()` checks that tidy growth data
@@ -110,6 +90,42 @@ validate_growth_data(tidy_data)
 #> 10   0.5 Cg_R1    0.116 Cg        R1       
 #> # ℹ 431 more rows
 ```
+
+## Plot growth curves
+
+**What it does:** `plot_growth_curve()` visualizes OD over time and
+returns a `ggplot` object.
+
+**Why use it:** It preserves the clear ggplot-style growth curve display
+of the previous version of `growkar`, and it is useful for quick quality
+control and for comparing growth patterns across samples. Because the
+output is a `ggplot` object, users can further customize it with
+`ggplot2`.
+
+**Minimal example:**
+
+``` r
+p <- plot_growth_curve(tidy_data, average_replicates = TRUE)
+p
+```
+
+<img src="man/figures/README-unnamed-chunk-5-1.png" alt="" width="100%" />
+
+To view individual replicates as separate panels, use
+`facet_col = "replicate"` with `average_replicates = FALSE`.
+
+``` r
+p_rep <- plot_growth_curve(
+  tidy_data,
+  average_replicates = FALSE,
+  colour_col = "condition",
+  facet_col = "replicate"
+)
+
+p_rep
+```
+
+<img src="man/figures/README-unnamed-chunk-6-1.png" alt="" width="100%" />
 
 ## Estimate growth rate
 
@@ -347,7 +363,7 @@ pf <- plot_fitted_curve(fit)
 pf
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-13-1.png" alt="" width="100%" />
 
 ## Workflow summary
 
@@ -376,7 +392,7 @@ validate_growth_data(tidy_data)
 plot_growth_curve(tidy_data)
 ```
 
-<img src="man/figures/README-unnamed-chunk-13-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" alt="" width="100%" />
 
 ``` r
 
@@ -410,7 +426,7 @@ extract_params(fit)
 plot_fitted_curve(fit)
 ```
 
-<img src="man/figures/README-unnamed-chunk-13-2.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-2.png" alt="" width="100%" />
 
 ## Development status
 

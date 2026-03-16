@@ -30,6 +30,14 @@ plot_growth_curve <- function(data,
     stop("`facet_col` must refer to a column in `data`.", call. = FALSE)
   }
 
+  if (isTRUE(average_replicates) && identical(facet_col, "replicate")) {
+    warning(
+      "`facet_col = \"replicate\"` is ignored when `average_replicates = TRUE` because replicates are averaged before plotting.",
+      call. = FALSE
+    )
+    facet_col <- NULL
+  }
+
   plot_data <- if (isTRUE(average_replicates)) {
     growkar_average_replicates(tidy_data)
   } else {
