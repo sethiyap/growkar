@@ -1,32 +1,37 @@
 Package: growkar
-Type: Package
-Title: Growth Curve Analysis
-Version: 0.1.3
-Author: Pooja Sethiya
+Title: Tidy Growth Curve Analysis for Optical Density Time Series
+Version: 0.99.0
 Authors@R: 
-    person(given = "Pooja",
-           family = "Sethiya",
-           role = c("aut", "cre"),
-           email = "poojasethiya24@gmail.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Maintainer: Pooja Sethiya <poojasethiya24@gmail.com>
-Description: growkar, allows to visualize and calculate growing trend of cells from optical density (OD) data obtained from spectrophotometer. growkar presumes that the cells follow sigmoidal growth curve and data is comparable between different samples and hence does not perform any internal normalization.
-License: MIT
+    person("Pooja", "Sethiya", 
+           email = "pooja.sethiya@wimr.org.au", 
+           role = c("aut", "cre"))
+Description: Tools to import, tidy, visualize, summarize, and fit microbial
+    growth curves from optical density time-series data. The package provides
+    empirical estimation of growth rate and doubling time from observed data,
+    exponential phase detection, and model-based fitting using logistic and
+    Gompertz growth models.
+License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
-RoxygenNote: 7.3.2
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends:
+    R (>= 4.3.0)
 Imports:
-    magrittr (>= 1.5),
-    tidyr (>= 1.0.0),
-    dplyr (>= 1.0.0),
-    forcats (>= 0.4.0),
-    readr (>= 1.3.1),
-    ggplot2 (>= 3.2.1),
-    RColorBrewer (>= 1.1-2),
-    readr (>= 1.3.1),
-    purrr (>= 0.3.4),
-    tibble (>= 3.0.3),
-    ggplot2 (>= 3.2.1)
-links:
-BugReports: https://github.com/sethiyap/growkar/issues
+    dplyr,
+    lifecycle,
+    ggplot2,
+    purrr,
+    rlang,
+    stats,
+    tibble,
+    tidyr,
+    utils
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Config/testthat/edition: 3
 URL: https://github.com/sethiyap/growkar
+BugReports: https://github.com/sethiyap/growkar/issues
+biocViews: Software, Microbiology, GeneExpression, Visualization

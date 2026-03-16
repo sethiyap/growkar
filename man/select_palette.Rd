@@ -11,26 +11,26 @@ select_palette(num_of_colors, palette_name = "all_colors")
 
 \item{palette_name}{character,name palettes Default: 'all_colors'
 For individual palette;
- \itemize{
- \item {Accent: }{8}
- \item {Dark2: }{8}
- \item {Paired: }{12}
- \item {Pastel1: }{9}
- \item {Pastel2: }{8}
- \item {Set1: }{9}
- \item {Set2: }{8}
- \item {Set3: }{12} }}
+\itemize{
+\item {Accent: }{8}
+\item {Dark2: }{8}
+\item {Paired: }{12}
+\item {Pastel1: }{9}
+\item {Pastel2: }{8}
+\item {Set1: }{9}
+\item {Set2: }{8}
+\item {Set3: }{12} }}
 }
 \value{
 a vector of colors from selected palette
 }
 \description{
 allows to select contrasting colors from 8 different palettes
-  contributing a total of 75 colors
+contributing a total of 75 colors
 }
 \details{
 select_palette is particularly useful as individual palette from
-  many color brewer packages contain less than 10 colors
+many color brewer packages contain less than 10 colors
 }
 \examples{
 \dontrun{

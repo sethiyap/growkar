@@ -1,0 +1,68 @@
+---
+title: "growkar-introduction"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{growkar-introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(growkar)
+library(ggplot2)
+```
+
+## Overview
+
+`growkar` provides a tidy workflow for microbial growth curve analysis from
+optical density time-series data. Version 2 centers on a canonical input format
+with columns `sample`, `time`, and `od`, while preserving compatibility with
+legacy wide plate-reader data.
+
+## Canonical tidy data
+
+```{r}
+tidy_growth <- as_tidy_growth_data(yeast_growth_data)
+
+tidy_growth
+```
+
+## Plot observed curves
+
+```{r}
+plot_growth_curve(
+  tidy_growth,
+  average_replicates = TRUE,
+  colour_col = "condition"
+)
+```
+
+## Summarize empirical growth metrics
+
+```{r}
+metrics <- summarize_growth_metrics(
+  tidy_growth,
+  method = "rolling_window",
+  average_replicates = TRUE
+)
+
+metrics
+```
+
+## Fit a parametric growth model
+
+```{r}
+cg_fit <- tidy_growth |>
+  dplyr::filter(sample == "Cg_R1") |>
+  fit_growth_curve(model = "logistic")
+
+extract_params(cg_fit)
+plot_fitted_curve(cg_fit)
+```
