@@ -46,10 +46,15 @@ head(yeast_growth_data)
 
 ## Convert data to tidy format
 
-`as_tidy_growth_data()` converts growth data into the canonical tidy format
-used throughout the package. The expected columns are `sample`, `time`, and
-`od`. This is useful because the same structure can then be reused for
-validation, plotting, empirical summaries, and model fitting.
+**What it does:** `as_tidy_growth_data()` converts growth data into the
+canonical tidy format used throughout the package, with core columns `sample`,
+`time`, and `od`.
+
+**Why use it:** A standard tidy structure makes downstream validation,
+visualization, empirical summaries, and model fitting easier and more
+consistent.
+
+**Minimal example:**
 
 ```{r}
 tidy_data <- as_tidy_growth_data(yeast_growth_data)
@@ -58,13 +63,15 @@ head(tidy_data)
 
 ## Plot growth curves
 
-`plot_growth_curve()` visualizes OD over time and returns a `ggplot` object.
-This preserves the clear ggplot-style output of the previous version of
-`growkar` while using tidy input data. It is useful for quick quality control
-and for comparing growth patterns across samples.
+**What it does:** `plot_growth_curve()` visualizes OD over time and returns a
+`ggplot` object.
 
-Because the output is a `ggplot` object, users can further customize the figure
-with `ggplot2`.
+**Why use it:** It preserves the clear ggplot-style growth curve display of the
+previous version of `growkar`, and it is useful for quick quality control and
+for comparing growth patterns across samples. Because the output is a `ggplot`
+object, users can further customize it with `ggplot2`.
+
+**Minimal example:**
 
 ```{r}
 p <- plot_growth_curve(tidy_data, average_replicates = TRUE)
@@ -73,9 +80,13 @@ p
 
 ## Validate tidy input
 
-`validate_growth_data()` checks that tidy growth data contains the required
-columns and valid values. This is useful before downstream analysis so that
-problems are caught early.
+**What it does:** `validate_growth_data()` checks that tidy growth data has the
+required columns and valid values.
+
+**Why use it:** It helps catch structural or value problems before downstream
+analysis.
+
+**Minimal example:**
 
 ```{r}
 validate_growth_data(tidy_data)
@@ -83,13 +94,15 @@ validate_growth_data(tidy_data)
 
 ## Estimate growth rate
 
-`compute_growth_rate()` estimates the specific growth rate from `log(od)` versus
-time. It supports methods including `"rolling_window"`, `"defined_interval"`,
-and `"rule_based"`. This is useful for estimating exponential growth directly
-from observed data.
+**What it does:** `compute_growth_rate()` estimates the specific growth rate
+from `log(od)` versus time. In the returned table, `mu` is the estimated growth
+rate.
 
-For a lightweight example, the code below uses the first sample in the example
-dataset.
+**Why use it:** It is useful for estimating exponential growth directly from
+observed data, using methods such as `"rolling_window"`, `"defined_interval"`,
+and `"rule_based"`.
+
+**Minimal example:**
 
 ```{r}
 library(dplyr)
@@ -106,9 +119,13 @@ gr
 
 ## Compute doubling time
 
-`compute_doubling_time()` calculates doubling time from growth rate as
-`log(2) / mu`. This is useful for biological interpretation of growth
-kinetics.
+**What it does:** `compute_doubling_time()` calculates doubling time from
+growth rate as `log(2) / mu`.
+
+**Why use it:** It converts the estimated growth rate into a more biologically
+interpretable measure of growth kinetics.
+
+**Minimal example:**
 
 ```{r}
 compute_doubling_time(gr$mu)
@@ -116,9 +133,13 @@ compute_doubling_time(gr$mu)
 
 ## Summarize growth metrics across samples
 
-`summarize_growth_metrics()` computes growth rate and doubling time across all
-samples. This is useful for comparing strains, conditions, or replicates in one
-tidy summary table.
+**What it does:** `summarize_growth_metrics()` computes growth rate and
+doubling time across all samples.
+
+**Why use it:** It is useful for comparing strains, conditions, or replicates
+in one tidy summary table.
+
+**Minimal example:**
 
 ```{r}
 metrics <- summarize_growth_metrics(tidy_data)
@@ -127,9 +148,13 @@ metrics
 
 ## Detect exponential phase
 
-`detect_exponential_phase()` identifies likely exponential-phase windows
-automatically. This is useful for understanding which time interval was used
-for growth-rate estimation.
+**What it does:** `detect_exponential_phase()` identifies likely
+exponential-phase windows automatically.
+
+**Why use it:** It helps show which time interval is most consistent with
+exponential growth and supports interpretation of the growth-rate estimate.
+
+**Minimal example:**
 
 ```{r}
 phase_tbl <- detect_exponential_phase(
@@ -141,9 +166,13 @@ phase_tbl
 
 ## Fit a growth model
 
-`fit_growth_curve()` fits a logistic or Gompertz growth model to one sample.
-This is useful when a smooth model-based summary of the full growth curve is
-preferred over a purely empirical estimate.
+**What it does:** `fit_growth_curve()` fits a logistic or Gompertz growth model
+to one sample.
+
+**Why use it:** It is useful when a smooth model-based summary of the full
+growth curve is preferred over a purely empirical estimate.
+
+**Minimal example:**
 
 ```{r}
 fit <- fit_growth_curve(
@@ -156,9 +185,12 @@ fit
 
 ## Extract fitted parameters
 
-`extract_params()` extracts fitted coefficients and model-derived quantities
-such as the asymptote and model-based doubling time. This is useful for
-reporting fitted summaries in a tidy format.
+**What it does:** `extract_params()` extracts fitted coefficients and
+model-derived quantities such as the asymptote and model-based doubling time.
+
+**Why use it:** It is useful for reporting fitted summaries in a tidy format.
+
+**Minimal example:**
 
 ```{r}
 params <- extract_params(fit)
@@ -167,12 +199,13 @@ params
 
 ## Plot fitted curves
 
-`plot_fitted_curve()` overlays observed OD points and the fitted growth model,
-and returns a `ggplot` object. This is useful for visually checking model fit
-quality.
+**What it does:** `plot_fitted_curve()` overlays observed OD points and the
+fitted growth model, and returns a `ggplot` object.
 
-Because the output is a `ggplot` object, users can further customize the figure
-with `ggplot2`.
+**Why use it:** It is useful for visually checking model fit quality. Because
+the output is a `ggplot` object, users can further customize it with `ggplot2`.
+
+**Minimal example:**
 
 ```{r}
 pf <- plot_fitted_curve(fit)
