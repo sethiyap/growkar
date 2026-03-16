@@ -4,10 +4,33 @@
 \alias{plot_fitted_curve}
 \title{Plot a Fitted Growth Curve}
 \usage{
-plot_fitted_curve(fit)
+plot_fitted_curve(
+  fit,
+  model = c("logistic", "gompertz"),
+  select_replicates = NULL,
+  average_replicates = FALSE,
+  colour_col = "sample",
+  facet_col = NULL
+)
 }
 \arguments{
-\item{fit}{A \code{growkar_fit} object.}
+\item{fit}{A \code{growkar_fit} object, or growth curve data in tidy or wide
+format.}
+
+\item{model}{Model type used when \code{fit} is raw data rather than a
+\code{growkar_fit} object.}
+
+\item{select_replicates}{Optional character vector of replicate IDs to retain
+before fitting. When \code{NULL}, all replicates are retained.}
+
+\item{average_replicates}{Logical; if \code{TRUE}, average replicate trajectories
+before fitting and plotting.}
+
+\item{colour_col}{Name of the column mapped to colour when plotting from raw
+data.}
+
+\item{facet_col}{Optional name of a column used for faceting when plotting
+from raw data.}
 }
 \value{
 A \code{ggplot2} object.

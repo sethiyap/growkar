@@ -695,6 +695,16 @@ rate.</p>
 growth directly from observed data, using methods such as
 <code>&quot;rolling_window&quot;</code>, <code>&quot;defined_interval&quot;</code>, and
 <code>&quot;rule_based&quot;</code>.</p>
+<p>Method options:</p>
+<ul>
+<li><code>&quot;rolling_window&quot;</code> scans rolling windows across the time
+series and selects the window with the strongest positive log-linear
+slope.</li>
+<li><code>&quot;defined_interval&quot;</code> fits the growth rate over a
+user-supplied start and end time interval.</li>
+<li><code>&quot;rule_based&quot;</code> preserves the legacy <code>growkar</code>
+OD-doubling approach for defining the exponential phase.</li>
+</ul>
 <p><strong>Minimal example:</strong></p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt; </span></span>

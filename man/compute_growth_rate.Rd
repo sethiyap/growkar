@@ -8,6 +8,7 @@ compute_growth_rate(
   data,
   method = c("rolling_window", "defined_interval", "rule_based"),
   interval = NULL,
+  select_replicates = NULL,
   average_replicates = FALSE,
   window_size = 5,
   min_od = 0.02,
@@ -23,6 +24,9 @@ compute_growth_rate(
 \item{interval}{Interval definition for \code{defined_interval}. Supply either a
 numeric vector of length two or a data frame whose first three columns are
 sample, start time, and end time.}
+
+\item{select_replicates}{Optional character vector of replicate IDs to retain
+before estimation. When \code{NULL}, all replicates are retained.}
 
 \item{average_replicates}{Logical; if \code{TRUE}, average replicates before
 estimation when replicate metadata are available.}
@@ -44,4 +48,14 @@ Estimate per-sample growth rate from tidy growth data.
 \details{
 The returned \code{mu} column is the specific growth rate, estimated as the slope
 of \code{log(od)} versus time over the selected interval or window.
+
+Available methods:
+\itemize{
+\item \code{rolling_window}: scans rolling windows across the time series and
+selects the window with the strongest positive log-linear slope.
+\item \code{defined_interval}: fits the growth rate over a user-supplied start
+and end time interval.
+\item \code{rule_based}: preserves the legacy \code{growkar} approach based on
+OD-doubling heuristics to define the exponential phase.
+}
 }

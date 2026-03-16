@@ -28,3 +28,25 @@ test_that("extract_params and augment_growth_fit return tidy tibbles", {
   expect_s3_class(augmented, "tbl_df")
   expect_true(".fitted" %in% names(augmented))
 })
+
+test_that("plot_fitted_curve supports data input with selected replicates", {
+  p <- plot_fitted_curve(
+    growkar::yeast_growth_data,
+    model = "logistic",
+    select_replicates = c("R1", "R2")
+  )
+
+  expect_s3_class(p, "ggplot")
+})
+
+test_that("plot_fitted_curve supports averaging selected replicates", {
+  p <- plot_fitted_curve(
+    growkar::yeast_growth_data,
+    model = "logistic",
+    select_replicates = c("R1", "R2"),
+    average_replicates = TRUE,
+    colour_col = "condition"
+  )
+
+  expect_s3_class(p, "ggplot")
+})

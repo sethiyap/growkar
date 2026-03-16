@@ -7,6 +7,8 @@
 summarize_growth_metrics(
   data,
   method = c("rolling_window", "defined_interval", "rule_based"),
+  average_replicates = FALSE,
+  select_replicates = NULL,
   ...
 )
 }
@@ -14,6 +16,13 @@ summarize_growth_metrics(
 \item{data}{Growth curve data in tidy or wide format.}
 
 \item{method}{Estimation method passed to \code{compute_growth_rate()}.}
+
+\item{average_replicates}{Logical; if \code{TRUE}, average replicate trajectories
+before computing metrics. When \code{select_replicates} is \code{NULL}, all available
+replicates are averaged.}
+
+\item{select_replicates}{Optional character vector of replicate IDs to retain
+before summarizing. When \code{NULL}, all replicates are retained.}
 
 \item{...}{Additional arguments passed to \code{compute_growth_rate()}.}
 }

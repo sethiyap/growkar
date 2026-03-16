@@ -28,13 +28,15 @@ fit_growth_curve <- function(data, model = c("logistic", "gompertz")) {
 
   lower <- c(K = max(max(data$od, na.rm = TRUE), .Machine$double.eps), r = 1e-8, t0 = min(data$time))
   fit <- tryCatch(
-    stats::nls(
-      formula = formula,
-      data = data,
-      start = starts,
-      algorithm = "port",
-      lower = lower,
-      control = stats::nls.control(warnOnly = TRUE)
+    suppressWarnings(
+      stats::nls(
+        formula = formula,
+        data = data,
+        start = starts,
+        algorithm = "port",
+        lower = lower,
+        control = stats::nls.control(warnOnly = TRUE)
+      )
     ),
     error = function(e) e
   )

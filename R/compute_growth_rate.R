@@ -5,12 +5,24 @@
 #' The returned `mu` column is the specific growth rate, estimated as the slope
 #' of `log(od)` versus time over the selected interval or window.
 #'
+#' Available methods:
+#' \itemize{
+#'   \item `rolling_window`: scans rolling windows across the time series and
+#'   selects the window with the strongest positive log-linear slope.
+#'   \item `defined_interval`: fits the growth rate over a user-supplied start
+#'   and end time interval.
+#'   \item `rule_based`: preserves the legacy `growkar` approach based on
+#'   OD-doubling heuristics to define the exponential phase.
+#' }
+#'
 #' @param data Growth curve data in tidy or wide format.
 #' @param method Estimation method. One of `"rolling_window"`,
 #'   `"defined_interval"`, or `"rule_based"`.
 #' @param interval Interval definition for `defined_interval`. Supply either a
 #'   numeric vector of length two or a data frame whose first three columns are
 #'   sample, start time, and end time.
+#' @param select_replicates Optional character vector of replicate IDs to retain
+#'   before estimation. When `NULL`, all replicates are retained.
 #' @param average_replicates Logical; if `TRUE`, average replicates before
 #'   estimation when replicate metadata are available.
 #' @param window_size Rolling window size for `rolling_window`.
@@ -24,6 +36,7 @@
 compute_growth_rate <- function(data,
                                 method = c("rolling_window", "defined_interval", "rule_based"),
                                 interval = NULL,
+                                select_replicates = NULL,
                                 average_replicates = FALSE,
                                 window_size = 5,
                                 min_od = 0.02,
@@ -31,6 +44,20 @@ compute_growth_rate <- function(data,
   method <- match.arg(method)
   tidy_data <- as_tidy_growth_data(data)
   tidy_data <- validate_growth_data(tidy_data)
+
+  if (!is.null(select_replicates)) {
+    if (!"replicate" %in% names(tidy_data)) {
+      stop(
+        "`select_replicates` requires a `replicate` column or sample names that encode replicates.",
+        call. = FALSE
+      )
+    }
+
+    tidy_data <- dplyr::filter(tidy_data, .data$replicate %in% select_replicates)
+    if (nrow(tidy_data) == 0L) {
+      stop("No rows remain after filtering `select_replicates`.", call. = FALSE)
+    }
+  }
 
   if (isTRUE(average_replicates)) {
     tidy_data <- growkar_average_replicates(tidy_data) |>

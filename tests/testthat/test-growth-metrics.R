@@ -23,6 +23,27 @@ test_that("compute_growth_rate supports rolling and rule-based methods", {
   expect_equal(unique(rule_based$method), "rule_based")
 })
 
+test_that("compute_growth_rate can filter selected replicates", {
+  metrics <- compute_growth_rate(
+    growkar::yeast_growth_data,
+    method = "rule_based",
+    select_replicates = c("R1", "R2")
+  )
+
+  expect_equal(sort(metrics$sample), sort(c("Cg_R1", "Cg_R2", "CgFlu_R1", "CgFlu_R2", "YPD_R1", "YPD_R2")))
+})
+
+test_that("compute_growth_rate can average selected replicates", {
+  metrics <- compute_growth_rate(
+    growkar::yeast_growth_data,
+    method = "rolling_window",
+    select_replicates = c("R1", "R2"),
+    average_replicates = TRUE
+  )
+
+  expect_equal(sort(metrics$sample), sort(c("Cg", "CgFlu", "YPD")))
+})
+
 test_that("summarize_growth_metrics adds doubling time", {
   metrics <- summarize_growth_metrics(growkar::yeast_growth_data, method = "rule_based")
 
@@ -31,4 +52,36 @@ test_that("summarize_growth_metrics adds doubling time", {
     nrow(metrics),
     length(unique(as_tidy_growth_data(growkar::yeast_growth_data)$sample))
   )
+})
+
+test_that("summarize_growth_metrics can filter selected replicates", {
+  metrics <- summarize_growth_metrics(
+    growkar::yeast_growth_data,
+    method = "rule_based",
+    select_replicates = c("R1", "R2")
+  )
+
+  expect_equal(sort(metrics$sample), sort(c("Cg_R1", "Cg_R2", "CgFlu_R1", "CgFlu_R2", "YPD_R1", "YPD_R2")))
+})
+
+test_that("summarize_growth_metrics can average selected replicates", {
+  metrics <- summarize_growth_metrics(
+    growkar::yeast_growth_data,
+    method = "rolling_window",
+    average_replicates = TRUE,
+    select_replicates = c("R1", "R2")
+  )
+
+  expect_equal(sort(metrics$sample), sort(c("Cg", "CgFlu", "YPD")))
+  expect_true(all(c("mu", "doubling_time") %in% names(metrics)))
+})
+
+test_that("summarize_growth_metrics averages all replicates when requested", {
+  metrics <- summarize_growth_metrics(
+    growkar::yeast_growth_data,
+    method = "rolling_window",
+    average_replicates = TRUE
+  )
+
+  expect_equal(sort(metrics$sample), sort(c("Cg", "CgFlu", "YPD")))
 })

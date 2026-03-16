@@ -121,6 +121,15 @@ estimated growth rate.
 from observed data, using methods such as `"rolling_window"`,
 `"defined_interval"`, and `"rule_based"`.
 
+Method options:
+
+- `"rolling_window"` scans rolling windows across the time series and
+  selects the window with the strongest positive log-linear slope.
+- `"defined_interval"` fits the growth rate over a user-supplied start
+  and end time interval.
+- `"rule_based"` preserves the legacy `growkar` OD-doubling approach for
+  defining the exponential phase.
+
 **Minimal example:**
 
 ``` r
