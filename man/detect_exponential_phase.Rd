@@ -14,8 +14,8 @@ detect_exponential_phase(data, window_size = 5, min_od = 0.02)
 \item{min_od}{Minimum OD retained for log-linear fitting.}
 }
 \value{
-A tibble with \code{start_time}, \code{end_time}, \code{slope}, and \code{r_squared},
-ranked by highest positive slope and then \code{r_squared}.
+A tibble with \code{sample}, \code{start_time}, \code{end_time}, \code{slope}, and
+\code{r_squared}, ranked by highest positive slope and then \code{r_squared}.
 }
 \description{
 Identify rolling windows with the strongest evidence for exponential growth

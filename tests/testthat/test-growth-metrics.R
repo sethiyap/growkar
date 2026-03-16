@@ -9,6 +9,8 @@ test_that("detect_exponential_phase finds positive slope windows", {
 
   expect_s3_class(windows, "tbl_df")
   expect_gt(nrow(windows), 0)
+  expect_true("sample" %in% names(windows))
+  expect_equal(unique(windows$sample), "exp1")
   expect_gt(windows$slope[[1]], 0)
 })
 

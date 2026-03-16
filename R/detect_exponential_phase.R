@@ -7,12 +7,13 @@
 #' @param window_size Number of observations in each rolling window.
 #' @param min_od Minimum OD retained for log-linear fitting.
 #'
-#' @return A tibble with `start_time`, `end_time`, `slope`, and `r_squared`,
-#'   ranked by highest positive slope and then `r_squared`.
+#' @return A tibble with `sample`, `start_time`, `end_time`, `slope`, and
+#'   `r_squared`, ranked by highest positive slope and then `r_squared`.
 #' @export
 detect_exponential_phase <- function(data, window_size = 5, min_od = 0.02) {
   data <- as_tidy_growth_data(data)
   data <- validate_growth_data(data)
+  sample_id <- unique(data$sample)
 
   if (dplyr::n_distinct(data$sample) != 1L) {
     stop("`detect_exponential_phase()` requires data for exactly one sample.", call. = FALSE)
@@ -24,6 +25,7 @@ detect_exponential_phase <- function(data, window_size = 5, min_od = 0.02) {
 
   if (nrow(data) < window_size) {
     return(tibble::tibble(
+      sample = character(),
       start_time = numeric(),
       end_time = numeric(),
       slope = numeric(),
@@ -37,6 +39,7 @@ detect_exponential_phase <- function(data, window_size = 5, min_od = 0.02) {
     summary_fit <- suppressWarnings(summary(fit))
 
     tibble::tibble(
+      sample = sample_id,
       start_time = min(window_data$time),
       end_time = max(window_data$time),
       slope = unname(stats::coef(fit)[["time"]]),
