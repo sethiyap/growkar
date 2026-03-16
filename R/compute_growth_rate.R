@@ -2,6 +2,9 @@
 #'
 #' Estimate per-sample growth rate from tidy growth data.
 #'
+#' The returned `mu` column is the specific growth rate, estimated as the slope
+#' of `log(od)` versus time over the selected interval or window.
+#'
 #' @param data Growth curve data in tidy or wide format.
 #' @param method Estimation method. One of `"rolling_window"`,
 #'   `"defined_interval"`, or `"rule_based"`.
@@ -16,7 +19,7 @@
 #'   method.
 #'
 #' @return A tibble with `sample`, `mu`, `start_time`, `end_time`, `r_squared`,
-#'   and `method`.
+#'   and `method`. Here `mu` is the estimated specific growth rate.
 #' @export
 compute_growth_rate <- function(data,
                                 method = c("rolling_window", "defined_interval", "rule_based"),

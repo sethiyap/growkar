@@ -7,7 +7,8 @@
 compute_doubling_time(mu)
 }
 \arguments{
-\item{mu}{Numeric vector of growth-rate estimates.}
+\item{mu}{Numeric vector of specific growth-rate estimates. In \code{growkar},
+\code{mu} is the slope of \code{log(od)} versus time.}
 }
 \value{
 A numeric vector equal to \code{log(2) / mu}, with \code{NA} returned when

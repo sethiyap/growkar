@@ -36,8 +36,12 @@ method.}
 }
 \value{
 A tibble with \code{sample}, \code{mu}, \code{start_time}, \code{end_time}, \code{r_squared},
-and \code{method}.
+and \code{method}. Here \code{mu} is the estimated specific growth rate.
 }
 \description{
 Estimate per-sample growth rate from tidy growth data.
+}
+\details{
+The returned \code{mu} column is the specific growth rate, estimated as the slope
+of \code{log(od)} versus time over the selected interval or window.
 }

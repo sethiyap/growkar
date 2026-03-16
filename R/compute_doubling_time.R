@@ -2,7 +2,8 @@
 #'
 #' Compute doubling time from a growth rate estimate.
 #'
-#' @param mu Numeric vector of growth-rate estimates.
+#' @param mu Numeric vector of specific growth-rate estimates. In `growkar`,
+#'   `mu` is the slope of `log(od)` versus time.
 #'
 #' @return A numeric vector equal to `log(2) / mu`, with `NA` returned when
 #'   `mu <= 0`.

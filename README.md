@@ -69,7 +69,7 @@ Because the output is a `ggplot` object, users can further customize the
 figure with `ggplot2`.
 
 ``` r
-p <- plot_growth_curve(tidy_data)
+p <- plot_growth_curve(tidy_data, average_replicates = TRUE)
 p
 ```
 
