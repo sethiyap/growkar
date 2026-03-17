@@ -14,10 +14,6 @@ A data frame with 49 rows and 6 variables:
 ...
 }
 }
-\usage{
-yeast_growth_data
-}
 \description{
 A dataset containing the time-interval and OD600 of growing yeast cells recorded upto 24 hours.
 }
-\keyword{datasets}

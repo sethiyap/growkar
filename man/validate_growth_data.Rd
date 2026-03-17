@@ -38,6 +38,7 @@ The validated tibble after coercion to tibble.
 Validate tidy growth data before downstream analysis.
 }
 \examples{
+data(yeast_growth_data)
 tidy_data <- as_tidy_growth_data(yeast_growth_data)
 validate_growth_data(tidy_data)
 }

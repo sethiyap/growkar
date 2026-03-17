@@ -19,6 +19,7 @@ with \code{converged = FALSE} and diagnostic fields describing the failure.
 Fit a logistic or Gompertz growth model to a single sample.
 }
 \examples{
+data(yeast_growth_data)
 tidy_growth <- as_tidy_growth_data(yeast_growth_data)
 sample_id <- unique(tidy_growth$sample)[1]
 fit <- fit_growth_curve(

@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 library(growkar)
 library(dplyr)
 library(knitr)
+data(yeast_growth_data)
 ```
 
 ## Overview

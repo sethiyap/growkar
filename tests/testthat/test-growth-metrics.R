@@ -15,7 +15,7 @@ test_that("detect_exponential_phase finds positive slope windows", {
 })
 
 test_that("compute_growth_rate supports rolling and rule-based methods", {
-  tidy_data <- as_tidy_growth_data(growkar::yeast_growth_data)
+  tidy_data <- as_tidy_growth_data(yeast_growth_data)
 
   rolling <- suppressWarnings(compute_growth_rate(tidy_data, method = "rolling_window"))
   rule_based <- suppressWarnings(compute_growth_rate(tidy_data, method = "rule_based"))
@@ -27,7 +27,7 @@ test_that("compute_growth_rate supports rolling and rule-based methods", {
 
 test_that("compute_growth_rate can filter selected replicates", {
   metrics <- suppressWarnings(compute_growth_rate(
-    growkar::yeast_growth_data,
+    yeast_growth_data,
     method = "rule_based",
     select_replicates = c("R1", "R2")
   ))
@@ -37,7 +37,7 @@ test_that("compute_growth_rate can filter selected replicates", {
 
 test_that("compute_growth_rate can average selected replicates", {
   metrics <- suppressWarnings(compute_growth_rate(
-    growkar::yeast_growth_data,
+    yeast_growth_data,
     method = "rolling_window",
     select_replicates = c("R1", "R2"),
     average_replicates = TRUE
@@ -47,18 +47,18 @@ test_that("compute_growth_rate can average selected replicates", {
 })
 
 test_that("summarize_growth_metrics adds doubling time", {
-  metrics <- suppressWarnings(summarize_growth_metrics(growkar::yeast_growth_data, method = "rule_based"))
+  metrics <- suppressWarnings(summarize_growth_metrics(yeast_growth_data, method = "rule_based"))
 
   expect_true("doubling_time" %in% names(metrics))
   expect_equal(
     nrow(metrics),
-    length(unique(as_tidy_growth_data(growkar::yeast_growth_data)$sample))
+    length(unique(as_tidy_growth_data(yeast_growth_data)$sample))
   )
 })
 
 test_that("summarize_growth_metrics can filter selected replicates", {
   metrics <- suppressWarnings(summarize_growth_metrics(
-    growkar::yeast_growth_data,
+    yeast_growth_data,
     method = "rule_based",
     select_replicates = c("R1", "R2")
   ))
@@ -68,7 +68,7 @@ test_that("summarize_growth_metrics can filter selected replicates", {
 
 test_that("summarize_growth_metrics can average selected replicates", {
   metrics <- suppressWarnings(summarize_growth_metrics(
-    growkar::yeast_growth_data,
+    yeast_growth_data,
     method = "rolling_window",
     average_replicates = TRUE,
     select_replicates = c("R1", "R2")
@@ -80,7 +80,7 @@ test_that("summarize_growth_metrics can average selected replicates", {
 
 test_that("summarize_growth_metrics averages all replicates when requested", {
   metrics <- suppressWarnings(summarize_growth_metrics(
-    growkar::yeast_growth_data,
+    yeast_growth_data,
     method = "rolling_window",
     average_replicates = TRUE
   ))

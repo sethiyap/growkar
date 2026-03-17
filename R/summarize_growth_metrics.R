@@ -18,6 +18,7 @@
 #' @return A tidy tibble with one row per sample.
 #'
 #' @examples
+#' data(yeast_growth_data)
 #' metrics <- summarize_growth_metrics(
 #'   yeast_growth_data,
 #'   method = "rolling_window",

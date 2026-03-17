@@ -17,6 +17,7 @@
 #' @return A `ggplot2` object.
 #'
 #' @examples
+#' data(yeast_growth_data)
 #' plot_growth_curve(
 #'   yeast_growth_data,
 #'   average_replicates = TRUE,

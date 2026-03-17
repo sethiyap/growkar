@@ -18,7 +18,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Pooja Sethiya \email{pooja.sethiya@wimr.org.au}
+\strong{Maintainer}: Pooja Sethiya \email{poojasethiya24@gmail.com}
 
 }
 \keyword{internal}

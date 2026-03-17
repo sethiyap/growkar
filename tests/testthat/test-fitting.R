@@ -87,7 +87,7 @@ test_that("summary and print methods handle failed fits", {
 
 test_that("plot_fitted_curve supports data input with selected replicates", {
   p <- plot_fitted_curve(
-    growkar::yeast_growth_data,
+    yeast_growth_data,
     model = "logistic",
     select_replicates = c("R1", "R2")
   )
@@ -97,7 +97,7 @@ test_that("plot_fitted_curve supports data input with selected replicates", {
 
 test_that("plot_fitted_curve supports averaging selected replicates", {
   p <- plot_fitted_curve(
-    growkar::yeast_growth_data,
+    yeast_growth_data,
     model = "logistic",
     select_replicates = c("R1", "R2"),
     average_replicates = TRUE,
@@ -110,7 +110,7 @@ test_that("plot_fitted_curve supports averaging selected replicates", {
 test_that("plot_fitted_curve warns when faceting by replicate after averaging", {
   expect_warning(
     p <- plot_fitted_curve(
-      growkar::yeast_growth_data,
+      yeast_growth_data,
       model = "logistic",
       average_replicates = TRUE,
       colour_col = "condition",

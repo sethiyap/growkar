@@ -62,6 +62,7 @@ OD-doubling heuristics to define the exponential phase.
 }
 }
 \examples{
+data(yeast_growth_data)
 tidy_growth <- as_tidy_growth_data(yeast_growth_data)
 sample_id <- unique(tidy_growth$sample)[1]
 compute_growth_rate(

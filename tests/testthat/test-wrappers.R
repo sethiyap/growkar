@@ -1,7 +1,7 @@
 test_that("legacy wrappers return legacy-style columns", {
   expect_warning(
     legacy <- withCallingHandlers(
-      calculate_growth_rate(growkar::yeast_growth_data, average_replicates = FALSE),
+      calculate_growth_rate(yeast_growth_data, average_replicates = FALSE),
       warning = function(w) {
         if (!grepl("deprecated", conditionMessage(w), ignore.case = TRUE)) {
           invokeRestart("muffleWarning")
@@ -15,7 +15,7 @@ test_that("legacy wrappers return legacy-style columns", {
 })
 
 test_that("defined-interval legacy wrappers still work and warn", {
-  subset_data <- tibble::as_tibble(growkar::yeast_growth_data)[, c("Time", "Cg_R1", "Cg_R2")]
+  subset_data <- tibble::as_tibble(yeast_growth_data)[, c("Time", "Cg_R1", "Cg_R2")]
   interval_tbl <- tibble::tibble(
     sample = c("Cg_R1", "Cg_R2"),
     start_time = c(4, 4),

@@ -39,7 +39,7 @@ select_palette <- function(num_of_colors, palette_name = "all_colors") {
     tibble::as_tibble() |>
     dplyr::filter(.data$category == "qual") |>
     dplyr::mutate(colors = purrr::map2(.data$maxcolors, .data$rn, ~ RColorBrewer::brewer.pal(..1, ..2))) |>
-    tidyr::unnest(.data$colors)
+    tidyr::unnest(cols = "colors")
 
   if (palette_name == "all_colors") {
     color_vector <- color_tibble |>

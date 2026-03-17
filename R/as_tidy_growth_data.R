@@ -14,6 +14,7 @@
 #'   metadata columns are preserved where available.
 #'
 #' @examples
+#' data(yeast_growth_data)
 #' tidy_growth <- as_tidy_growth_data(yeast_growth_data)
 #' head(tidy_growth)
 #' @export

@@ -9,6 +9,7 @@
 #' @return A tibble compatible with the legacy `growkar` output.
 #'
 #' @examples
+#' data(yeast_growth_data)
 #' calculate_growth_rate(yeast_growth_data, average_replicates = TRUE)
 #' @export
 calculate_growth_rate <- function(dat_growth_curve,
@@ -47,13 +48,14 @@ calculate_growth_rate <- function(dat_growth_curve,
 #' @return A tibble compatible with the legacy `growkar` output.
 #'
 #' @examples
+#' data(yeast_growth_data)
 #' interval_tbl <- tibble::tibble(
 #'   sample = c("Cg_R1", "Cg_R2"),
 #'   start_time = c(7, 7),
 #'   end_time = c(11, 11)
 #' )
 #' calculate_growthrate_from_defined_logphase(
-#'   dplyr::filter(yeast_growth_data, sample %in% c("Cg_R1", "Cg_R2")),
+#'   yeast_growth_data[, c("Time", "Cg_R1", "Cg_R2")],
 #'   logphase_tibble = interval_tbl
 #' )
 #' @export

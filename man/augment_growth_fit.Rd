@@ -16,6 +16,7 @@ A tidy tibble containing observed and fitted values.
 Return observed data together with fitted values from a \code{growkar_fit} object.
 }
 \examples{
+data(yeast_growth_data)
 tidy_growth <- as_tidy_growth_data(yeast_growth_data)
 sample_id <- unique(tidy_growth$sample)[1]
 fit <- fit_growth_curve(dplyr::filter(tidy_growth, sample == sample_id))

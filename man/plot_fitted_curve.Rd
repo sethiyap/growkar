@@ -49,6 +49,7 @@ A \code{ggplot2} object.
 Overlay observed points and fitted values from a parametric growth model.
 }
 \examples{
+data(yeast_growth_data)
 tidy_growth <- as_tidy_growth_data(yeast_growth_data)
 sample_id <- unique(tidy_growth$sample)[1]
 fit <- fit_growth_curve(dplyr::filter(tidy_growth, sample == sample_id))

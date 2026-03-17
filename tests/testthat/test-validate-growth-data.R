@@ -1,5 +1,5 @@
 test_that("valid tidy data passes validation", {
-  tidy_data <- as_tidy_growth_data(growkar::yeast_growth_data)
+  tidy_data <- as_tidy_growth_data(yeast_growth_data)
 
   expect_s3_class(validate_growth_data(tidy_data), "tbl_df")
 })

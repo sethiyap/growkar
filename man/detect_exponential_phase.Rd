@@ -24,6 +24,7 @@ Identify rolling windows with the strongest evidence for exponential growth
 in a single sample.
 }
 \examples{
+data(yeast_growth_data)
 tidy_growth <- as_tidy_growth_data(yeast_growth_data)
 sample_id <- unique(tidy_growth$sample)[1]
 phase_tbl <- detect_exponential_phase(dplyr::filter(tidy_growth, sample == sample_id))

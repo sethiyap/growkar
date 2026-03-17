@@ -38,6 +38,7 @@ A \code{ggplot2} object.
 Plot observed growth curves from tidy or wide input data.
 }
 \examples{
+data(yeast_growth_data)
 plot_growth_curve(
   yeast_growth_data,
   average_replicates = TRUE,

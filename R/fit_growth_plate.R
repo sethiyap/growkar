@@ -8,6 +8,7 @@
 #' @return A tibble with `sample` and a list-column of `growkar_fit` objects.
 #'
 #' @examples
+#' data(yeast_growth_data)
 #' fits <- fit_growth_plate(yeast_growth_data, model = "logistic")
 #' fits
 #' @export

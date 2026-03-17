@@ -30,5 +30,6 @@ A tibble compatible with the legacy \code{growkar} output.
 Deprecated Wrapper for Rule-Based Growth Rate
 }
 \examples{
+data(yeast_growth_data)
 calculate_growth_rate(yeast_growth_data, average_replicates = TRUE)
 }
