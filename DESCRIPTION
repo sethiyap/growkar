@@ -1,17 +1,19 @@
 Package: growkar
-Title: Tidy Growth Curve Analysis for Optical Density Time Series
+Title: Tidy Analysis of Microbial Growth Curve Time Series
 Version: 0.99.0
 Authors@R: 
     person("Pooja", "Sethiya", 
            email = "pooja.sethiya@wimr.org.au", 
            role = c("aut", "cre"))
-Description: Tools to import, tidy, visualize, summarize, and fit microbial
-    growth curves from optical density time-series data. The package provides
-    empirical estimation of growth rate and doubling time from observed data,
-    exponential phase detection, and model-based fitting using logistic and
+Description: Tools to import, validate, visualize, summarize, and model
+    microbial growth curves from optical density time-series data. The package
+    supports a tidy workflow centered on canonical sample, time, and OD
+    columns, empirical estimation of growth rate and doubling time,
+    exponential-phase detection, and model-based fitting with logistic and
     Gompertz growth models.
 License: MIT + file LICENSE
 Encoding: UTF-8
+LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Depends:
@@ -21,15 +23,18 @@ Imports:
     lifecycle,
     ggplot2,
     purrr,
+    RColorBrewer,
     rlang,
     stats,
     tibble,
     tidyr,
     utils
 Suggests:
-    testthat (>= 3.0.0),
     knitr,
-    rmarkdown
+    pkgload,
+    remotes,
+    rmarkdown,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://github.com/sethiyap/growkar

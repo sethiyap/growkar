@@ -10,16 +10,17 @@ select_palette(num_of_colors, palette_name = "all_colors")
 \item{num_of_colors}{numeric, number of colors to be obtained from palette}
 
 \item{palette_name}{character,name palettes Default: 'all_colors'
-For individual palette;
+Supported individual palettes are:
 \itemize{
-\item {Accent: }{8}
-\item {Dark2: }{8}
-\item {Paired: }{12}
-\item {Pastel1: }{9}
-\item {Pastel2: }{8}
-\item {Set1: }{9}
-\item {Set2: }{8}
-\item {Set3: }{12} }}
+\item \code{Accent} (8)
+\item \code{Dark2} (8)
+\item \code{Paired} (12)
+\item \code{Pastel1} (9)
+\item \code{Pastel2} (8)
+\item \code{Set1} (9)
+\item \code{Set2} (8)
+\item \code{Set3} (12)
+}}
 }
 \value{
 a vector of colors from selected palette

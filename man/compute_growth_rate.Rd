@@ -40,7 +40,9 @@ method.}
 }
 \value{
 A tibble with \code{sample}, \code{mu}, \code{start_time}, \code{end_time}, \code{r_squared},
-and \code{method}. Here \code{mu} is the estimated specific growth rate.
+and \code{method}. Here \code{mu} is the estimated specific growth rate. Additional
+diagnostic columns describe the number of points used and whether the
+estimate required degraded fallback behavior.
 }
 \description{
 Estimate per-sample growth rate from tidy growth data.

@@ -4,18 +4,40 @@
 \alias{validate_growth_data}
 \title{Validate Canonical Growth Data}
 \usage{
-validate_growth_data(data, allow_negative_od = FALSE)
+validate_growth_data(
+  data,
+  allow_negative_od = FALSE,
+  require_increasing_time = TRUE,
+  min_points_per_sample = 2L,
+  warn_zero_od = FALSE,
+  require_finite = TRUE
+)
 }
 \arguments{
 \item{data}{A data frame containing at least \code{sample}, \code{time}, and \code{od}.}
 
 \item{allow_negative_od}{Logical; if \code{FALSE}, negative optical density values
 are rejected.}
+
+\item{require_increasing_time}{Logical; if \code{TRUE}, \code{time} must be strictly
+increasing within each sample.}
+
+\item{min_points_per_sample}{Minimum number of rows required within each
+sample.}
+
+\item{warn_zero_od}{Logical; if \code{TRUE}, emit a warning when zero OD values
+are present.}
+
+\item{require_finite}{Logical; if \code{TRUE}, reject non-finite numeric values in
+\code{time} or \code{od}.}
 }
 \value{
-The validated tibble, invisibly identical in content to the input
-after coercion to tibble.
+The validated tibble after coercion to tibble.
 }
 \description{
 Validate tidy growth data before downstream analysis.
+}
+\examples{
+tidy_data <- as_tidy_growth_data(yeast_growth_data)
+validate_growth_data(tidy_data)
 }

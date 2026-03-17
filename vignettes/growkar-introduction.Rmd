@@ -16,7 +16,8 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(growkar)
-library(ggplot2)
+library(dplyr)
+library(knitr)
 ```
 
 ## Overview
@@ -26,25 +27,55 @@ optical density time-series data. Version 2 centers on a canonical input format
 with columns `sample`, `time`, and `od`, while preserving compatibility with
 legacy wide plate-reader data.
 
-## Canonical tidy data
+The core workflow is:
+
+1. Convert data into canonical tidy form.
+2. Validate before downstream analysis.
+3. Explore growth curves visually.
+4. Compute empirical summaries and detect the exponential phase.
+5. Fit logistic or Gompertz models where a full-curve summary is useful.
+
+## Input formats and tidy conversion
 
 ```{r}
 tidy_growth <- as_tidy_growth_data(yeast_growth_data)
 
-tidy_growth
+head(tidy_growth)
 ```
 
-## Plot observed curves
+The canonical columns are `sample`, `time`, and `od`. Additional metadata such
+as `condition` and `replicate` can be carried alongside them.
+
+```{r}
+validate_growth_data(tidy_growth)
+```
+
+## Exploratory plotting and quality control
+
+Observed growth curves can be plotted directly from tidy data:
 
 ```{r}
 plot_growth_curve(
   tidy_growth,
   average_replicates = TRUE,
-  colour_col = "condition"
+  colour_col = "condition",
+  palette_name = "Dark2"
 )
 ```
 
-## Summarize empirical growth metrics
+Replicate-level faceting remains available when averaging is disabled:
+
+```{r}
+plot_growth_curve(
+  tidy_growth,
+  average_replicates = FALSE,
+  colour_col = "condition",
+  facet_col = "replicate",
+  palette_name = "Dark2"
+)
+```
+
+## Empirical summaries
 
 ```{r}
 metrics <- summarize_growth_metrics(
@@ -53,16 +84,111 @@ metrics <- summarize_growth_metrics(
   average_replicates = TRUE
 )
 
-metrics
+knitr::kable(metrics, digits = 3)
 ```
 
-## Fit a parametric growth model
+For a single sample, the empirical growth-rate estimate can be inspected in
+more detail:
+
+```{r}
+sample_id <- unique(tidy_growth$sample)[1]
+
+gr <- compute_growth_rate(
+  filter(tidy_growth, sample == sample_id),
+  method = "rolling_window"
+)
+
+knitr::kable(gr, digits = 3)
+```
+
+The doubling time helper is useful when you already have growth-rate values:
+
+```{r}
+knitr::kable(
+  tibble(
+    sample = gr$sample,
+    growth_rate = gr$mu,
+    doubling_time = compute_doubling_time(gr$mu)
+  ),
+  digits = 3
+)
+```
+
+## Exponential phase detection
+
+`detect_exponential_phase()` returns the ranked candidate windows and metadata
+describing whether the chosen interval required any degraded fallback.
+
+```{r}
+phase_tbl <- detect_exponential_phase(
+  filter(tidy_growth, sample == sample_id)
+)
+
+knitr::kable(head(phase_tbl), digits = 3)
+```
+
+## Model fitting and diagnostics
+
+For a full-curve model-based summary, fit one of the supported parametric
+models:
 
 ```{r}
 cg_fit <- tidy_growth |>
-  dplyr::filter(sample == "Cg_R1") |>
+  filter(sample == sample_id) |>
   fit_growth_curve(model = "logistic")
 
 extract_params(cg_fit)
+summary(cg_fit)
+```
+
+Failed fits remain machine-readable and do not crash downstream helpers:
+
+```{r}
+flat_fit <- fit_growth_curve(
+  tibble(
+    sample = "flat",
+    time = 0:4,
+    od = rep(0.2, 5)
+  ),
+  model = "logistic"
+)
+
+summary(flat_fit)
+```
+
+Observed and fitted values can be visualized together:
+
+```{r}
 plot_fitted_curve(cg_fit)
+```
+
+## Migration from legacy growkar
+
+Older workflows can continue to use:
+
+- `calculate_growth_rate()`
+- `calculate_growthrate_from_defined_time()`
+- `calculate_growthrate_from_defined_logphase()`
+
+These wrappers remain available, but they emit deprecation warnings and call
+the tidy-v2 internals. New code should prefer:
+
+- `compute_growth_rate()`
+- `summarize_growth_metrics()`
+- `detect_exponential_phase()`
+- `fit_growth_curve()`
+
+## Limitations and interpretation notes
+
+- Growth-rate estimates rely on log-linear behavior and can be degraded for
+  very sparse or flat curves.
+- Zero OD values are allowed in the data, but log-based methods may warn and
+  ignore them.
+- A failed model fit still returns a `growkar_fit` object with status and
+  diagnostics rather than throwing a cryptic `nls` error.
+
+## Session information
+
+```{r}
+sessionInfo()
 ```

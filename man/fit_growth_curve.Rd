@@ -12,7 +12,8 @@ fit_growth_curve(data, model = c("logistic", "gompertz"))
 \item{model}{Model type: \code{"logistic"} or \code{"gompertz"}.}
 }
 \value{
-An object of class \code{growkar_fit}.
+An object of class \code{growkar_fit}. Failed fits return the same class
+with \code{converged = FALSE} and diagnostic fields describing the failure.
 }
 \description{
 Fit a logistic or Gompertz growth model to a single sample.

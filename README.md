@@ -1,7 +1,7 @@
 
-<!-- README.md is generated from README.rmd. Please edit that file -->
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# growkar <img src="hexasticker.jpg" align="right" height="180" alt="growkar hex sticker" />
+# growkar <img src="hexasticker2.png" align="right" height="180" alt="growkar hex sticker" />
 
 `growkar` is an R package for microbial growth curve analysis from
 optical density (OD) time-series data. It provides a tidy workflow for
@@ -13,10 +13,13 @@ The package keeps the feel of the original `growkar` workflow while
 introducing a tidyverse-friendly v2 design built around canonical input
 columns: `sample`, `time`, and `od`.
 
+Legacy wrapper functions remain available for older workflows, but new
+analyses should prefer the tidy-v2 interface shown below.
+
 ## Installation
 
 ``` r
-remotes::install_github("sethiyap/growkar")
+remotes::install_github("sethiyap/growkar", ref = "tidy-v2")
 ```
 
 ## Example dataset
@@ -176,9 +179,9 @@ gr <- compute_growth_rate(
 knitr::kable(gr, digits = 3)
 ```
 
-| sample |    mu | start_time | end_time | r_squared | method         |
-|:-------|------:|-----------:|---------:|----------:|:---------------|
-| Cg_R1  | 0.576 |        4.5 |      6.5 |         1 | rolling_window |
+| sample | mu | start_time | end_time | r_squared | method | n_points | degraded | note |
+|:---|---:|---:|---:|---:|:---|---:|:---|:---|
+| Cg_R1 | 0.576 | 4.5 | 6.5 | 1 | rolling_window | 5 | FALSE | rolling_window_ranked |
 
 ## Compute doubling time
 
@@ -220,20 +223,24 @@ time from the estimated growth rate using `compute_doubling_time()`.
 
 ``` r
 metrics <- summarize_growth_metrics(tidy_data)
+#> Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive
+#> growth slope (rolling_window_ranked).
+#> Warning: Sample `YPD_R2`: Exponential phase detection did not yield a positive
+#> growth slope (rolling_window_ranked).
 knitr::kable(metrics, digits = 3)
 ```
 
-| sample   |    mu | start_time | end_time | r_squared | method         | doubling_time |
-|:---------|------:|-----------:|---------:|----------:|:---------------|--------------:|
-| Cg_R1    | 0.576 |        4.5 |      6.5 |     1.000 | rolling_window |         1.204 |
-| Cg_R2    | 0.560 |        4.5 |      6.5 |     1.000 | rolling_window |         1.238 |
-| Cg_R3    | 0.571 |        4.5 |      6.5 |     0.999 | rolling_window |         1.214 |
-| CgFlu_R1 | 0.403 |        4.5 |      6.5 |     1.000 | rolling_window |         1.719 |
-| CgFlu_R2 | 0.407 |        4.5 |      6.5 |     1.000 | rolling_window |         1.702 |
-| CgFlu_R3 | 0.403 |        4.5 |      6.5 |     1.000 | rolling_window |         1.721 |
-| YPD_R1   | 0.000 |       22.0 |     24.0 |     0.670 | rolling_window |            NA |
-| YPD_R2   | 0.000 |       22.0 |     24.0 |     0.670 | rolling_window |            NA |
-| YPD_R3   | 0.004 |       18.0 |     20.0 |     0.500 | rolling_window |       179.350 |
+| sample | mu | start_time | end_time | r_squared | method | n_points | degraded | note | doubling_time |
+|:---|---:|---:|---:|---:|:---|---:|:---|:---|---:|
+| Cg_R1 | 0.576 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked | 1.204 |
+| Cg_R2 | 0.560 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked | 1.238 |
+| Cg_R3 | 0.571 | 4.5 | 6.5 | 0.999 | rolling_window | 5 | FALSE | rolling_window_ranked | 1.214 |
+| CgFlu_R1 | 0.403 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked | 1.719 |
+| CgFlu_R2 | 0.407 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked | 1.702 |
+| CgFlu_R3 | 0.403 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked | 1.721 |
+| YPD_R1 | NA | NA | NA | NA | rolling_window | 5 | FALSE | rolling_window_ranked | NA |
+| YPD_R2 | NA | NA | NA | NA | rolling_window | 5 | FALSE | rolling_window_ranked | NA |
+| YPD_R3 | 0.004 | 18.0 | 20.0 | 0.500 | rolling_window | 5 | FALSE | rolling_window_ranked | 179.350 |
 
 ## Detect exponential phase
 
@@ -251,56 +258,17 @@ phase_tbl <- detect_exponential_phase(
   filter(tidy_data, sample == sample_id)
 )
 
-knitr::kable(phase_tbl, digits = 3)
+knitr::kable(head(phase_tbl), digits = 3)
 ```
 
-| sample | start_time | end_time |  slope | r_squared |
-|:-------|-----------:|---------:|-------:|----------:|
-| Cg_R1  |        4.5 |      6.5 |  0.576 |     1.000 |
-| Cg_R1  |        4.0 |      6.0 |  0.551 |     0.997 |
-| Cg_R1  |        5.0 |      7.0 |  0.551 |     0.997 |
-| Cg_R1  |        3.5 |      5.5 |  0.490 |     0.990 |
-| Cg_R1  |        5.5 |      7.5 |  0.490 |     0.991 |
-| Cg_R1  |        6.0 |      8.0 |  0.414 |     0.987 |
-| Cg_R1  |        3.0 |      5.0 |  0.409 |     0.985 |
-| Cg_R1  |        6.5 |      8.5 |  0.334 |     0.983 |
-| Cg_R1  |        2.5 |      4.5 |  0.321 |     0.975 |
-| Cg_R1  |        7.0 |      9.0 |  0.260 |     0.973 |
-| Cg_R1  |        2.0 |      4.0 |  0.244 |     0.968 |
-| Cg_R1  |        7.5 |      9.5 |  0.194 |     0.964 |
-| Cg_R1  |        1.5 |      3.5 |  0.174 |     0.955 |
-| Cg_R1  |        8.0 |     10.0 |  0.140 |     0.966 |
-| Cg_R1  |        1.0 |      3.0 |  0.117 |     0.943 |
-| Cg_R1  |        8.5 |     10.5 |  0.102 |     0.969 |
-| Cg_R1  |        0.5 |      2.5 |  0.077 |     0.915 |
-| Cg_R1  |        9.0 |     11.0 |  0.075 |     0.971 |
-| Cg_R1  |        9.5 |     11.5 |  0.054 |     0.955 |
-| Cg_R1  |        0.0 |      2.0 |  0.045 |     0.931 |
-| Cg_R1  |       10.0 |     12.0 |  0.036 |     0.925 |
-| Cg_R1  |       10.5 |     12.5 |  0.021 |     0.875 |
-| Cg_R1  |       11.0 |     13.0 |  0.011 |     0.866 |
-| Cg_R1  |       11.5 |     13.5 |  0.005 |     0.862 |
-| Cg_R1  |       12.0 |     14.0 |  0.002 |     0.877 |
-| Cg_R1  |       12.5 |     14.5 |  0.001 |     0.859 |
-| Cg_R1  |       13.0 |     15.0 |  0.001 |     0.817 |
-| Cg_R1  |       13.5 |     15.5 |  0.000 |     0.750 |
-| Cg_R1  |       14.0 |     16.0 |  0.000 |     0.000 |
-| Cg_R1  |       21.0 |     23.0 |  0.000 |     0.125 |
-| Cg_R1  |       21.5 |     23.5 |  0.000 |     0.333 |
-| Cg_R1  |       22.0 |     24.0 |  0.000 |     0.333 |
-| Cg_R1  |       14.5 |     16.5 |  0.000 |     0.750 |
-| Cg_R1  |       15.0 |     17.0 |  0.000 |     0.750 |
-| Cg_R1  |       16.0 |     18.0 |  0.000 |     0.750 |
-| Cg_R1  |       16.5 |     18.5 |  0.000 |     0.750 |
-| Cg_R1  |       19.0 |     21.0 |  0.000 |     0.450 |
-| Cg_R1  |       20.0 |     22.0 |  0.000 |     0.750 |
-| Cg_R1  |       15.5 |     17.5 |  0.000 |     0.800 |
-| Cg_R1  |       17.5 |     19.5 |  0.000 |     0.500 |
-| Cg_R1  |       18.5 |     20.5 |  0.000 |     0.500 |
-| Cg_R1  |       20.5 |     22.5 |  0.000 |     0.800 |
-| Cg_R1  |       18.0 |     20.0 |  0.000 |     0.625 |
-| Cg_R1  |       19.5 |     21.5 |  0.000 |     0.893 |
-| Cg_R1  |       17.0 |     19.0 | -0.001 |     0.750 |
+| sample | rank | start_time | end_time | slope | r_squared | n_points | selection_reason | degraded |
+|:---|---:|---:|---:|---:|---:|---:|:---|:---|
+| Cg_R1 | 1 | 4.5 | 6.5 | 0.576 | 1.000 | 5 | rolling_window_ranked | FALSE |
+| Cg_R1 | 2 | 4.0 | 6.0 | 0.551 | 0.997 | 5 | rolling_window_ranked | FALSE |
+| Cg_R1 | 3 | 5.0 | 7.0 | 0.551 | 0.997 | 5 | rolling_window_ranked | FALSE |
+| Cg_R1 | 4 | 3.5 | 5.5 | 0.490 | 0.990 | 5 | rolling_window_ranked | FALSE |
+| Cg_R1 | 5 | 5.5 | 7.5 | 0.490 | 0.991 | 5 | rolling_window_ranked | FALSE |
+| Cg_R1 | 6 | 6.0 | 8.0 | 0.414 | 0.987 | 5 | rolling_window_ranked | FALSE |
 
 ## Fit a growth model
 
@@ -319,66 +287,7 @@ fit <- fit_growth_curve(
 )
 
 fit
-#> $model
-#> [1] "logistic"
-#> 
-#> $fit
-#> Nonlinear regression model
-#>   model: od ~ K/(1 + exp(-r * (time - t0)))
-#>    data: data
-#>      K      r     t0 
-#> 2.0271 0.7772 6.9688 
-#>  residual sum-of-squares: 0.06883
-#> 
-#> Algorithm "port", convergence message: relative convergence (4)
-#> 
-#> $coefficients
-#>         K         r        t0 
-#> 2.0271408 0.7772492 6.9688283 
-#> 
-#> $fitted
-#> # A tibble: 49 × 2
-#>     time .fitted
-#>    <dbl>   <dbl>
-#>  1   0   0.00897
-#>  2   0.5 0.0132 
-#>  3   1   0.0194 
-#>  4   1.5 0.0285 
-#>  5   2   0.0417 
-#>  6   2.5 0.0610 
-#>  7   3   0.0887 
-#>  8   3.5 0.128  
-#>  9   4   0.183  
-#> 10   4.5 0.259  
-#> # ℹ 39 more rows
-#> 
-#> $data
-#> # A tibble: 49 × 5
-#>    sample  time    od condition replicate
-#>    <chr>  <dbl> <dbl> <chr>     <chr>    
-#>  1 Cg_R1    0   0.115 Cg        R1       
-#>  2 Cg_R1    0.5 0.116 Cg        R1       
-#>  3 Cg_R1    1   0.118 Cg        R1       
-#>  4 Cg_R1    1.5 0.121 Cg        R1       
-#>  5 Cg_R1    2   0.126 Cg        R1       
-#>  6 Cg_R1    2.5 0.136 Cg        R1       
-#>  7 Cg_R1    3   0.149 Cg        R1       
-#>  8 Cg_R1    3.5 0.172 Cg        R1       
-#>  9 Cg_R1    4   0.206 Cg        R1       
-#> 10 Cg_R1    4.5 0.258 Cg        R1       
-#> # ℹ 39 more rows
-#> 
-#> $converged
-#> [1] TRUE
-#> 
-#> $sample
-#> [1] "Cg_R1"
-#> 
-#> $message
-#> NULL
-#> 
-#> attr(,"class")
-#> [1] "growkar_fit"
+#> <growkar_fit> sample=Cg_R1, model=logistic, status=converged, n_points=49
 ```
 
 ## Extract fitted parameters
@@ -437,6 +346,21 @@ pf_rep
 
 <img src="man/figures/README-unnamed-chunk-14-1.png" alt="" width="100%" />
 
+## Migrating from legacy growkar
+
+Legacy wrappers are still available for older scripts, but the
+recommended workflow is now:
+
+- `calculate_growth_rate()` -\> `compute_growth_rate()` or
+  `summarize_growth_metrics()`
+- `calculate_growthrate_from_defined_time()` -\>
+  `compute_growth_rate(method = "defined_interval")`
+- `calculate_growthrate_from_defined_logphase()` -\>
+  `compute_growth_rate(method = "defined_interval")`
+
+The legacy wrappers emit deprecation warnings and internally call the
+tidy-v2 implementation.
+
 ## Workflow summary
 
 A typical `growkar` v2 workflow is:
@@ -469,19 +393,24 @@ plot_growth_curve(tidy_data)
 ``` r
 
 metrics <- summarize_growth_metrics(tidy_data)
+#> Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive
+#> growth slope (rolling_window_ranked).
+#> Warning: Sample `YPD_R2`: Exponential phase detection did not yield a positive
+#> growth slope (rolling_window_ranked).
 metrics
-#> # A tibble: 9 × 7
-#>   sample          mu start_time end_time r_squared method         doubling_time
-#>   <chr>        <dbl>      <dbl>    <dbl>     <dbl> <chr>                  <dbl>
-#> 1 Cg_R1     5.76e- 1        4.5      6.5     1.000 rolling_window          1.20
-#> 2 Cg_R2     5.60e- 1        4.5      6.5     1.000 rolling_window          1.24
-#> 3 Cg_R3     5.71e- 1        4.5      6.5     0.999 rolling_window          1.21
-#> 4 CgFlu_R1  4.03e- 1        4.5      6.5     1.000 rolling_window          1.72
-#> 5 CgFlu_R2  4.07e- 1        4.5      6.5     1.000 rolling_window          1.70
-#> 6 CgFlu_R3  4.03e- 1        4.5      6.5     1.000 rolling_window          1.72
-#> 7 YPD_R1   -2.78e-16       22       24       0.670 rolling_window         NA   
-#> 8 YPD_R2   -2.78e-16       22       24       0.670 rolling_window         NA   
-#> 9 YPD_R3    3.86e- 3       18       20       0.5   rolling_window        179.
+#> # A tibble: 9 × 10
+#>   sample         mu start_time end_time r_squared method n_points degraded note 
+#>   <chr>       <dbl>      <dbl>    <dbl>     <dbl> <chr>     <int> <lgl>    <chr>
+#> 1 Cg_R1     0.576          4.5      6.5     1.000 rolli…        5 FALSE    roll…
+#> 2 Cg_R2     0.560          4.5      6.5     1.000 rolli…        5 FALSE    roll…
+#> 3 Cg_R3     0.571          4.5      6.5     0.999 rolli…        5 FALSE    roll…
+#> 4 CgFlu_R1  0.403          4.5      6.5     1.000 rolli…        5 FALSE    roll…
+#> 5 CgFlu_R2  0.407          4.5      6.5     1.000 rolli…        5 FALSE    roll…
+#> 6 CgFlu_R3  0.403          4.5      6.5     1.000 rolli…        5 FALSE    roll…
+#> 7 YPD_R1   NA             NA       NA      NA     rolli…        5 FALSE    roll…
+#> 8 YPD_R2   NA             NA       NA      NA     rolli…        5 FALSE    roll…
+#> 9 YPD_R3    0.00386       18       20       0.5   rolli…        5 FALSE    roll…
+#> # ℹ 1 more variable: doubling_time <dbl>
 
 sample_id <- unique(tidy_data$sample)[1]
 

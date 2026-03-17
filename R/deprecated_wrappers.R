@@ -80,12 +80,19 @@ calculate_growthrate_from_defined_time <- function(dat_growth_curve,
     "compute_growth_rate(method = \"defined_interval\")"
   )
 
-  calculate_growthrate_from_defined_logphase(
-    dat_growth_curve = dat_growth_curve,
-    logphase_tibble = logphase_tibble,
-    average_replicates = average_replicates,
-    select_replicates = select_replicates
+  tidy_data <- as_tidy_growth_data(dat_growth_curve)
+  if (!is.null(select_replicates) && "replicate" %in% names(tidy_data)) {
+    tidy_data <- dplyr::filter(tidy_data, .data$replicate %in% select_replicates)
+  }
+
+  metrics <- compute_growth_rate(
+    tidy_data,
+    method = "defined_interval",
+    interval = logphase_tibble,
+    average_replicates = average_replicates
   )
+
+  growkar_format_legacy_metrics(metrics, tidy_data, average_replicates = average_replicates)
 }
 
 growkar_format_legacy_metrics <- function(metrics, tidy_data, average_replicates) {
@@ -107,15 +114,15 @@ growkar_format_legacy_metrics <- function(metrics, tidy_data, average_replicates
 
   if (isTRUE(average_replicates)) {
     if ("condition" %in% names(out)) {
-      return(dplyr::select(out, .data$condition, .data$time1, .data$time2, .data$growth_rate, .data$doubling_time))
+      return(dplyr::select(out, dplyr::all_of(c("condition", "time1", "time2", "growth_rate", "doubling_time"))))
     }
 
-    return(dplyr::select(out, .data$sample, .data$time1, .data$time2, .data$growth_rate, .data$doubling_time))
+    return(dplyr::select(out, dplyr::all_of(c("sample", "time1", "time2", "growth_rate", "doubling_time"))))
   }
 
   if (all(c("condition", "replicate") %in% names(out))) {
-    return(dplyr::select(out, .data$condition, .data$replicate, .data$time1, .data$time2, .data$growth_rate, .data$doubling_time))
+    return(dplyr::select(out, dplyr::all_of(c("condition", "replicate", "time1", "time2", "growth_rate", "doubling_time"))))
   }
 
-  dplyr::select(out, .data$sample, .data$time1, .data$time2, .data$growth_rate, .data$doubling_time)
+  dplyr::select(out, dplyr::all_of(c("sample", "time1", "time2", "growth_rate", "doubling_time")))
 }

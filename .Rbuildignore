@@ -1,2 +1,10 @@
 ^README\.Rmd$
+^README\.html$
 ^LICENSE\.md$
+^_pkgdown\.yml$
+^docs$
+^renv$
+^growkar\.Rproj$
+^hexasticker\.jpg$
+^hexasticker2\.png$
+^\.github$

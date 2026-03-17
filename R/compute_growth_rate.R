@@ -31,7 +31,9 @@
 #'   method.
 #'
 #' @return A tibble with `sample`, `mu`, `start_time`, `end_time`, `r_squared`,
-#'   and `method`. Here `mu` is the estimated specific growth rate.
+#'   and `method`. Here `mu` is the estimated specific growth rate. Additional
+#'   diagnostic columns describe the number of points used and whether the
+#'   estimate required degraded fallback behavior.
 #' @export
 compute_growth_rate <- function(data,
                                 method = c("rolling_window", "defined_interval", "rule_based"),
@@ -43,7 +45,7 @@ compute_growth_rate <- function(data,
                                 first_timepoint = NULL) {
   method <- match.arg(method)
   tidy_data <- as_tidy_growth_data(data)
-  tidy_data <- validate_growth_data(tidy_data)
+  tidy_data <- validate_growth_data(tidy_data, warn_zero_od = TRUE)
 
   if (!is.null(select_replicates)) {
     if (!"replicate" %in% names(tidy_data)) {
@@ -63,7 +65,7 @@ compute_growth_rate <- function(data,
     tidy_data <- growkar_average_replicates(tidy_data) |>
       dplyr::mutate(od = .data$od_mean) |>
       dplyr::select(-dplyr::any_of(c("od_mean", "od_sd", "n")))
-    tidy_data <- validate_growth_data(tidy_data)
+    tidy_data <- validate_growth_data(tidy_data, warn_zero_od = TRUE)
   }
 
   sample_list <- split(tidy_data, tidy_data$sample)
@@ -95,55 +97,94 @@ compute_growth_rate_rolling_window <- function(data, window_size, min_od) {
   sample_id <- unique(data$sample)
 
   if (nrow(windows) == 0L) {
-    return(tibble::tibble(
-      sample = sample_id,
-      mu = NA_real_,
-      start_time = NA_real_,
-      end_time = NA_real_,
-      r_squared = NA_real_,
-      method = "rolling_window"
-    ))
+    growkar_warn_metric(sample_id, "Exponential phase could not be detected.")
+    return(growkar_metric_result(sample_id, method = "rolling_window", note = "no_candidate_windows"))
   }
 
   best <- windows[1, , drop = FALSE]
-  tibble::tibble(
-    sample = sample_id,
+  if (is.na(best$slope) || best$slope <= 0) {
+    growkar_warn_metric(sample_id, paste0("Exponential phase detection did not yield a positive growth slope (", best$selection_reason, ")."))
+    return(growkar_metric_result(
+      sample_id,
+      method = "rolling_window",
+      n_points = best$n_points,
+      degraded = best$degraded,
+      note = best$selection_reason
+    ))
+  }
+
+  growkar_metric_result(
+    sample_id,
     mu = best$slope,
     start_time = best$start_time,
     end_time = best$end_time,
     r_squared = best$r_squared,
-    method = "rolling_window"
+    method = "rolling_window",
+    n_points = best$n_points,
+    degraded = best$degraded,
+    note = best$selection_reason
   )
 }
 
 compute_growth_rate_defined_interval <- function(data, interval, min_od) {
   sample_id <- unique(data$sample)
   bounds <- growkar_resolve_interval(interval, sample_id)
-  subset_data <- data |>
-    dplyr::filter(.data$time >= bounds[1], .data$time <= bounds[2], .data$od > min_od) |>
+  interval_data <- data |>
+    dplyr::filter(.data$time >= bounds[1], .data$time <= bounds[2]) |>
     dplyr::arrange(.data$time)
 
-  if (nrow(subset_data) < 2L) {
-    return(tibble::tibble(
-      sample = sample_id,
-      mu = NA_real_,
+  if (nrow(interval_data) < 2L) {
+    growkar_warn_metric(sample_id, "Defined interval contains fewer than two observations.")
+    return(growkar_metric_result(
+      sample_id,
+      method = "defined_interval",
       start_time = bounds[1],
       end_time = bounds[2],
-      r_squared = NA_real_,
-      method = "defined_interval"
+      n_points = nrow(interval_data),
+      degraded = TRUE,
+      note = "insufficient_interval_points"
     ))
   }
 
-  fit <- stats::lm(log(od) ~ time, data = subset_data)
-  summary_fit <- suppressWarnings(summary(fit))
+  subset_data <- dplyr::filter(interval_data, .data$od > min_od)
 
-  tibble::tibble(
-    sample = sample_id,
-    mu = unname(stats::coef(fit)[["time"]]),
+  if (nrow(subset_data) < 2L) {
+    growkar_warn_metric(sample_id, "Defined interval does not contain enough positive OD values for log-based fitting.")
+    return(growkar_metric_result(
+      sample_id,
+      method = "defined_interval",
+      start_time = bounds[1],
+      end_time = bounds[2],
+      n_points = nrow(subset_data),
+      degraded = TRUE,
+      note = "insufficient_positive_points_in_interval"
+    ))
+  }
+
+  fit_summary <- growkar_fit_log_linear(subset_data)
+  if (!fit_summary$success || fit_summary$slope <= 0) {
+    growkar_warn_metric(sample_id, "Defined interval did not yield a positive growth slope.")
+    return(growkar_metric_result(
+      sample_id,
+      method = "defined_interval",
+      start_time = bounds[1],
+      end_time = bounds[2],
+      n_points = nrow(subset_data),
+      degraded = TRUE,
+      note = fit_summary$note
+    ))
+  }
+
+  growkar_metric_result(
+    sample_id,
+    mu = fit_summary$slope,
     start_time = bounds[1],
     end_time = bounds[2],
-    r_squared = unname(summary_fit$r.squared),
-    method = "defined_interval"
+    r_squared = fit_summary$r_squared,
+    method = "defined_interval",
+    n_points = nrow(subset_data),
+    degraded = FALSE,
+    note = "defined_interval_fit"
   )
 }
 
@@ -154,13 +195,13 @@ compute_growth_rate_rule_based <- function(data, first_timepoint = NULL) {
     dplyr::filter(.data$od > 0)
 
   if (nrow(data) < 3L) {
-    return(tibble::tibble(
-      sample = sample_id,
-      mu = NA_real_,
-      start_time = NA_real_,
-      end_time = NA_real_,
-      r_squared = NA_real_,
-      method = "rule_based"
+    growkar_warn_metric(sample_id, "Rule-based growth estimation requires at least three positive observations.")
+    return(growkar_metric_result(
+      sample_id,
+      method = "rule_based",
+      n_points = nrow(data),
+      degraded = TRUE,
+      note = "insufficient_positive_points"
     ))
   }
 
@@ -169,13 +210,13 @@ compute_growth_rate_rule_based <- function(data, first_timepoint = NULL) {
   od0 <- data$od[[reference_index]]
 
   if (!is.finite(od0) || od0 <= 0) {
-    return(tibble::tibble(
-      sample = sample_id,
-      mu = NA_real_,
-      start_time = NA_real_,
-      end_time = NA_real_,
-      r_squared = NA_real_,
-      method = "rule_based"
+    growkar_warn_metric(sample_id, "Rule-based growth estimation could not identify a valid starting OD.")
+    return(growkar_metric_result(
+      sample_id,
+      method = "rule_based",
+      n_points = nrow(data),
+      degraded = TRUE,
+      note = "invalid_reference_od"
     ))
   }
 
@@ -193,13 +234,28 @@ compute_growth_rate_rule_based <- function(data, first_timepoint = NULL) {
     NA_real_
   }
 
-  tibble::tibble(
-    sample = sample_id,
+  if (is.na(mu) || mu <= 0) {
+    growkar_warn_metric(sample_id, "Rule-based growth estimation did not yield a positive growth slope.")
+    return(growkar_metric_result(
+      sample_id,
+      method = "rule_based",
+      start_time = t1,
+      end_time = t2,
+      n_points = nrow(data),
+      degraded = TRUE,
+      note = "non_positive_growth"
+    ))
+  }
+
+  growkar_metric_result(
+    sample_id,
     mu = mu,
     start_time = t1,
     end_time = t2,
-    r_squared = NA_real_,
-    method = "rule_based"
+    method = "rule_based",
+    n_points = nrow(data),
+    degraded = FALSE,
+    note = "rule_based_od_doubling"
   )
 }
 
@@ -228,4 +284,53 @@ growkar_resolve_interval <- function(interval, sample_id) {
   }
 
   stop("Unsupported `interval` specification.", call. = FALSE)
+}
+
+growkar_fit_log_linear <- function(data) {
+  if (nrow(data) < 2L) {
+    return(list(success = FALSE, slope = NA_real_, r_squared = NA_real_, note = "insufficient_points"))
+  }
+
+  if (all(abs(data$od - data$od[[1]]) < sqrt(.Machine$double.eps))) {
+    return(list(success = FALSE, slope = 0, r_squared = NA_real_, note = "flat_curve"))
+  }
+
+  fit <- tryCatch(stats::lm(log(od) ~ time, data = data), error = function(e) e)
+  if (inherits(fit, "error")) {
+    return(list(success = FALSE, slope = NA_real_, r_squared = NA_real_, note = "log_linear_fit_failed"))
+  }
+
+  summary_fit <- suppressWarnings(summary(fit))
+  list(
+    success = TRUE,
+    slope = unname(stats::coef(fit)[["time"]]),
+    r_squared = unname(summary_fit$r.squared),
+    note = "log_linear_fit"
+  )
+}
+
+growkar_metric_result <- function(sample,
+                                  mu = NA_real_,
+                                  start_time = NA_real_,
+                                  end_time = NA_real_,
+                                  r_squared = NA_real_,
+                                  method,
+                                  n_points = NA_integer_,
+                                  degraded = FALSE,
+                                  note = NA_character_) {
+  tibble::tibble(
+    sample = sample,
+    mu = mu,
+    start_time = start_time,
+    end_time = end_time,
+    r_squared = r_squared,
+    method = method,
+    n_points = as.integer(n_points),
+    degraded = degraded,
+    note = note
+  )
+}
+
+growkar_warn_metric <- function(sample_id, message_text) {
+  warning("Sample `", sample_id, "`: ", message_text, call. = FALSE)
 }

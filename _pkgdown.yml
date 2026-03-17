@@ -3,6 +3,32 @@ url: https://sethiyap.github.io/growkar
 template:
   params:
     bootswatch: flatly
+reference:
+  - title: Data input and validation
+    contents:
+      - as_tidy_growth_data
+      - validate_growth_data
+  - title: Visualization
+    contents:
+      - plot_growth_curve
+      - plot_fitted_curve
+  - title: Empirical summaries
+    contents:
+      - compute_growth_rate
+      - compute_doubling_time
+      - summarize_growth_metrics
+      - detect_exponential_phase
+  - title: Model fitting
+    contents:
+      - fit_growth_curve
+      - fit_growth_plate
+      - extract_params
+      - augment_growth_fit
+  - title: Legacy wrappers
+    contents:
+      - calculate_growth_rate
+      - calculate_growthrate_from_defined_time
+      - calculate_growthrate_from_defined_logphase
 right:
   menu:
     - icon: fa-github fa-lg

@@ -2,7 +2,7 @@
 output: github_document
 ---
 
-<!-- README.md is generated from README.rmd. Please edit that file -->
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -17,7 +17,7 @@ if (requireNamespace("pkgload", quietly = TRUE) && file.exists("DESCRIPTION")) {
 }
 ```
 
-# growkar <img src="hexasticker.jpg" align="right" height="180" alt="growkar hex sticker" />
+# growkar <img src="hexasticker2.png" align="right" height="180" alt="growkar hex sticker" />
 
 `growkar` is an R package for microbial growth curve analysis from optical
 density (OD) time-series data. It provides a tidy workflow for converting input
@@ -29,10 +29,13 @@ The package keeps the feel of the original `growkar` workflow while introducing
 a tidyverse-friendly v2 design built around canonical input columns:
 `sample`, `time`, and `od`.
 
+Legacy wrapper functions remain available for older workflows, but new analyses
+should prefer the tidy-v2 interface shown below.
+
 ## Installation
 
 ```r
-remotes::install_github("sethiyap/growkar")
+remotes::install_github("sethiyap/growkar", ref = "tidy-v2")
 ```
 
 ## Example dataset
@@ -200,7 +203,7 @@ phase_tbl <- detect_exponential_phase(
   filter(tidy_data, sample == sample_id)
 )
 
-knitr::kable(phase_tbl, digits = 3)
+knitr::kable(head(phase_tbl), digits = 3)
 ```
 
 ## Fit a growth model
@@ -266,6 +269,21 @@ pf_rep <- plot_fitted_curve(
 
 pf_rep
 ```
+
+## Migrating from legacy growkar
+
+Legacy wrappers are still available for older scripts, but the recommended
+workflow is now:
+
+- `calculate_growth_rate()` -> `compute_growth_rate()` or
+  `summarize_growth_metrics()`
+- `calculate_growthrate_from_defined_time()` ->
+  `compute_growth_rate(method = "defined_interval")`
+- `calculate_growthrate_from_defined_logphase()` ->
+  `compute_growth_rate(method = "defined_interval")`
+
+The legacy wrappers emit deprecation warnings and internally call the tidy-v2
+implementation.
 
 ## Workflow summary
 

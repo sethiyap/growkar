@@ -15,7 +15,9 @@ detect_exponential_phase(data, window_size = 5, min_od = 0.02)
 }
 \value{
 A tibble with \code{sample}, \code{start_time}, \code{end_time}, \code{slope}, and
-\code{r_squared}, ranked by highest positive slope and then \code{r_squared}.
+\code{r_squared}, ranked by highest positive slope and then \code{r_squared}. The
+returned tibble also includes \code{rank}, \code{n_points}, \code{selection_reason}, and
+\code{degraded} metadata describing how the candidate windows were selected.
 }
 \description{
 Identify rolling windows with the strongest evidence for exponential growth
