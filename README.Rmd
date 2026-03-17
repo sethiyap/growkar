@@ -19,6 +19,10 @@ if (requireNamespace("pkgload", quietly = TRUE) && file.exists("DESCRIPTION")) {
 
 # growkar <img src="hexasticker2.png" align="right" height="180" alt="growkar hex sticker" />
 
+[![R-CMD-check](https://github.com/sethiyap/growkar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sethiyap/growkar/actions/workflows/R-CMD-check.yaml)
+[![BiocCheck](https://github.com/sethiyap/growkar/actions/workflows/bioccheck.yaml/badge.svg)](https://github.com/sethiyap/growkar/actions/workflows/bioccheck.yaml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 `growkar` is an R package for microbial growth curve analysis from optical
 density (OD) time-series data. It provides a tidy workflow for converting input
 data, validating growth measurements, plotting growth curves, estimating growth
