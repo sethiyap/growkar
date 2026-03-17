@@ -15,6 +15,14 @@
 #'   these user-defined colours are used instead of the selected palette.
 #'
 #' @return A `ggplot2` object.
+#'
+#' @examples
+#' plot_growth_curve(
+#'   yeast_growth_data,
+#'   average_replicates = TRUE,
+#'   colour_col = "condition",
+#'   palette_name = "Dark2"
+#' )
 #' @export
 plot_growth_curve <- function(data,
                               average_replicates = FALSE,

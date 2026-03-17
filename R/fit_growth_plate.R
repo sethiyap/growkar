@@ -6,6 +6,10 @@
 #' @param model Model type: `"logistic"` or `"gompertz"`.
 #'
 #' @return A tibble with `sample` and a list-column of `growkar_fit` objects.
+#'
+#' @examples
+#' fits <- fit_growth_plate(yeast_growth_data, model = "logistic")
+#' fits
 #' @export
 fit_growth_plate <- function(data, model = c("logistic", "gompertz")) {
   model <- match.arg(model)

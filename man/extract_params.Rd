@@ -15,3 +15,9 @@ A tibble of fitted parameters.
 \description{
 Extract coefficients and derived doubling time from a \code{growkar_fit} object.
 }
+\examples{
+tidy_growth <- as_tidy_growth_data(yeast_growth_data)
+sample_id <- unique(tidy_growth$sample)[1]
+fit <- fit_growth_curve(dplyr::filter(tidy_growth, sample == sample_id))
+extract_params(fit)
+}

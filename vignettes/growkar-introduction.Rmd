@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r vignette-setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -37,7 +37,7 @@ The core workflow is:
 
 ## Input formats and tidy conversion
 
-```{r}
+```{r tidy-conversion}
 tidy_growth <- as_tidy_growth_data(yeast_growth_data)
 
 head(tidy_growth)
@@ -46,7 +46,7 @@ head(tidy_growth)
 The canonical columns are `sample`, `time`, and `od`. Additional metadata such
 as `condition` and `replicate` can be carried alongside them.
 
-```{r}
+```{r validate-input}
 validate_growth_data(tidy_growth)
 ```
 
@@ -54,7 +54,7 @@ validate_growth_data(tidy_growth)
 
 Observed growth curves can be plotted directly from tidy data:
 
-```{r}
+```{r plot-averaged-curves}
 plot_growth_curve(
   tidy_growth,
   average_replicates = TRUE,
@@ -65,7 +65,7 @@ plot_growth_curve(
 
 Replicate-level faceting remains available when averaging is disabled:
 
-```{r}
+```{r plot-replicate-facets}
 plot_growth_curve(
   tidy_growth,
   average_replicates = FALSE,
@@ -77,7 +77,7 @@ plot_growth_curve(
 
 ## Empirical summaries
 
-```{r}
+```{r summarize-metrics}
 metrics <- summarize_growth_metrics(
   tidy_growth,
   method = "rolling_window",
@@ -90,7 +90,7 @@ knitr::kable(metrics, digits = 3)
 For a single sample, the empirical growth-rate estimate can be inspected in
 more detail:
 
-```{r}
+```{r single-sample-growth-rate}
 sample_id <- unique(tidy_growth$sample)[1]
 
 gr <- compute_growth_rate(
@@ -103,7 +103,7 @@ knitr::kable(gr, digits = 3)
 
 The doubling time helper is useful when you already have growth-rate values:
 
-```{r}
+```{r doubling-time-helper}
 knitr::kable(
   tibble(
     sample = gr$sample,
@@ -119,7 +119,7 @@ knitr::kable(
 `detect_exponential_phase()` returns the ranked candidate windows and metadata
 describing whether the chosen interval required any degraded fallback.
 
-```{r}
+```{r detect-phase}
 phase_tbl <- detect_exponential_phase(
   filter(tidy_growth, sample == sample_id)
 )
@@ -132,7 +132,7 @@ knitr::kable(head(phase_tbl), digits = 3)
 For a full-curve model-based summary, fit one of the supported parametric
 models:
 
-```{r}
+```{r fit-logistic-model}
 cg_fit <- tidy_growth |>
   filter(sample == sample_id) |>
   fit_growth_curve(model = "logistic")
@@ -143,7 +143,7 @@ summary(cg_fit)
 
 Failed fits remain machine-readable and do not crash downstream helpers:
 
-```{r}
+```{r failed-fit-example}
 flat_fit <- fit_growth_curve(
   tibble(
     sample = "flat",
@@ -158,7 +158,7 @@ summary(flat_fit)
 
 Observed and fitted values can be visualized together:
 
-```{r}
+```{r plot-fitted-curve}
 plot_fitted_curve(cg_fit)
 ```
 
@@ -189,6 +189,6 @@ the tidy-v2 internals. New code should prefer:
 
 ## Session information
 
-```{r}
+```{r session-information}
 sessionInfo()
 ```

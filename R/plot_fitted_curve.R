@@ -22,6 +22,12 @@
 #'   these user-defined colours are used instead of the selected palette.
 #'
 #' @return A `ggplot2` object.
+#'
+#' @examples
+#' tidy_growth <- as_tidy_growth_data(yeast_growth_data)
+#' sample_id <- unique(tidy_growth$sample)[1]
+#' fit <- fit_growth_curve(dplyr::filter(tidy_growth, sample == sample_id))
+#' plot_fitted_curve(fit)
 #' @export
 plot_fitted_curve <- function(fit,
                               model = c("logistic", "gompertz"),

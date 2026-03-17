@@ -11,6 +11,9 @@
 #'
 #' @return A numeric vector equal to `log(2) / mu`, with `NA` returned when
 #'   `mu <= 0`.
+#'
+#' @examples
+#' compute_doubling_time(c(0.4, 0.7, NA, -0.1))
 #' @export
 compute_doubling_time <- function(mu) {
   ifelse(is.na(mu) | mu <= 0, NA_real_, log(2) / mu)

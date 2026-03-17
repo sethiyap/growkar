@@ -5,6 +5,12 @@
 #' @param fit A `growkar_fit` object returned by `fit_growth_curve()`.
 #'
 #' @return A tibble of fitted parameters.
+#'
+#' @examples
+#' tidy_growth <- as_tidy_growth_data(yeast_growth_data)
+#' sample_id <- unique(tidy_growth$sample)[1]
+#' fit <- fit_growth_curve(dplyr::filter(tidy_growth, sample == sample_id))
+#' extract_params(fit)
 #' @export
 extract_params <- function(fit) {
   if (!inherits(fit, "growkar_fit")) {

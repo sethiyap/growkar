@@ -16,6 +16,14 @@
 #' @param ... Additional arguments passed to `compute_growth_rate()`.
 #'
 #' @return A tidy tibble with one row per sample.
+#'
+#' @examples
+#' metrics <- summarize_growth_metrics(
+#'   yeast_growth_data,
+#'   method = "rolling_window",
+#'   average_replicates = TRUE
+#' )
+#' head(metrics)
 #' @export
 summarize_growth_metrics <- function(data,
                                      method = c("rolling_window", "defined_interval", "rule_based"),

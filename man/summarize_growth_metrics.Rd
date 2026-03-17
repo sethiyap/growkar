@@ -37,3 +37,11 @@ This is the convenience wrapper for obtaining both metrics across multiple
 samples in one tidy table. Internally, doubling time is derived from the
 estimated growth rate using \code{compute_doubling_time()}.
 }
+\examples{
+metrics <- summarize_growth_metrics(
+  yeast_growth_data,
+  method = "rolling_window",
+  average_replicates = TRUE
+)
+head(metrics)
+}

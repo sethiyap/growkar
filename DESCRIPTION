@@ -13,11 +13,10 @@ Description: Tools to import, validate, visualize, summarize, and model
     Gompertz growth models.
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Depends:
-    R (>= 4.3.0)
+    R (>= 4.5.0)
 Imports:
     dplyr,
     lifecycle,
@@ -39,4 +38,4 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://github.com/sethiyap/growkar
 BugReports: https://github.com/sethiyap/growkar/issues
-biocViews: Software, Microbiology, GeneExpression, Visualization
+biocViews: Software, DataImport, GeneExpression, Visualization

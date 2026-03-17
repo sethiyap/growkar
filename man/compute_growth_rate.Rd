@@ -61,3 +61,11 @@ and end time interval.
 OD-doubling heuristics to define the exponential phase.
 }
 }
+\examples{
+tidy_growth <- as_tidy_growth_data(yeast_growth_data)
+sample_id <- unique(tidy_growth$sample)[1]
+compute_growth_rate(
+  dplyr::filter(tidy_growth, sample == sample_id),
+  method = "rolling_window"
+)
+}

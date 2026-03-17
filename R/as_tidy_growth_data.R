@@ -12,6 +12,10 @@
 #'
 #' @return A tibble containing at least `sample`, `time`, and `od`. Additional
 #'   metadata columns are preserved where available.
+#'
+#' @examples
+#' tidy_growth <- as_tidy_growth_data(yeast_growth_data)
+#' head(tidy_growth)
 #' @export
 as_tidy_growth_data <- function(data,
                                 sample_col = "sample",

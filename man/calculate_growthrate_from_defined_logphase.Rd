@@ -35,3 +35,14 @@ A tibble compatible with the legacy \code{growkar} output.
 \description{
 Deprecated Wrapper for Defined-Interval Growth Rate
 }
+\examples{
+interval_tbl <- tibble::tibble(
+  sample = c("Cg_R1", "Cg_R2"),
+  start_time = c(7, 7),
+  end_time = c(11, 11)
+)
+calculate_growthrate_from_defined_logphase(
+  dplyr::filter(yeast_growth_data, sample \%in\% c("Cg_R1", "Cg_R2")),
+  logphase_tibble = interval_tbl
+)
+}

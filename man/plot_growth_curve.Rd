@@ -37,3 +37,11 @@ A \code{ggplot2} object.
 \description{
 Plot observed growth curves from tidy or wide input data.
 }
+\examples{
+plot_growth_curve(
+  yeast_growth_data,
+  average_replicates = TRUE,
+  colour_col = "condition",
+  palette_name = "Dark2"
+)
+}

@@ -17,3 +17,7 @@ A tibble with \code{sample} and a list-column of \code{growkar_fit} objects.
 \description{
 Split tidy growth data by sample and fit a parametric model to each sample.
 }
+\examples{
+fits <- fit_growth_plate(yeast_growth_data, model = "logistic")
+fits
+}

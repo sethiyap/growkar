@@ -32,3 +32,7 @@ metadata columns are preserved where available.
 Convert growth curve data supplied in either wide or long form into the
 canonical tidy representation used throughout \code{growkar}.
 }
+\examples{
+tidy_growth <- as_tidy_growth_data(yeast_growth_data)
+head(tidy_growth)
+}

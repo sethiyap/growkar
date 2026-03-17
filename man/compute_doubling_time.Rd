@@ -22,3 +22,6 @@ This is a low-level helper for converting one or more growth-rate estimates
 into doubling times. For a convenience summary across all samples, use
 \code{summarize_growth_metrics()}.
 }
+\examples{
+compute_doubling_time(c(0.4, 0.7, NA, -0.1))
+}

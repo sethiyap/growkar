@@ -34,6 +34,14 @@
 #'   and `method`. Here `mu` is the estimated specific growth rate. Additional
 #'   diagnostic columns describe the number of points used and whether the
 #'   estimate required degraded fallback behavior.
+#'
+#' @examples
+#' tidy_growth <- as_tidy_growth_data(yeast_growth_data)
+#' sample_id <- unique(tidy_growth$sample)[1]
+#' compute_growth_rate(
+#'   dplyr::filter(tidy_growth, sample == sample_id),
+#'   method = "rolling_window"
+#' )
 #' @export
 compute_growth_rate <- function(data,
                                 method = c("rolling_window", "defined_interval", "rule_based"),
@@ -274,7 +282,7 @@ growkar_resolve_interval <- function(interval, sample_id) {
       stop("Interval data frames must have at least three columns.", call. = FALSE)
     }
 
-    names(interval)[1:3] <- c("sample", "start_time", "end_time")
+    names(interval)[seq_len(3)] <- c("sample", "start_time", "end_time")
     match_row <- interval[interval$sample %in% sample_id, , drop = FALSE]
     if (nrow(match_row) == 0L) {
       stop("No interval found for sample `", sample_id, "`.", call. = FALSE)

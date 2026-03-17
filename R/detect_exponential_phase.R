@@ -11,6 +11,12 @@
 #'   `r_squared`, ranked by highest positive slope and then `r_squared`. The
 #'   returned tibble also includes `rank`, `n_points`, `selection_reason`, and
 #'   `degraded` metadata describing how the candidate windows were selected.
+#'
+#' @examples
+#' tidy_growth <- as_tidy_growth_data(yeast_growth_data)
+#' sample_id <- unique(tidy_growth$sample)[1]
+#' phase_tbl <- detect_exponential_phase(dplyr::filter(tidy_growth, sample == sample_id))
+#' head(phase_tbl)
 #' @export
 detect_exponential_phase <- function(data, window_size = 5, min_od = 0.02) {
   data <- as_tidy_growth_data(data)
