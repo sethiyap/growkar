@@ -4,7 +4,6 @@
 # growkar <img src="hexasticker2.png" align="right" height="180" alt="growkar hex sticker" />
 
 [![R-CMD-check](https://github.com/sethiyap/growkar/actions/workflows/R-CMD-check.yaml/badge.svg?branch=tidy-v2)](https://github.com/sethiyap/growkar/actions/workflows/R-CMD-check.yaml)
-[![BiocCheck](https://github.com/sethiyap/growkar/actions/workflows/bioccheck.yaml/badge.svg?branch=tidy-v2)](https://github.com/sethiyap/growkar/actions/workflows/bioccheck.yaml)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
