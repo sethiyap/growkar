@@ -172,12 +172,12 @@ Method schematic:
 flowchart LR
   A[One sample growth curve] --> B[rolling_window]
   B --> B1[Slide fixed-size windows]
-  B1 --> B2[Fit log(OD) ~ time in each window]
-  B2 --> B3[Pick highest positive slope, then highest R²]
+  B1 --> B2[Fit log OD versus time in each window]
+  B2 --> B3[Pick highest positive slope then highest R squared]
 
   A --> C[defined_interval]
   C --> C1[Use user-supplied start and end times]
-  C1 --> C2[Fit log(OD) ~ time within that interval]
+  C1 --> C2[Fit log OD versus time within that interval]
 
   A --> D[rule_based]
   D --> D1[Track successive OD doublings]
