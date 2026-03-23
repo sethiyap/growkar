@@ -166,22 +166,46 @@ Method options:
 - `"rule_based"` uses OD-doubling heuristics to anchor the exponential
   interval from the observed curve.
 
-Method schematic:
+Method schematic on a mock growth curve:
 
-```mermaid
-flowchart LR
-  A[One sample growth curve] --> B[rolling_window]
-  B --> B1[Slide fixed-size windows]
-  B1 --> B2[Fit log OD versus time in each window]
-  B2 --> B3[Pick highest positive slope then highest R squared]
+```{r}
+mock_curve <- tibble::tibble(
+  time = seq(0, 12, by = 0.25),
+  od = 0.08 + 1 / (1 + exp(-0.9 * (time - 5)))
+)
 
-  A --> C[defined_interval]
-  C --> C1[Use user-supplied start and end times]
-  C1 --> C2[Fit log OD versus time within that interval]
+method_windows <- tibble::tribble(
+  ~method,            ~xmin, ~xmax, ~label,
+  "rolling_window",    3.0,   5.0,  "Best local log-linear window",
+  "defined_interval",  2.0,   6.0,  "User-defined interval",
+  "rule_based",        2.5,   5.5,  "OD-doubling anchored interval"
+)
 
-  A --> D[rule_based]
-  D --> D1[Track successive OD doublings]
-  D1 --> D2[Anchor a candidate exponential interval]
+method_plot_data <- dplyr::bind_rows(
+  lapply(method_windows$method, function(method_name) {
+    dplyr::mutate(mock_curve, method = method_name)
+  })
+)
+
+ggplot2::ggplot(method_plot_data, ggplot2::aes(time, od)) +
+  ggplot2::geom_rect(
+    data = method_windows,
+    ggplot2::aes(xmin = xmin, xmax = xmax, ymin = -Inf, ymax = Inf),
+    inherit.aes = FALSE,
+    fill = "#DDAA33",
+    alpha = 0.18
+  ) +
+  ggplot2::geom_line(linewidth = 0.9, colour = "#0B3C5D") +
+  ggplot2::geom_text(
+    data = dplyr::mutate(method_windows, x = xmax - 0.1, y = 0.95),
+    ggplot2::aes(x = x, y = y, label = label),
+    inherit.aes = FALSE,
+    hjust = 1,
+    size = 3.2
+  ) +
+  ggplot2::facet_wrap(~method, ncol = 1) +
+  ggplot2::labs(x = "Time", y = "OD", title = "How each empirical method selects the growth segment") +
+  ggplot2::theme_minimal(base_size = 11)
 ```
 
 **Minimal example:**
