@@ -7,6 +7,8 @@
 #' @param comparison_col Column used to group replicate-level doubling times.
 #'   Typical values are `"condition"` or `"sample"`.
 #' @param compare_to Optional reference group used for p-value comparisons.
+#' @param exclude_groups Optional character vector of groups in `comparison_col`
+#'   to remove from the plotted summary.
 #' @param select_replicates Optional character vector of replicate IDs to retain
 #'   before computing doubling times.
 #' @param method Estimation method passed to `summarize_growth_metrics()`.
@@ -33,6 +35,7 @@
 plot_doubling_time <- function(data,
                                comparison_col = NULL,
                                compare_to = NULL,
+                               exclude_groups = NULL,
                                select_replicates = NULL,
                                method = c("rolling_window", "defined_interval", "rule_based"),
                                error = c("se", "sd"),
@@ -65,6 +68,17 @@ plot_doubling_time <- function(data,
 
   if (!comparison_col %in% names(summary_tbl)) {
     stop("`comparison_col` must be present in the summarized output.", call. = FALSE)
+  }
+
+  if (!is.null(exclude_groups)) {
+    if (!is.null(compare_to) && compare_to %in% exclude_groups) {
+      stop("`exclude_groups` cannot contain `compare_to`.", call. = FALSE)
+    }
+
+    summary_tbl <- dplyr::filter(summary_tbl, !.data[[comparison_col]] %in% exclude_groups)
+    if (nrow(summary_tbl) == 0L) {
+      stop("No groups remain after filtering `exclude_groups`.", call. = FALSE)
+    }
   }
 
   y_max <- max(summary_tbl$mean_doubling_time + dplyr::coalesce(summary_tbl$error_bar, 0), na.rm = TRUE)

@@ -8,6 +8,7 @@ plot_doubling_time(
   data,
   comparison_col = NULL,
   compare_to = NULL,
+  exclude_groups = NULL,
   select_replicates = NULL,
   method = c("rolling_window", "defined_interval", "rule_based"),
   error = c("se", "sd"),
@@ -24,6 +25,9 @@ plot_doubling_time(
 Typical values are \code{"condition"} or \code{"sample"}.}
 
 \item{compare_to}{Optional reference group used for p-value comparisons.}
+
+\item{exclude_groups}{Optional character vector of groups in \code{comparison_col}
+to remove from the plotted summary.}
 
 \item{select_replicates}{Optional character vector of replicate IDs to retain
 before computing doubling times.}
