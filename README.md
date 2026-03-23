@@ -307,6 +307,9 @@ knitr::kable(dt_stats, digits = 3)
 | CgFlu | 0.404 | 1.714 | 0.010 | 3 | 0.006 | 0 | \*\*\*\* |
 | YPD | 0.004 | 179.350 | NA | 1 | NA | NA | NA |
 
+This summary includes numeric p-values in `p_value` and asterisk-form
+significance labels in `p_value_label`.
+
 ## Detect exponential phase
 
 **What it does:** `detect_exponential_phase()` identifies likely

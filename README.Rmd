@@ -231,6 +231,9 @@ dt_stats <- summarize_growth_metrics(
 knitr::kable(dt_stats, digits = 3)
 ```
 
+This summary includes numeric p-values in `p_value` and asterisk-form
+significance labels in `p_value_label`.
+
 ## Detect exponential phase
 
 **What it does:** `detect_exponential_phase()` identifies likely
