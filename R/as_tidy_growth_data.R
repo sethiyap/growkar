@@ -3,6 +3,12 @@
 #' Convert growth curve data supplied in either wide or long form into the
 #' canonical tidy representation used throughout `growkar`.
 #'
+#' Wide input is expected to contain time in the first column and sample names
+#' in the remaining column names. Tidy input is expected to contain at least
+#' `sample`, `time`, and `od`. When replicate identifiers are encoded in sample
+#' names, use a consistent suffix such as `_R1` or `_1` so replicate metadata
+#' can be inferred reliably.
+#'
 #' @param data A data frame, tibble, `SummarizedExperiment`, or object
 #'   coercible to a tibble.
 #' @param sample_col Name of the sample column for long-form input.

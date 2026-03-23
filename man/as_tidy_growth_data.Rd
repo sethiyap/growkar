@@ -33,6 +33,13 @@ metadata columns are preserved where available.
 Convert growth curve data supplied in either wide or long form into the
 canonical tidy representation used throughout \code{growkar}.
 }
+\details{
+Wide input is expected to contain time in the first column and sample names
+in the remaining column names. Tidy input is expected to contain at least
+\code{sample}, \code{time}, and \code{od}. When replicate identifiers are encoded in sample
+names, use a consistent suffix such as \verb{_R1} or \verb{_1} so replicate metadata
+can be inferred reliably.
+}
 \examples{
 data(yeast_growth_data)
 tidy_growth <- as_tidy_growth_data(yeast_growth_data)

@@ -15,12 +15,20 @@ curves, estimating growth rate and doubling time, detecting exponential
 phase, fitting logistic or Gompertz growth models, and coercing data to
 `SummarizedExperiment` for Bioconductor-style workflows.
 
-The package keeps the feel of the original `growkar` workflow while
-introducing a tidyverse-friendly v2 design built around canonical input
-columns: `sample`, `time`, and `od`.
+The package is designed for tidy analysis of microbial growth data using
+the canonical columns `sample`, `time`, and `od`. It is especially
+useful for plotting growth curves from tidy input and returning
+`ggplot2` objects that can be customized into publication-ready figures.
 
-Legacy wrapper functions remain available for older workflows, but new
-analyses should prefer the current tidy interface shown below.
+Input data can be supplied in either:
+
+- tidy format with columns `sample`, `time`, and `od`
+- wide format with time in the first column and sample names in the
+  remaining column names
+
+If replicate identifiers are encoded in sample names, use a consistent
+suffix such as `_R1` or `_1` so `growkar` can infer replicate metadata
+reliably.
 
 ## Installation
 
@@ -455,12 +463,6 @@ plot_fitted_curve(fit)
 ```
 
 <img src="man/figures/README-unnamed-chunk-16-2.png" alt="" width="100%" />
-
-## Development status
-
-The `tidy_v2` branch introduces tidy input handling and model fitting
-while preserving legacy growth-rate logic through compatibility wrappers
-where practical.
 
 ## Contributing and issues
 
