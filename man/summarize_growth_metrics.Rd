@@ -9,6 +9,10 @@ summarize_growth_metrics(
   method = c("rolling_window", "defined_interval", "rule_based"),
   average_replicates = FALSE,
   select_replicates = NULL,
+  comparison_col = NULL,
+  compare_to = NULL,
+  error = c("se", "sd"),
+  pvalue_method = c("t_test", "wilcox"),
   ...
 )
 }
@@ -24,10 +28,25 @@ replicates are averaged.}
 \item{select_replicates}{Optional character vector of replicate IDs to retain
 before summarizing. When \code{NULL}, all replicates are retained.}
 
+\item{comparison_col}{Optional column used to summarize replicate-level
+doubling times and compute group-wise statistics. Typical values are
+\code{"condition"} or \code{"sample"}.}
+
+\item{compare_to}{Optional reference group in \code{comparison_col} used for
+doubling-time p-value comparisons.}
+
+\item{error}{Statistic used for doubling-time error bars and summary output.
+One of \code{"se"} or \code{"sd"}.}
+
+\item{pvalue_method}{Statistical test used when \code{compare_to} is supplied.
+One of \code{"t_test"} or \code{"wilcox"}.}
+
 \item{...}{Additional arguments passed to \code{compute_growth_rate()}.}
 }
 \value{
-A tidy tibble with one row per sample.
+A tidy tibble with one row per sample by default. When
+\code{comparison_col} is supplied, returns one row per comparison group with
+replicate-level doubling-time summary statistics and optional p-values.
 }
 \description{
 Compute growth rate and doubling time per sample.

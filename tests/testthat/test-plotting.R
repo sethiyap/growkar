@@ -11,3 +11,15 @@ test_that("plot_growth_curve warns when faceting by replicate after averaging", 
 
   expect_s3_class(p, "ggplot")
 })
+
+test_that("plot_doubling_time returns a ggplot for replicate-based summaries", {
+  p <- suppressWarnings(plot_doubling_time(
+    yeast_growth_data,
+    comparison_col = "condition",
+    compare_to = "Cg",
+    select_replicates = c("R1", "R2"),
+    palette_name = "Dark2"
+  ))
+
+  expect_s3_class(p, "ggplot")
+})

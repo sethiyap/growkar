@@ -281,6 +281,32 @@ knitr::kable(metrics, digits = 3)
 | YPD_R2 | NA | NA | NA | NA | rolling_window | 5 | FALSE | rolling_window_ranked | NA |
 | YPD_R3 | 0.004 | 18.0 | 20.0 | 0.500 | rolling_window | 5 | FALSE | rolling_window_ranked | 179.350 |
 
+To summarize replicate-level doubling time by condition and compare each
+group to a reference condition, supply `comparison_col` and
+`compare_to`.
+
+``` r
+dt_stats <- summarize_growth_metrics(
+  tidy_data,
+  method = "rolling_window",
+  comparison_col = "condition",
+  compare_to = "Cg",
+  select_replicates = c("R1", "R2", "R3")
+)
+#> Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive
+#> growth slope (rolling_window_ranked).
+#> Warning: Sample `YPD_R2`: Exponential phase detection did not yield a positive
+#> growth slope (rolling_window_ranked).
+
+knitr::kable(dt_stats, digits = 3)
+```
+
+| condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
+|:---|---:|---:|---:|---:|---:|---:|:---|
+| Cg | 0.569 | 1.219 | 0.017 | 3 | 0.010 | NA | ref |
+| CgFlu | 0.404 | 1.714 | 0.010 | 3 | 0.006 | 0 | \*\*\*\* |
+| YPD | 0.004 | 179.350 | NA | 1 | NA | NA | NA |
+
 ## Detect exponential phase
 
 **What it does:** `detect_exponential_phase()` identifies likely
@@ -365,7 +391,7 @@ pf <- plot_fitted_curve(fit)
 pf
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" alt="" width="100%" />
 
 To fit and view individual replicates as separate panels from raw data,
 use `facet_col = "replicate"` with `average_replicates = FALSE`.
@@ -383,7 +409,35 @@ pf_rep <- plot_fitted_curve(
 pf_rep
 ```
 
-<img src="man/figures/README-unnamed-chunk-15-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-16-1.png" alt="" width="100%" />
+
+## Plot doubling time
+
+**What it does:** `plot_doubling_time()` summarizes replicate-level
+doubling times as a bar plot with error bars and optional p-value
+annotations shown as asterisks.
+
+**Why use it:** It is useful for comparing conditions or strains at the
+doubling-time level while showing replicate variability and a
+reference-group comparison.
+
+**Minimal example:**
+
+``` r
+plot_doubling_time(
+  tidy_data,
+  comparison_col = "condition",
+  compare_to = "Cg",
+  select_replicates = c("R1", "R2", "R3"),
+  palette_name = "Dark2"
+)
+#> Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive
+#> growth slope (rolling_window_ranked).
+#> Warning: Sample `YPD_R2`: Exponential phase detection did not yield a positive
+#> growth slope (rolling_window_ranked).
+```
+
+<img src="man/figures/README-unnamed-chunk-17-1.png" alt="" width="100%" />
 
 ## Supported API
 
@@ -423,7 +477,7 @@ validate_growth_data(tidy_data)
 plot_growth_curve(tidy_data)
 ```
 
-<img src="man/figures/README-unnamed-chunk-16-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-18-1.png" alt="" width="100%" />
 
 ``` r
 
@@ -462,7 +516,7 @@ extract_params(fit)
 plot_fitted_curve(fit)
 ```
 
-<img src="man/figures/README-unnamed-chunk-16-2.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-18-2.png" alt="" width="100%" />
 
 ## Contributing and issues
 

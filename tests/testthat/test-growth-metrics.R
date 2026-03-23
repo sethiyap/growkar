@@ -87,3 +87,47 @@ test_that("summarize_growth_metrics averages all replicates when requested", {
 
   expect_equal(sort(metrics$sample), sort(c("Cg", "CgFlu", "YPD")))
 })
+
+test_that("summarize_growth_metrics can compute doubling-time statistics by condition", {
+  stats_tbl <- suppressWarnings(summarize_growth_metrics(
+    yeast_growth_data,
+    method = "rolling_window",
+    comparison_col = "condition",
+    compare_to = "Cg"
+  ))
+
+  expect_true(all(c(
+    "condition",
+    "mean_mu",
+    "mean_doubling_time",
+    "sd_doubling_time",
+    "n_replicates",
+    "error_bar",
+    "p_value",
+    "p_value_label"
+  ) %in% names(stats_tbl)))
+  expect_true("ref" %in% stats_tbl$p_value_label)
+})
+
+test_that("summarize_growth_metrics can restrict doubling-time statistics to selected replicates", {
+  stats_tbl <- suppressWarnings(summarize_growth_metrics(
+    yeast_growth_data,
+    method = "rolling_window",
+    comparison_col = "condition",
+    compare_to = "Cg",
+    select_replicates = c("R1", "R2")
+  ))
+
+  expect_true(all(stats_tbl$n_replicates <= 2))
+})
+
+test_that("summarize_growth_metrics errors when replicate statistics average replicates", {
+  expect_error(
+    summarize_growth_metrics(
+      yeast_growth_data,
+      comparison_col = "condition",
+      average_replicates = TRUE
+    ),
+    "cannot be combined"
+  )
+})

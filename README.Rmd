@@ -216,6 +216,21 @@ metrics <- summarize_growth_metrics(tidy_data)
 knitr::kable(metrics, digits = 3)
 ```
 
+To summarize replicate-level doubling time by condition and compare each group
+to a reference condition, supply `comparison_col` and `compare_to`.
+
+```{r}
+dt_stats <- summarize_growth_metrics(
+  tidy_data,
+  method = "rolling_window",
+  comparison_col = "condition",
+  compare_to = "Cg",
+  select_replicates = c("R1", "R2", "R3")
+)
+
+knitr::kable(dt_stats, digits = 3)
+```
+
 ## Detect exponential phase
 
 **What it does:** `detect_exponential_phase()` identifies likely
@@ -296,6 +311,28 @@ pf_rep <- plot_fitted_curve(
 )
 
 pf_rep
+```
+
+## Plot doubling time
+
+**What it does:** `plot_doubling_time()` summarizes replicate-level doubling
+times as a bar plot with error bars and optional p-value annotations shown as
+asterisks.
+
+**Why use it:** It is useful for comparing conditions or strains at the
+doubling-time level while showing replicate variability and a reference-group
+comparison.
+
+**Minimal example:**
+
+```{r}
+plot_doubling_time(
+  tidy_data,
+  comparison_col = "condition",
+  compare_to = "Cg",
+  select_replicates = c("R1", "R2", "R3"),
+  palette_name = "Dark2"
+)
 ```
 
 ## Supported API
