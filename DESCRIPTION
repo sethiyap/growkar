@@ -9,8 +9,9 @@ Description: Tools to import, validate, visualize, summarize, and model
     microbial growth curves from optical density time-series data. The package
     supports a tidy workflow centered on canonical sample, time, and OD
     columns, empirical estimation of growth rate and doubling time,
-    exponential-phase detection, and model-based fitting with logistic and
-    Gompertz growth models.
+    exponential-phase detection, model-based fitting with logistic and
+    Gompertz growth models, and coercion to Bioconductor-compatible
+    SummarizedExperiment containers.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -18,8 +19,9 @@ RoxygenNote: 7.3.3
 Depends:
     R (>= 4.5.0)
 Imports:
+    S4Vectors,
+    SummarizedExperiment,
     dplyr,
-    lifecycle,
     ggplot2,
     purrr,
     RColorBrewer,
@@ -38,4 +40,5 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://github.com/sethiyap/growkar
 BugReports: https://github.com/sethiyap/growkar/issues
-biocViews: Software, DataImport, GeneExpression, Visualization
+biocViews: Software, DataImport, GeneExpression, Visualization,
+    Infrastructure

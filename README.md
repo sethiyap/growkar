@@ -12,19 +12,20 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 optical density (OD) time-series data. It provides a tidy workflow for
 converting input data, validating growth measurements, plotting growth
 curves, estimating growth rate and doubling time, detecting exponential
-phase, and fitting logistic or Gompertz growth models.
+phase, fitting logistic or Gompertz growth models, and coercing data to
+`SummarizedExperiment` for Bioconductor-style workflows.
 
 The package keeps the feel of the original `growkar` workflow while
 introducing a tidyverse-friendly v2 design built around canonical input
 columns: `sample`, `time`, and `od`.
 
 Legacy wrapper functions remain available for older workflows, but new
-analyses should prefer the tidy-v2 interface shown below.
+analyses should prefer the current tidy interface shown below.
 
 ## Installation
 
 ``` r
-remotes::install_github("sethiyap/growkar", ref = "tidy-v2")
+remotes::install_github("sethiyap/growkar")
 ```
 
 ## Example dataset
@@ -69,6 +70,31 @@ head(tidy_data)
 #> 4     0 CgFlu_R1 0.131 CgFlu     R1       
 #> 5     0 CgFlu_R2 0.133 CgFlu     R2       
 #> 6     0 CgFlu_R3 0.132 CgFlu     R3
+```
+
+## SummarizedExperiment interop
+
+**What it does:** `as_summarized_experiment()` converts growth data into
+a `SummarizedExperiment` with an `od` assay, time in `rowData()`, and
+sample metadata in `colData()`.
+
+**Why use it:** It provides a lightweight Bioconductor-compatible
+container without replacing the tidy tibble workflow used throughout
+`growkar`.
+
+**Minimal example:**
+
+``` r
+se <- as_summarized_experiment(yeast_growth_data)
+se
+#> class: SummarizedExperiment 
+#> dim: 49 9 
+#> metadata(0):
+#> assays(1): od
+#> rownames(49): 0 0.5 ... 23.5 24
+#> rowData names(1): time
+#> colnames(9): CgFlu_R1 CgFlu_R2 ... YPD_R2 YPD_R3
+#> colData names(3): sample condition replicate
 ```
 
 ## Validate tidy input
@@ -122,7 +148,7 @@ p <- plot_growth_curve(
 p
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" alt="" width="100%" />
 
 To view individual replicates as separate panels, use
 `facet_col = "replicate"` with `average_replicates = FALSE`.
@@ -139,7 +165,7 @@ p_rep <- plot_growth_curve(
 p_rep
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" alt="" width="100%" />
 
 ## Estimate growth rate
 
@@ -331,7 +357,7 @@ pf <- plot_fitted_curve(fit)
 pf
 ```
 
-<img src="man/figures/README-unnamed-chunk-13-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" alt="" width="100%" />
 
 To fit and view individual replicates as separate panels from raw data,
 use `facet_col = "replicate"` with `average_replicates = FALSE`.
@@ -349,26 +375,22 @@ pf_rep <- plot_fitted_curve(
 pf_rep
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" alt="" width="100%" />
 
-## Migrating from legacy growkar
+## Supported API
 
-Legacy wrappers are still available for older scripts, but the
-recommended workflow is now:
+The supported interface is the current tidy workflow:
 
-- `calculate_growth_rate()` -\> `compute_growth_rate()` or
-  `summarize_growth_metrics()`
-- `calculate_growthrate_from_defined_time()` -\>
-  `compute_growth_rate(method = "defined_interval")`
-- `calculate_growthrate_from_defined_logphase()` -\>
-  `compute_growth_rate(method = "defined_interval")`
-
-The legacy wrappers emit deprecation warnings and internally call the
-tidy-v2 implementation.
+- `as_tidy_growth_data()`
+- `validate_growth_data()`
+- `compute_growth_rate()`
+- `summarize_growth_metrics()`
+- `detect_exponential_phase()`
+- `fit_growth_curve()`
 
 ## Workflow summary
 
-A typical `growkar` v2 workflow is:
+A typical `growkar` workflow is:
 
 ``` r
 data(yeast_growth_data)
@@ -393,7 +415,7 @@ validate_growth_data(tidy_data)
 plot_growth_curve(tidy_data)
 ```
 
-<img src="man/figures/README-unnamed-chunk-15-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-16-1.png" alt="" width="100%" />
 
 ``` r
 
@@ -432,7 +454,7 @@ extract_params(fit)
 plot_fitted_curve(fit)
 ```
 
-<img src="man/figures/README-unnamed-chunk-15-2.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-16-2.png" alt="" width="100%" />
 
 ## Development status
 

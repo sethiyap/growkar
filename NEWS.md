@@ -5,5 +5,7 @@
   Bioconductor-oriented package metadata and documentation.
 * Plotting, fitted-curve visualization, and summary workflows gain cleaner
   replicate handling and more explicit palette/documentation support.
-* Legacy wrapper functions continue to redirect users toward the tidy-v2 API
-  with concise deprecation warnings.
+* Added `SummarizedExperiment` coercion so tidy growth data can interoperate
+  with Bioconductor-style containers without replacing the tibble-first API.
+* Removed the legacy wrapper API so the current tidy workflow is the only
+  supported interface.

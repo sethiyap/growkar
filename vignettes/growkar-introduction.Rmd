@@ -51,6 +51,15 @@ as `condition` and `replicate` can be carried alongside them.
 validate_growth_data(tidy_growth)
 ```
 
+For Bioconductor-oriented workflows, the same data can be represented as a
+`SummarizedExperiment` while preserving the tidy API as the main user-facing
+entry point.
+
+```{r summarized-experiment}
+se <- as_summarized_experiment(yeast_growth_data)
+se
+```
+
 ## Exploratory plotting and quality control
 
 Observed growth curves can be plotted directly from tidy data:
@@ -163,17 +172,12 @@ Observed and fitted values can be visualized together:
 plot_fitted_curve(cg_fit)
 ```
 
-## Migration from legacy growkar
+## Supported API
 
-Older workflows can continue to use:
+The supported interface is the current tidy workflow:
 
-- `calculate_growth_rate()`
-- `calculate_growthrate_from_defined_time()`
-- `calculate_growthrate_from_defined_logphase()`
-
-These wrappers remain available, but they emit deprecation warnings and call
-the tidy-v2 internals. New code should prefer:
-
+- `as_tidy_growth_data()`
+- `validate_growth_data()`
 - `compute_growth_rate()`
 - `summarize_growth_metrics()`
 - `detect_exponential_phase()`

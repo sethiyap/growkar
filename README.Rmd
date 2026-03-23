@@ -26,20 +26,21 @@ if (requireNamespace("pkgload", quietly = TRUE) && file.exists("DESCRIPTION")) {
 `growkar` is an R package for microbial growth curve analysis from optical
 density (OD) time-series data. It provides a tidy workflow for converting input
 data, validating growth measurements, plotting growth curves, estimating growth
-rate and doubling time, detecting exponential phase, and fitting logistic or
-Gompertz growth models.
+rate and doubling time, detecting exponential phase, fitting logistic or
+Gompertz growth models, and coercing data to `SummarizedExperiment` for
+Bioconductor-style workflows.
 
 The package keeps the feel of the original `growkar` workflow while introducing
 a tidyverse-friendly v2 design built around canonical input columns:
 `sample`, `time`, and `od`.
 
 Legacy wrapper functions remain available for older workflows, but new analyses
-should prefer the tidy-v2 interface shown below.
+should prefer the current tidy interface shown below.
 
 ## Installation
 
 ```r
-remotes::install_github("sethiyap/growkar", ref = "tidy-v2")
+remotes::install_github("sethiyap/growkar")
 ```
 
 ## Example dataset
@@ -66,6 +67,22 @@ consistent.
 ```{r}
 tidy_data <- as_tidy_growth_data(yeast_growth_data)
 head(tidy_data)
+```
+
+## SummarizedExperiment interop
+
+**What it does:** `as_summarized_experiment()` converts growth data into a
+`SummarizedExperiment` with an `od` assay, time in `rowData()`, and sample
+metadata in `colData()`.
+
+**Why use it:** It provides a lightweight Bioconductor-compatible container
+without replacing the tidy tibble workflow used throughout `growkar`.
+
+**Minimal example:**
+
+```{r}
+se <- as_summarized_experiment(yeast_growth_data)
+se
 ```
 
 ## Validate tidy input
@@ -274,24 +291,20 @@ pf_rep <- plot_fitted_curve(
 pf_rep
 ```
 
-## Migrating from legacy growkar
+## Supported API
 
-Legacy wrappers are still available for older scripts, but the recommended
-workflow is now:
+The supported interface is the current tidy workflow:
 
-- `calculate_growth_rate()` -> `compute_growth_rate()` or
-  `summarize_growth_metrics()`
-- `calculate_growthrate_from_defined_time()` ->
-  `compute_growth_rate(method = "defined_interval")`
-- `calculate_growthrate_from_defined_logphase()` ->
-  `compute_growth_rate(method = "defined_interval")`
-
-The legacy wrappers emit deprecation warnings and internally call the tidy-v2
-implementation.
+- `as_tidy_growth_data()`
+- `validate_growth_data()`
+- `compute_growth_rate()`
+- `summarize_growth_metrics()`
+- `detect_exponential_phase()`
+- `fit_growth_curve()`
 
 ## Workflow summary
 
-A typical `growkar` v2 workflow is:
+A typical `growkar` workflow is:
 
 ```{r}
 data(yeast_growth_data)

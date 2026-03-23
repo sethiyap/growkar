@@ -3,7 +3,8 @@
 #' Convert growth curve data supplied in either wide or long form into the
 #' canonical tidy representation used throughout `growkar`.
 #'
-#' @param data A data frame, tibble, or object coercible to a tibble.
+#' @param data A data frame, tibble, `SummarizedExperiment`, or object
+#'   coercible to a tibble.
 #' @param sample_col Name of the sample column for long-form input.
 #' @param time_col Name of the time column.
 #' @param od_col Name of the optical density column.
@@ -17,12 +18,19 @@
 #' data(yeast_growth_data)
 #' tidy_growth <- as_tidy_growth_data(yeast_growth_data)
 #' head(tidy_growth)
+#'
+#' se <- as_summarized_experiment(yeast_growth_data)
+#' head(as_tidy_growth_data(se))
 #' @export
 as_tidy_growth_data <- function(data,
                                 sample_col = "sample",
                                 time_col = "time",
                                 od_col = "od",
                                 sample_sep = "_") {
+  if (inherits(data, "SummarizedExperiment")) {
+    return(growkar_tidy_from_summarized_experiment(data))
+  }
+
   data <- tibble::as_tibble(data)
 
   if (all(c(sample_col, time_col, od_col) %in% names(data))) {

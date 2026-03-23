@@ -2,11 +2,9 @@
 
 S3method(print,growkar_fit)
 S3method(summary,growkar_fit)
+export(as_summarized_experiment)
 export(as_tidy_growth_data)
 export(augment_growth_fit)
-export(calculate_growth_rate)
-export(calculate_growthrate_from_defined_logphase)
-export(calculate_growthrate_from_defined_time)
 export(compute_doubling_time)
 export(compute_growth_rate)
 export(detect_exponential_phase)

@@ -24,11 +24,6 @@ reference:
       - fit_growth_plate
       - extract_params
       - augment_growth_fit
-  - title: Legacy wrappers
-    contents:
-      - calculate_growth_rate
-      - calculate_growthrate_from_defined_time
-      - calculate_growthrate_from_defined_logphase
 right:
   menu:
     - icon: fa-github fa-lg
