@@ -7,7 +7,11 @@
 #' in the remaining column names. Tidy input is expected to contain at least
 #' `sample`, `time`, and `od`. When replicate identifiers are encoded in sample
 #' names, use a consistent suffix such as `_R1` or `_1` so replicate metadata
-#' can be inferred reliably.
+#' can be inferred reliably. Common machine-exported column labels such as
+#' `Time [s]`, `Time [h]`, `Sample`, `Well`, `OD600`, `OD 600`, and
+#' `Absorbance 600` are detected automatically where possible, which helps
+#' when importing exports from Agilent, BioTek, Cytation 3, LogPhase 600, and
+#' similar plate-reader workflows.
 #'
 #' @param data A data frame, tibble, `SummarizedExperiment`, or object
 #'   coercible to a tibble.
@@ -38,21 +42,26 @@ as_tidy_growth_data <- function(data,
   }
 
   data <- tibble::as_tibble(data)
+  resolved_time_col <- growkar_resolve_column_name(names(data), time_col, growkar_time_aliases())
+  resolved_sample_col <- growkar_resolve_column_name(names(data), sample_col, growkar_sample_aliases())
+  resolved_od_col <- growkar_resolve_column_name(names(data), od_col, growkar_od_aliases())
 
-  if (all(c(sample_col, time_col, od_col) %in% names(data))) {
-    extra_cols <- setdiff(names(data), c(sample_col, time_col, od_col))
+  if (!is.null(resolved_sample_col) &&
+      !is.null(resolved_time_col) &&
+      !is.null(resolved_od_col)) {
+    extra_cols <- setdiff(names(data), c(resolved_sample_col, resolved_time_col, resolved_od_col))
     tidy_data <- dplyr::transmute(
       data,
-      sample = as.character(.data[[sample_col]]),
-      time = .data[[time_col]],
-      od = .data[[od_col]],
+      sample = as.character(.data[[resolved_sample_col]]),
+      time = .data[[resolved_time_col]],
+      od = .data[[resolved_od_col]],
       !!!rlang::syms(extra_cols)
     )
   } else {
-    if (!time_col %in% names(data)) {
+    if (is.null(resolved_time_col)) {
       names(data)[1] <- "time"
     } else {
-      names(data)[names(data) == time_col] <- "time"
+      names(data)[names(data) == resolved_time_col] <- "time"
     }
 
     if (!"time" %in% names(data)) {
@@ -73,6 +82,7 @@ as_tidy_growth_data <- function(data,
   }
 
   tidy_data <- tibble::as_tibble(tidy_data)
+  tidy_data <- growkar_normalize_machine_export(tidy_data)
 
   metadata <- growkar_infer_sample_metadata(tidy_data$sample, sample_sep = sample_sep)
   metadata_cols <- setdiff(names(metadata), names(tidy_data))
@@ -81,6 +91,94 @@ as_tidy_growth_data <- function(data,
   }
 
   tidy_data
+}
+
+growkar_resolve_column_name <- function(column_names, requested, aliases = character()) {
+  if (requested %in% column_names) {
+    return(requested)
+  }
+
+  matches <- aliases[aliases %in% column_names]
+  if (length(matches) > 0L) {
+    return(matches[[1]])
+  }
+
+  NULL
+}
+
+growkar_time_aliases <- function() {
+  c(
+    "time", "Time", "TIME", "Time [s]", "Time [sec]", "Time (s)",
+    "Time [h]", "Time [hr]", "Time (h)", "Elapsed Time", "Elapsed time",
+    "Kinetic Time", "Kinetic Time [s]", "Hours", "hours"
+  )
+}
+
+growkar_sample_aliases <- function() {
+  c("sample", "Sample", "SAMPLE", "well", "Well", "WELL", "Well ID", "well_id")
+}
+
+growkar_od_aliases <- function() {
+  c(
+    "od", "OD", "Od", "OD600", "OD 600", "OD_600", "OD(600)",
+    "Absorbance 600", "Absorbance_600", "A600", "LogPhase 600",
+    "LogPhase_600", "logphase_600"
+  )
+}
+
+growkar_normalize_machine_export <- function(data) {
+  parsed_time <- growkar_parse_time_values(data$time)
+  dropped_rows <- sum(is.na(parsed_time) & !is.na(data$time))
+
+  if (dropped_rows > 0L) {
+    warning(
+      "Dropped ", dropped_rows,
+      " row(s) with non-numeric time values, which can occur in instrument export headers.",
+      call. = FALSE
+    )
+  }
+
+  data <- data[!is.na(parsed_time), , drop = FALSE]
+  data$time <- parsed_time[!is.na(parsed_time)]
+  data$od <- growkar_parse_numeric_values(data$od)
+  data
+}
+
+growkar_parse_time_values <- function(x) {
+  if (is.numeric(x)) {
+    return(as.numeric(x))
+  }
+
+  x <- trimws(as.character(x))
+  hms_pattern <- "^[0-9]{1,2}:[0-9]{2}:[0-9]{2}$"
+  out <- rep(NA_real_, length(x))
+
+  hms_idx <- grepl(hms_pattern, x)
+  if (any(hms_idx)) {
+    parts <- strsplit(x[hms_idx], ":", fixed = TRUE)
+    out[hms_idx] <- vapply(parts, function(part) {
+      as.numeric(part[[1]]) + as.numeric(part[[2]]) / 60 + as.numeric(part[[3]]) / 3600
+    }, numeric(1))
+  }
+
+  numeric_idx <- !hms_idx
+  if (any(numeric_idx)) {
+    out[numeric_idx] <- growkar_parse_numeric_values(x[numeric_idx])
+  }
+
+  out
+}
+
+growkar_parse_numeric_values <- function(x) {
+  if (is.numeric(x)) {
+    return(as.numeric(x))
+  }
+
+  x <- trimws(as.character(x))
+  x[x == ""] <- NA_character_
+  x <- sub(",", ".", x, fixed = TRUE)
+
+  suppressWarnings(as.numeric(x))
 }
 
 growkar_infer_sample_metadata <- function(sample, sample_sep = "_") {

@@ -11,8 +11,8 @@
 #'   selects the window with the strongest positive log-linear slope.
 #'   \item `defined_interval`: fits the growth rate over a user-supplied start
 #'   and end time interval.
-#'   \item `rule_based`: preserves the legacy `growkar` approach based on
-#'   OD-doubling heuristics to define the exponential phase.
+#'   \item `rule_based`: uses OD-doubling heuristics to anchor the exponential
+#'   interval from the observed curve.
 #' }
 #'
 #' @param data Growth curve data in tidy or wide format.
@@ -27,8 +27,7 @@
 #'   estimation when replicate metadata are available.
 #' @param window_size Rolling window size for `rolling_window`.
 #' @param min_od Minimum OD retained when fitting log-linear models.
-#' @param first_timepoint Reference time used by the legacy `"rule_based"`
-#'   method.
+#' @param first_timepoint Reference time used by the `"rule_based"` method.
 #'
 #' @return A tibble with `sample`, `mu`, `start_time`, `end_time`, `r_squared`,
 #'   and `method`. Here `mu` is the estimated specific growth rate. Additional

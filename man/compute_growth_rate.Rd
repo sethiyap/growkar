@@ -35,8 +35,7 @@ estimation when replicate metadata are available.}
 
 \item{min_od}{Minimum OD retained when fitting log-linear models.}
 
-\item{first_timepoint}{Reference time used by the legacy \code{"rule_based"}
-method.}
+\item{first_timepoint}{Reference time used by the \code{"rule_based"} method.}
 }
 \value{
 A tibble with \code{sample}, \code{mu}, \code{start_time}, \code{end_time}, \code{r_squared},
@@ -57,8 +56,8 @@ Available methods:
 selects the window with the strongest positive log-linear slope.
 \item \code{defined_interval}: fits the growth rate over a user-supplied start
 and end time interval.
-\item \code{rule_based}: preserves the legacy \code{growkar} approach based on
-OD-doubling heuristics to define the exponential phase.
+\item \code{rule_based}: uses OD-doubling heuristics to anchor the exponential
+interval from the observed curve.
 }
 }
 \examples{

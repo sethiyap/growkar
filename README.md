@@ -30,6 +30,12 @@ If replicate identifiers are encoded in sample names, use a consistent
 suffix such as `_R1` or `_1` so `growkar` can infer replicate metadata
 reliably.
 
+Common instrument-style column labels such as `Time [s]`, `Time [h]`,
+`Sample`, `Well`, `OD600`, `OD 600`, and `Absorbance 600` are detected
+automatically where possible, which helps when importing exports from
+instruments such as Agilent readers, BioTek/Cytation 3, LogPhase 600,
+and similar OD600 workflows.
+
 ## Installation
 
 ``` r
@@ -138,11 +144,9 @@ validate_growth_data(tidy_data)
 **What it does:** `plot_growth_curve()` visualizes OD over time and
 returns a `ggplot` object.
 
-**Why use it:** It preserves the clear ggplot-style growth curve display
-of the previous version of `growkar`, and it is useful for quick quality
-control and for comparing growth patterns across samples. Because the
-output is a `ggplot` object, users can further customize it with
-`ggplot2`.
+**Why use it:** It is useful for quick quality control and for comparing
+growth patterns across samples. Because the output is a `ggplot` object,
+users can further customize it with `ggplot2`.
 
 **Minimal example:**
 
@@ -191,8 +195,26 @@ Method options:
   selects the window with the strongest positive log-linear slope.
 - `"defined_interval"` fits the growth rate over a user-supplied start
   and end time interval.
-- `"rule_based"` preserves the legacy `growkar` OD-doubling approach for
-  defining the exponential phase.
+- `"rule_based"` uses OD-doubling heuristics to anchor the exponential
+  interval from the observed curve.
+
+Method schematic:
+
+``` mermaid
+flowchart LR
+  A[One sample growth curve] --> B[rolling_window]
+  B --> B1[Slide fixed-size windows]
+  B1 --> B2[Fit log(OD) ~ time in each window]
+  B2 --> B3[Pick highest positive slope, then highest R²]
+
+  A --> C[defined_interval]
+  C --> C1[Use user-supplied start and end times]
+  C1 --> C2[Fit log(OD) ~ time within that interval]
+
+  A --> D[rule_based]
+  D --> D1[Track successive OD doublings]
+  D1 --> D2[Anchor a candidate exponential interval]
+```
 
 **Minimal example:**
 
