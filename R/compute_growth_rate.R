@@ -10,17 +10,29 @@
 #'   \item `rolling_window`: scans rolling windows across the time series and
 #'   selects the window with the strongest positive log-linear slope.
 #'   \item `defined_interval`: fits the growth rate over a user-supplied start
-#'   and end time interval.
-#'   \item `rule_based`: uses OD-doubling heuristics to anchor the exponential
-#'   interval from the observed curve.
+#'   and end time interval. Supply either one interval for all samples or a
+#'   per-sample interval table.
+#'   \item `rule_based`: starts from a reference OD, finds the nearest
+#'   successive OD doublings, and estimates growth from the interval between
+#'   those doubling anchors.
 #' }
+#'
+#' For the `rule_based` method, `growkar` first picks a reference OD at the
+#' earliest time point, or at `first_timepoint` when supplied. It then finds the
+#' observations nearest to approximately 2x and 4x that reference OD. The
+#' growth rate is estimated from the log-linear slope between those two
+#' doubling anchors. This provides a simple empirical approximation when users
+#' want a heuristic interval rather than a rolling search or manually defined
+#' bounds.
 #'
 #' @param data Growth curve data in tidy or wide format.
 #' @param method Estimation method. One of `"rolling_window"`,
 #'   `"defined_interval"`, or `"rule_based"`.
 #' @param interval Interval definition for `defined_interval`. Supply either a
-#'   numeric vector of length two or a data frame whose first three columns are
-#'   sample, start time, and end time.
+#'   numeric vector of length two to use the same interval for all samples, or a
+#'   data frame containing sample-specific start and end times. Interval tables
+#'   may use columns named `sample`, `start_time`, and `end_time`, or the first
+#'   three columns may be sample, start time, and end time.
 #' @param select_replicates Optional character vector of replicate IDs to retain
 #'   before estimation. When `NULL`, all replicates are retained.
 #' @param average_replicates Logical; if `TRUE`, average replicates before
@@ -41,6 +53,11 @@
 #' compute_growth_rate(
 #'   dplyr::filter(tidy_growth, sample == sample_id),
 #'   method = "rolling_window"
+#' )
+#' compute_growth_rate(
+#'   tidy_growth,
+#'   method = "defined_interval",
+#'   interval = c(2, 6)
 #' )
 #' @export
 compute_growth_rate <- function(data,
@@ -282,16 +299,52 @@ growkar_resolve_interval <- function(interval, sample_id) {
       stop("Interval data frames must have at least three columns.", call. = FALSE)
     }
 
-    names(interval)[seq_len(3)] <- c("sample", "start_time", "end_time")
+    interval <- growkar_standardize_interval_table(interval)
     match_row <- interval[interval$sample %in% sample_id, , drop = FALSE]
     if (nrow(match_row) == 0L) {
       stop("No interval found for sample `", sample_id, "`.", call. = FALSE)
     }
 
-    return(as.numeric(match_row[1, c("start_time", "end_time")]))
+    bounds <- as.numeric(match_row[1, c("start_time", "end_time")])
+    if (any(!is.finite(bounds)) || bounds[1] >= bounds[2]) {
+      stop("Intervals must contain finite `start_time < end_time` values.", call. = FALSE)
+    }
+
+    return(bounds)
   }
 
   stop("Unsupported `interval` specification.", call. = FALSE)
+}
+
+growkar_standardize_interval_table <- function(interval) {
+  sample_col <- growkar_resolve_column_name(names(interval), "sample", c("Sample", "SAMPLE"))
+  start_col <- growkar_resolve_column_name(
+    names(interval),
+    "start_time",
+    c("start", "Start", "interval_start", "time_start", "from", "From")
+  )
+  end_col <- growkar_resolve_column_name(
+    names(interval),
+    "end_time",
+    c("end", "End", "interval_end", "time_end", "to", "To")
+  )
+
+  if (!is.null(sample_col) && !is.null(start_col) && !is.null(end_col)) {
+    return(dplyr::transmute(
+      interval,
+      sample = as.character(.data[[sample_col]]),
+      start_time = as.numeric(.data[[start_col]]),
+      end_time = as.numeric(.data[[end_col]])
+    ))
+  }
+
+  names(interval)[seq_len(3)] <- c("sample", "start_time", "end_time")
+  dplyr::transmute(
+    interval,
+    sample = as.character(.data$sample),
+    start_time = as.numeric(.data$start_time),
+    end_time = as.numeric(.data$end_time)
+  )
 }
 
 growkar_fit_log_linear <- function(data) {

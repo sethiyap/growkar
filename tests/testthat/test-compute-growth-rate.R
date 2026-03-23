@@ -64,3 +64,39 @@ test_that("compute_growth_rate warns and returns NA when defined interval is unu
   expect_true(is.na(result$mu[[1]]))
   expect_true(result$degraded[[1]])
 })
+
+test_that("compute_growth_rate supports one defined interval for all samples", {
+  tidy_data <- as_tidy_growth_data(yeast_growth_data) |>
+    dplyr::filter(.data$condition %in% c("Cg", "CgFlu"))
+
+  result <- compute_growth_rate(
+    tidy_data,
+    method = "defined_interval",
+    interval = c(2, 6)
+  )
+
+  expect_s3_class(result, "tbl_df")
+  expect_true(all(result$method == "defined_interval"))
+  expect_true(all(result$start_time == 2))
+  expect_true(all(result$end_time == 6))
+})
+
+test_that("compute_growth_rate supports per-sample interval tables", {
+  tidy_data <- as_tidy_growth_data(yeast_growth_data)
+  samples <- unique(tidy_data$sample)[1:2]
+
+  interval_tbl <- tibble::tibble(
+    sample = samples,
+    start_time = c(2, 3),
+    end_time = c(5, 6)
+  )
+
+  result <- compute_growth_rate(
+    dplyr::filter(tidy_data, sample %in% samples),
+    method = "defined_interval",
+    interval = interval_tbl
+  )
+
+  expect_equal(result$start_time, c(2, 3))
+  expect_equal(result$end_time, c(5, 6))
+})

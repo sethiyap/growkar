@@ -22,8 +22,10 @@ compute_growth_rate(
 \code{"defined_interval"}, or \code{"rule_based"}.}
 
 \item{interval}{Interval definition for \code{defined_interval}. Supply either a
-numeric vector of length two or a data frame whose first three columns are
-sample, start time, and end time.}
+numeric vector of length two to use the same interval for all samples, or a
+data frame containing sample-specific start and end times. Interval tables
+may use columns named \code{sample}, \code{start_time}, and \code{end_time}, or the first
+three columns may be sample, start time, and end time.}
 
 \item{select_replicates}{Optional character vector of replicate IDs to retain
 before estimation. When \code{NULL}, all replicates are retained.}
@@ -55,10 +57,20 @@ Available methods:
 \item \code{rolling_window}: scans rolling windows across the time series and
 selects the window with the strongest positive log-linear slope.
 \item \code{defined_interval}: fits the growth rate over a user-supplied start
-and end time interval.
-\item \code{rule_based}: uses OD-doubling heuristics to anchor the exponential
-interval from the observed curve.
+and end time interval. Supply either one interval for all samples or a
+per-sample interval table.
+\item \code{rule_based}: starts from a reference OD, finds the nearest
+successive OD doublings, and estimates growth from the interval between
+those doubling anchors.
 }
+
+For the \code{rule_based} method, \code{growkar} first picks a reference OD at the
+earliest time point, or at \code{first_timepoint} when supplied. It then finds the
+observations nearest to approximately 2x and 4x that reference OD. The
+growth rate is estimated from the log-linear slope between those two
+doubling anchors. This provides a simple empirical approximation when users
+want a heuristic interval rather than a rolling search or manually defined
+bounds.
 }
 \examples{
 data(yeast_growth_data)
@@ -67,5 +79,10 @@ sample_id <- unique(tidy_growth$sample)[1]
 compute_growth_rate(
   dplyr::filter(tidy_growth, sample == sample_id),
   method = "rolling_window"
+)
+compute_growth_rate(
+  tidy_growth,
+  method = "defined_interval",
+  interval = c(2, 6)
 )
 }

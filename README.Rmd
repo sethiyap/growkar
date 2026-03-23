@@ -162,9 +162,11 @@ Method options:
 - `"rolling_window"` scans rolling windows across the time series and selects
   the window with the strongest positive log-linear slope.
 - `"defined_interval"` fits the growth rate over a user-supplied start and end
-  time interval.
-- `"rule_based"` uses OD-doubling heuristics to anchor the exponential
-  interval from the observed curve.
+  time interval. You can provide one interval for all samples or a per-sample
+  interval table.
+- `"rule_based"` starts from a reference OD, finds the nearest successive OD
+  doublings, and uses the interval between those doubling anchors to estimate
+  growth.
 
 Method schematic on a mock growth curve:
 
@@ -224,6 +226,36 @@ gr <- compute_growth_rate(
 knitr::kable(gr, digits = 3)
 ```
 
+Use the same interval for all samples:
+
+```{r}
+gr_defined_all <- compute_growth_rate(
+  tidy_data,
+  method = "defined_interval",
+  interval = c(2, 6)
+)
+
+knitr::kable(head(gr_defined_all), digits = 3)
+```
+
+Use different intervals for different samples:
+
+```{r}
+interval_tbl <- tibble::tibble(
+  sample = unique(tidy_data$sample)[1:2],
+  start_time = c(2, 3),
+  end_time = c(5, 6)
+)
+
+gr_defined_by_sample <- compute_growth_rate(
+  dplyr::filter(tidy_data, sample %in% interval_tbl$sample),
+  method = "defined_interval",
+  interval = interval_tbl
+)
+
+knitr::kable(gr_defined_by_sample, digits = 3)
+```
+
 ## Compute doubling time
 
 **What it does:** `compute_doubling_time()` calculates doubling time from
@@ -271,14 +303,16 @@ dt_stats <- summarize_growth_metrics(
   method = "rolling_window",
   comparison_col = "condition",
   compare_to = "Cg",
+  p_adjust_method = "BH",
   select_replicates = c("R1", "R2", "R3")
 )
 
 knitr::kable(dt_stats, digits = 3)
 ```
 
-This summary includes numeric p-values in `p_value` and asterisk-form
-significance labels in `p_value_label`.
+This summary includes raw numeric p-values in `p_value`, adjusted p-values in
+`p_value_adjusted`, and asterisk-form significance labels in `p_value_label`.
+By default, p-values are adjusted with the Benjamini-Hochberg (`"BH"`) method.
 
 ## Detect exponential phase
 
@@ -317,6 +351,7 @@ plot_doubling_time(
   compare_to = "Cg",
   exclude_groups = "YPD",
   select_replicates = c("R1", "R2", "R3"),
+  p_adjust_method = "BH",
   palette_name = "Dark2"
 )
 ```
@@ -346,6 +381,8 @@ fit
 model-derived quantities such as the asymptote and model-based doubling time.
 
 **Why use it:** It is useful for reporting fitted summaries in a tidy format.
+Here, the asymptote is the fitted upper plateau of the growth curve, often
+interpreted as the model-predicted maximum OD reached at late time points.
 
 **Minimal example:**
 

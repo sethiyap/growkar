@@ -13,6 +13,8 @@ plot_doubling_time(
   method = c("rolling_window", "defined_interval", "rule_based"),
   error = c("se", "sd"),
   pvalue_method = c("t_test", "wilcox"),
+  p_adjust_method = c("BH", "none", "bonferroni", "holm", "hochberg", "hommel", "BY",
+    "fdr"),
   palette_name = "all_colors",
   custom_colors = NULL,
   ...
@@ -38,6 +40,11 @@ before computing doubling times.}
 
 \item{pvalue_method}{Statistical test used when \code{compare_to} is supplied.
 One of \code{"t_test"} or \code{"wilcox"}.}
+
+\item{p_adjust_method}{Multiple-testing adjustment applied to replicate-level
+p-values when \code{compare_to} is supplied. Defaults to \code{"BH"}. One of
+\code{"BH"}, \code{"none"}, \code{"bonferroni"}, \code{"holm"}, \code{"hochberg"}, \code{"hommel"},
+\code{"BY"}, or \code{"fdr"}.}
 
 \item{palette_name}{Name of the qualitative palette used by
 \code{select_palette()}.}

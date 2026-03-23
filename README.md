@@ -194,9 +194,11 @@ Method options:
 - `"rolling_window"` scans rolling windows across the time series and
   selects the window with the strongest positive log-linear slope.
 - `"defined_interval"` fits the growth rate over a user-supplied start
-  and end time interval.
-- `"rule_based"` uses OD-doubling heuristics to anchor the exponential
-  interval from the observed curve.
+  and end time interval. You can provide one interval for all samples or
+  a per-sample interval table.
+- `"rule_based"` starts from a reference OD, finds the nearest
+  successive OD doublings, and uses the interval between those doubling
+  anchors to estimate growth.
 
 Method schematic on a mock growth curve:
 
@@ -270,6 +272,56 @@ knitr::kable(gr, digits = 3)
 |:---|---:|---:|---:|---:|:---|---:|:---|:---|
 | Cg_R1 | 0.576 | 4.5 | 6.5 | 1 | rolling_window | 5 | FALSE | rolling_window_ranked |
 
+Use the same interval for all samples:
+
+``` r
+gr_defined_all <- compute_growth_rate(
+  tidy_data,
+  method = "defined_interval",
+  interval = c(2, 6)
+)
+#> Warning: Sample `YPD_R1`: Defined interval did not yield a positive growth
+#> slope.
+#> Warning: Sample `YPD_R2`: Defined interval did not yield a positive growth
+#> slope.
+#> Warning: Sample `YPD_R3`: Defined interval did not yield a positive growth
+#> slope.
+
+knitr::kable(head(gr_defined_all), digits = 3)
+```
+
+| sample | mu | start_time | end_time | r_squared | method | n_points | degraded | note |
+|:---|---:|---:|---:|---:|:---|---:|:---|:---|
+| Cg_R1 | 0.400 | 2 | 6 | 0.956 | defined_interval | 9 | FALSE | defined_interval_fit |
+| Cg_R2 | 0.394 | 2 | 6 | 0.959 | defined_interval | 9 | FALSE | defined_interval_fit |
+| Cg_R3 | 0.386 | 2 | 6 | 0.953 | defined_interval | 9 | FALSE | defined_interval_fit |
+| CgFlu_R1 | 0.339 | 2 | 6 | 0.990 | defined_interval | 9 | FALSE | defined_interval_fit |
+| CgFlu_R2 | 0.342 | 2 | 6 | 0.989 | defined_interval | 9 | FALSE | defined_interval_fit |
+| CgFlu_R3 | 0.345 | 2 | 6 | 0.988 | defined_interval | 9 | FALSE | defined_interval_fit |
+
+Use different intervals for different samples:
+
+``` r
+interval_tbl <- tibble::tibble(
+  sample = unique(tidy_data$sample)[1:2],
+  start_time = c(2, 3),
+  end_time = c(5, 6)
+)
+
+gr_defined_by_sample <- compute_growth_rate(
+  dplyr::filter(tidy_data, sample %in% interval_tbl$sample),
+  method = "defined_interval",
+  interval = interval_tbl
+)
+
+knitr::kable(gr_defined_by_sample, digits = 3)
+```
+
+| sample | mu | start_time | end_time | r_squared | method | n_points | degraded | note |
+|:---|---:|---:|---:|---:|:---|---:|:---|:---|
+| Cg_R1 | 0.326 | 2 | 5 | 0.955 | defined_interval | 7 | FALSE | defined_interval_fit |
+| Cg_R2 | 0.468 | 3 | 6 | 0.985 | defined_interval | 7 | FALSE | defined_interval_fit |
+
 ## Compute doubling time
 
 **What it does:** `compute_doubling_time()` calculates doubling time
@@ -339,6 +391,7 @@ dt_stats <- summarize_growth_metrics(
   method = "rolling_window",
   comparison_col = "condition",
   compare_to = "Cg",
+  p_adjust_method = "BH",
   select_replicates = c("R1", "R2", "R3")
 )
 #> Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive
@@ -349,14 +402,16 @@ dt_stats <- summarize_growth_metrics(
 knitr::kable(dt_stats, digits = 3)
 ```
 
-| condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
-|:---|---:|---:|---:|---:|---:|---:|:---|
-| Cg | 0.569 | 1.219 | 0.017 | 3 | 0.010 | NA | ref |
-| CgFlu | 0.404 | 1.714 | 0.010 | 3 | 0.006 | 0 | \*\*\*\* |
-| YPD | 0.004 | 179.350 | NA | 1 | NA | NA | NA |
+| condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_adjusted | p_value_label |
+|:---|---:|---:|---:|---:|---:|---:|---:|:---|
+| Cg | 0.569 | 1.219 | 0.017 | 3 | 0.010 | NA | NA | ref |
+| CgFlu | 0.404 | 1.714 | 0.010 | 3 | 0.006 | 0 | 0 | \*\*\*\* |
+| YPD | 0.004 | 179.350 | NA | 1 | NA | NA | NA | NA |
 
-This summary includes numeric p-values in `p_value` and asterisk-form
-significance labels in `p_value_label`.
+This summary includes raw numeric p-values in `p_value`, adjusted
+p-values in `p_value_adjusted`, and asterisk-form significance labels in
+`p_value_label`. By default, p-values are adjusted with the
+Benjamini-Hochberg (`"BH"`) method.
 
 ## Detect exponential phase
 
@@ -405,6 +460,7 @@ plot_doubling_time(
   compare_to = "Cg",
   exclude_groups = "YPD",
   select_replicates = c("R1", "R2", "R3"),
+  p_adjust_method = "BH",
   palette_name = "Dark2"
 )
 #> Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive
@@ -413,7 +469,7 @@ plot_doubling_time(
 #> growth slope (rolling_window_ranked).
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-16-1.png" alt="" width="100%" />
 
 ## Fit a growth model
 
@@ -442,7 +498,9 @@ model-derived quantities such as the asymptote and model-based doubling
 time.
 
 **Why use it:** It is useful for reporting fitted summaries in a tidy
-format.
+format. Here, the asymptote is the fitted upper plateau of the growth
+curve, often interpreted as the model-predicted maximum OD reached at
+late time points.
 
 **Minimal example:**
 
@@ -471,7 +529,7 @@ pf <- plot_fitted_curve(fit)
 pf
 ```
 
-<img src="man/figures/README-unnamed-chunk-17-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-19-1.png" alt="" width="100%" />
 
 To fit and view individual replicates as separate panels from raw data,
 use `facet_col = "replicate"` with `average_replicates = FALSE`.
@@ -489,7 +547,7 @@ pf_rep <- plot_fitted_curve(
 pf_rep
 ```
 
-<img src="man/figures/README-unnamed-chunk-18-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-20-1.png" alt="" width="100%" />
 
 ## Supported API
 
