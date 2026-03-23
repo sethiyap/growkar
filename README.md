@@ -417,8 +417,8 @@ pf_rep
 ## Plot doubling time
 
 **What it does:** `plot_doubling_time()` summarizes replicate-level
-doubling times as a bar plot with error bars and optional p-value
-annotations shown as asterisks.
+doubling times as a bar plot with error bars and optional comparison
+brackets annotated with significance asterisks.
 
 **Why use it:** It is useful for comparing conditions or strains at the
 doubling-time level while showing replicate variability and a
@@ -431,6 +431,7 @@ plot_doubling_time(
   tidy_data,
   comparison_col = "condition",
   compare_to = "Cg",
+  exclude_groups = "YPD",
   select_replicates = c("R1", "R2", "R3"),
   palette_name = "Dark2"
 )

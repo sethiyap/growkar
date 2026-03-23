@@ -1,7 +1,7 @@
 #' Plot Doubling Time Summary
 #'
 #' Plot replicate-based doubling-time summaries as a bar chart with error bars
-#' and optional p-value annotations.
+#' and optional bracketed p-value annotations.
 #'
 #' @param data Growth curve data in tidy or wide format.
 #' @param comparison_col Column used to group replicate-level doubling times.
@@ -105,14 +105,37 @@ plot_doubling_time <- function(data,
     ggplot2::ylab("Doubling time")
 
   if (!is.null(compare_to)) {
-    p <- p + ggplot2::geom_text(
-      ggplot2::aes(
-        y = .data$mean_doubling_time + dplyr::coalesce(.data$error_bar, 0) + offset,
-        label = .data$p_value_label
-      ),
-      na.rm = TRUE,
-      vjust = 0
+    annotation_tbl <- growkar_bracket_annotations(
+      summary_tbl = summary_tbl,
+      comparison_col = comparison_col,
+      compare_to = compare_to,
+      offset = offset
     )
+
+    if (nrow(annotation_tbl) > 0L) {
+      p <- p +
+        ggplot2::geom_segment(
+          data = annotation_tbl,
+          ggplot2::aes(x = .data$x_ref, xend = .data$x_ref, y = .data$y_low, yend = .data$y),
+          inherit.aes = FALSE
+        ) +
+        ggplot2::geom_segment(
+          data = annotation_tbl,
+          ggplot2::aes(x = .data$x_ref, xend = .data$x_group, y = .data$y, yend = .data$y),
+          inherit.aes = FALSE
+        ) +
+        ggplot2::geom_segment(
+          data = annotation_tbl,
+          ggplot2::aes(x = .data$x_group, xend = .data$x_group, y = .data$y_low, yend = .data$y),
+          inherit.aes = FALSE
+        ) +
+        ggplot2::geom_text(
+          data = annotation_tbl,
+          ggplot2::aes(x = .data$x_mid, y = .data$y + offset * 0.2, label = .data$p_value_label),
+          inherit.aes = FALSE,
+          vjust = 0
+        )
+    }
   }
 
   fill_values <- if (!is.null(custom_colors)) {
@@ -122,4 +145,33 @@ plot_doubling_time <- function(data,
   }
 
   p + ggplot2::scale_fill_manual(values = fill_values)
+}
+
+growkar_bracket_annotations <- function(summary_tbl, comparison_col, compare_to, offset) {
+  ref_index <- match(compare_to, summary_tbl[[comparison_col]])
+  if (is.na(ref_index)) {
+    return(tibble::tibble())
+  }
+
+  comparison_tbl <- summary_tbl |>
+    dplyr::mutate(
+      x = seq_len(dplyr::n()),
+      y_top = .data$mean_doubling_time + dplyr::coalesce(.data$error_bar, 0)
+    ) |>
+    dplyr::filter(.data[[comparison_col]] != compare_to, !is.na(.data$p_value_label), .data$p_value_label != "ns")
+
+  if (nrow(comparison_tbl) == 0L) {
+    return(tibble::tibble())
+  }
+
+  ref_top <- summary_tbl$mean_doubling_time[[ref_index]] + dplyr::coalesce(summary_tbl$error_bar[[ref_index]], 0)
+
+  comparison_tbl |>
+    dplyr::mutate(
+      x_ref = ref_index,
+      x_group = .data$x,
+      x_mid = (.data$x_ref + .data$x_group) / 2,
+      y_low = pmax(ref_top, .data$y_top) + offset * 0.2,
+      y = pmax(ref_top, .data$y_top) + offset * (dplyr::row_number() + 0.2)
+    )
 }

@@ -52,7 +52,7 @@ A \code{ggplot2} object.
 }
 \description{
 Plot replicate-based doubling-time summaries as a bar chart with error bars
-and optional p-value annotations.
+and optional bracketed p-value annotations.
 }
 \examples{
 data(yeast_growth_data)
