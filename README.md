@@ -338,6 +338,35 @@ knitr::kable(head(phase_tbl), digits = 3)
 | Cg_R1 | 5 | 5.5 | 7.5 | 0.490 | 0.991 | 5 | rolling_window_ranked | FALSE |
 | Cg_R1 | 6 | 6.0 | 8.0 | 0.414 | 0.987 | 5 | rolling_window_ranked | FALSE |
 
+## Plot doubling time
+
+**What it does:** `plot_doubling_time()` summarizes replicate-level
+doubling times as a bar plot with error bars and optional comparison
+brackets annotated with significance asterisks.
+
+**Why use it:** It is useful for comparing conditions or strains at the
+doubling-time level while showing replicate variability and a
+reference-group comparison.
+
+**Minimal example:**
+
+``` r
+plot_doubling_time(
+  tidy_data,
+  comparison_col = "condition",
+  compare_to = "Cg",
+  exclude_groups = "YPD",
+  select_replicates = c("R1", "R2", "R3"),
+  palette_name = "Dark2"
+)
+#> Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive
+#> growth slope (rolling_window_ranked).
+#> Warning: Sample `YPD_R2`: Exponential phase detection did not yield a positive
+#> growth slope (rolling_window_ranked).
+```
+
+<img src="man/figures/README-unnamed-chunk-13-1.png" alt="" width="100%" />
+
 ## Fit a growth model
 
 **What it does:** `fit_growth_curve()` fits a logistic or Gompertz
@@ -394,7 +423,7 @@ pf <- plot_fitted_curve(fit)
 pf
 ```
 
-<img src="man/figures/README-unnamed-chunk-15-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-16-1.png" alt="" width="100%" />
 
 To fit and view individual replicates as separate panels from raw data,
 use `facet_col = "replicate"` with `average_replicates = FALSE`.
@@ -412,35 +441,6 @@ pf_rep <- plot_fitted_curve(
 pf_rep
 ```
 
-<img src="man/figures/README-unnamed-chunk-16-1.png" alt="" width="100%" />
-
-## Plot doubling time
-
-**What it does:** `plot_doubling_time()` summarizes replicate-level
-doubling times as a bar plot with error bars and optional comparison
-brackets annotated with significance asterisks.
-
-**Why use it:** It is useful for comparing conditions or strains at the
-doubling-time level while showing replicate variability and a
-reference-group comparison.
-
-**Minimal example:**
-
-``` r
-plot_doubling_time(
-  tidy_data,
-  comparison_col = "condition",
-  compare_to = "Cg",
-  exclude_groups = "YPD",
-  select_replicates = c("R1", "R2", "R3"),
-  palette_name = "Dark2"
-)
-#> Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive
-#> growth slope (rolling_window_ranked).
-#> Warning: Sample `YPD_R2`: Exponential phase detection did not yield a positive
-#> growth slope (rolling_window_ranked).
-```
-
 <img src="man/figures/README-unnamed-chunk-17-1.png" alt="" width="100%" />
 
 ## Supported API
@@ -453,74 +453,6 @@ The supported interface is the current tidy workflow:
 - `summarize_growth_metrics()`
 - `detect_exponential_phase()`
 - `fit_growth_curve()`
-
-## Workflow summary
-
-A typical `growkar` workflow is:
-
-``` r
-data(yeast_growth_data)
-
-tidy_data <- as_tidy_growth_data(yeast_growth_data)
-validate_growth_data(tidy_data)
-#> # A tibble: 441 × 5
-#>     time sample      od condition replicate
-#>    <dbl> <chr>    <dbl> <chr>     <chr>    
-#>  1   0   Cg_R1    0.115 Cg        R1       
-#>  2   0   Cg_R2    0.116 Cg        R2       
-#>  3   0   Cg_R3    0.117 Cg        R3       
-#>  4   0   CgFlu_R1 0.131 CgFlu     R1       
-#>  5   0   CgFlu_R2 0.133 CgFlu     R2       
-#>  6   0   CgFlu_R3 0.132 CgFlu     R3       
-#>  7   0   YPD_R1   0.105 YPD       R1       
-#>  8   0   YPD_R2   0.105 YPD       R2       
-#>  9   0   YPD_R3   0.104 YPD       R3       
-#> 10   0.5 Cg_R1    0.116 Cg        R1       
-#> # ℹ 431 more rows
-
-plot_growth_curve(tidy_data)
-```
-
-<img src="man/figures/README-unnamed-chunk-18-1.png" alt="" width="100%" />
-
-``` r
-
-metrics <- summarize_growth_metrics(tidy_data)
-#> Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive
-#> growth slope (rolling_window_ranked).
-#> Warning: Sample `YPD_R2`: Exponential phase detection did not yield a positive
-#> growth slope (rolling_window_ranked).
-metrics
-#> # A tibble: 9 × 10
-#>   sample         mu start_time end_time r_squared method n_points degraded note 
-#>   <chr>       <dbl>      <dbl>    <dbl>     <dbl> <chr>     <int> <lgl>    <chr>
-#> 1 Cg_R1     0.576          4.5      6.5     1.000 rolli…        5 FALSE    roll…
-#> 2 Cg_R2     0.560          4.5      6.5     1.000 rolli…        5 FALSE    roll…
-#> 3 Cg_R3     0.571          4.5      6.5     0.999 rolli…        5 FALSE    roll…
-#> 4 CgFlu_R1  0.403          4.5      6.5     1.000 rolli…        5 FALSE    roll…
-#> 5 CgFlu_R2  0.407          4.5      6.5     1.000 rolli…        5 FALSE    roll…
-#> 6 CgFlu_R3  0.403          4.5      6.5     1.000 rolli…        5 FALSE    roll…
-#> 7 YPD_R1   NA             NA       NA      NA     rolli…        5 FALSE    roll…
-#> 8 YPD_R2   NA             NA       NA      NA     rolli…        5 FALSE    roll…
-#> 9 YPD_R3    0.00386       18       20       0.5   rolli…        5 FALSE    roll…
-#> # ℹ 1 more variable: doubling_time <dbl>
-
-sample_id <- unique(tidy_data$sample)[1]
-
-fit <- fit_growth_curve(
-  filter(tidy_data, sample == sample_id),
-  model = "logistic"
-)
-
-extract_params(fit)
-#> # A tibble: 1 × 6
-#>   sample model    asymptote     r    t0 doubling_time_model
-#>   <chr>  <chr>        <dbl> <dbl> <dbl>               <dbl>
-#> 1 Cg_R1  logistic      2.03 0.777  6.97               0.892
-plot_fitted_curve(fit)
-```
-
-<img src="man/figures/README-unnamed-chunk-18-2.png" alt="" width="100%" />
 
 ## Contributing and issues
 

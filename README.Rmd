@@ -252,6 +252,29 @@ phase_tbl <- detect_exponential_phase(
 knitr::kable(head(phase_tbl), digits = 3)
 ```
 
+## Plot doubling time
+
+**What it does:** `plot_doubling_time()` summarizes replicate-level doubling
+times as a bar plot with error bars and optional comparison brackets annotated
+with significance asterisks.
+
+**Why use it:** It is useful for comparing conditions or strains at the
+doubling-time level while showing replicate variability and a reference-group
+comparison.
+
+**Minimal example:**
+
+```{r}
+plot_doubling_time(
+  tidy_data,
+  comparison_col = "condition",
+  compare_to = "Cg",
+  exclude_groups = "YPD",
+  select_replicates = c("R1", "R2", "R3"),
+  palette_name = "Dark2"
+)
+```
+
 ## Fit a growth model
 
 **What it does:** `fit_growth_curve()` fits a logistic or Gompertz growth model
@@ -316,29 +339,6 @@ pf_rep <- plot_fitted_curve(
 pf_rep
 ```
 
-## Plot doubling time
-
-**What it does:** `plot_doubling_time()` summarizes replicate-level doubling
-times as a bar plot with error bars and optional comparison brackets annotated
-with significance asterisks.
-
-**Why use it:** It is useful for comparing conditions or strains at the
-doubling-time level while showing replicate variability and a reference-group
-comparison.
-
-**Minimal example:**
-
-```{r}
-plot_doubling_time(
-  tidy_data,
-  comparison_col = "condition",
-  compare_to = "Cg",
-  exclude_groups = "YPD",
-  select_replicates = c("R1", "R2", "R3"),
-  palette_name = "Dark2"
-)
-```
-
 ## Supported API
 
 The supported interface is the current tidy workflow:
@@ -349,32 +349,6 @@ The supported interface is the current tidy workflow:
 - `summarize_growth_metrics()`
 - `detect_exponential_phase()`
 - `fit_growth_curve()`
-
-## Workflow summary
-
-A typical `growkar` workflow is:
-
-```{r}
-data(yeast_growth_data)
-
-tidy_data <- as_tidy_growth_data(yeast_growth_data)
-validate_growth_data(tidy_data)
-
-plot_growth_curve(tidy_data)
-
-metrics <- summarize_growth_metrics(tidy_data)
-metrics
-
-sample_id <- unique(tidy_data$sample)[1]
-
-fit <- fit_growth_curve(
-  filter(tidy_data, sample == sample_id),
-  model = "logistic"
-)
-
-extract_params(fit)
-plot_fitted_curve(fit)
-```
 
 ## Contributing and issues
 
