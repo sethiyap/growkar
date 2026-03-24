@@ -68,16 +68,6 @@ tidy_dd <- dplyr::mutate(
   condition = factor(.data$condition, levels = h2o2_levels)
 )
 
-averaged_dd <- tidy_dd |>
-  dplyr::group_by(.data$condition, .data$time) |>
-  dplyr::summarise(od = mean(.data$od, na.rm = TRUE), .groups = "drop") |>
-  dplyr::rename(sample = .data$condition)
-#> Warning: Use of .data in tidyselect expressions was deprecated in tidyselect 1.2.0.
-#> ℹ Please use `"condition"` instead of `.data$condition`
-#> This warning is displayed once per session.
-#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-#> generated.
-
 head(tidy_dd)
 #> # A tibble: 6 × 5
 #>    time sample           od condition   replicate
@@ -97,9 +87,9 @@ and returns a `ggplot2` object that can be customized further if needed.
 
 ``` r
 plot_growth_curve(
-  averaged_dd,
-  average_replicates = FALSE,
-  colour_col = "sample",
+  tidy_dd,
+  average_replicates = TRUE,
+  colour_col = "condition",
   palette_name = "Dark2"
 )
 ```
@@ -177,76 +167,3 @@ plot_doubling_time(
 ```
 
 ![](dd-growkar-workflow-files/figure-gfm/doubling-time-plot-1.png)<!-- -->
-
-## Rule-based exponential interval in all averaged samples
-
-This section shows the rule-based exponential interval for each averaged
-H2O2 condition and the mean start and end times across all conditions.
-
-``` r
-phase_tbl <- compute_growth_rate(
-  averaged_dd,
-  method = "rule_based"
-) |>
-  dplyr::mutate(doubling_time = compute_doubling_time(.data$mu)) |>
-  dplyr::select(sample, start_time, end_time, mu, doubling_time)
-#> Warning: Sample `H2O2(4.4mM)`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(8.8mM)`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-
-phase_tbl <- phase_tbl |>
-  dplyr::arrange(.data$sample) |>
-  dplyr::ungroup()
-
-knitr::kable(phase_tbl, digits = 3)
-```
-
-| sample        | start_time | end_time |    mu | doubling_time |
-|:--------------|-----------:|---------:|------:|--------------:|
-| H2O2(0.135mM) |      8.334 |   12.667 | 0.161 |         4.316 |
-| H2O2(0.275mM) |      9.000 |   12.667 | 0.183 |         3.791 |
-| H2O2(0.55mM)  |      9.667 |   14.000 | 0.166 |         4.168 |
-| H2O2(0mM)     |      9.000 |   13.000 | 0.171 |         4.049 |
-| H2O2(1.1mM)   |     11.667 |   15.667 | 0.179 |         3.864 |
-| H2O2(2.2mM)   |     25.000 |   27.667 | 0.266 |         2.605 |
-| H2O2(4.4mM)   |      0.000 |    0.000 |    NA |            NA |
-| H2O2(8.8mM)   |      1.000 |    1.000 |    NA |            NA |
-
-``` r
-
-phase_average <- phase_tbl |>
-  dplyr::summarise(
-    mean_start_time = mean(.data$start_time, na.rm = TRUE),
-    mean_end_time = mean(.data$end_time, na.rm = TRUE)
-  )
-
-knitr::kable(phase_average, digits = 3)
-```
-
-| mean_start_time | mean_end_time |
-|----------------:|--------------:|
-|           9.209 |        12.084 |
-
-## Fit and plot one representative growth curve
-
-This section fits a logistic model to the averaged `H2O2(0mM)` curve and
-overlays observed and fitted values.
-
-``` r
-fit <- averaged_dd |>
-  filter(sample == "H2O2(0mM)") |>
-  fit_growth_curve(model = "logistic")
-
-extract_params(fit)
-#> # A tibble: 1 × 6
-#>   sample    model    asymptote     r    t0 doubling_time_model
-#>   <chr>     <chr>        <dbl> <dbl> <dbl>               <dbl>
-#> 1 H2O2(0mM) logistic      1.85 0.357  16.4                1.94
-```
-
-``` r
-plot_fitted_curve(fit)
-```
-
-![](dd-growkar-workflow-files/figure-gfm/plot-fit-1.png)<!-- -->

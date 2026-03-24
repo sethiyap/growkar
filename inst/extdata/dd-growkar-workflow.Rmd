@@ -56,11 +56,6 @@ tidy_dd <- dplyr::mutate(
   condition = factor(.data$condition, levels = h2o2_levels)
 )
 
-averaged_dd <- tidy_dd |>
-  dplyr::group_by(.data$condition, .data$time) |>
-  dplyr::summarise(od = mean(.data$od, na.rm = TRUE), .groups = "drop") |>
-  dplyr::rename(sample = .data$condition)
-
 head(tidy_dd)
 ```
 
@@ -71,9 +66,9 @@ returns a `ggplot2` object that can be customized further if needed.
 
 ```{r average-growth-curve, fig.width=8, fig.height=5}
 plot_growth_curve(
-  averaged_dd,
-  average_replicates = FALSE,
-  colour_col = "sample",
+  tidy_dd,
+  average_replicates = TRUE,
+  colour_col = "condition",
   palette_name = "Dark2"
 )
 ```
@@ -109,49 +104,4 @@ plot_doubling_time(
   method = "rule_based",
   palette_name = "Dark2"
 )
-```
-
-## Rule-based exponential interval in all averaged samples
-
-This section shows the rule-based exponential interval for each averaged H2O2
-condition and the mean start and end times across all conditions.
-
-```{r detect-exponential-phase}
-phase_tbl <- compute_growth_rate(
-  averaged_dd,
-  method = "rule_based"
-) |>
-  dplyr::mutate(doubling_time = compute_doubling_time(.data$mu)) |>
-  dplyr::select(sample, start_time, end_time, mu, doubling_time)
-
-phase_tbl <- phase_tbl |>
-  dplyr::arrange(.data$sample) |>
-  dplyr::ungroup()
-
-knitr::kable(phase_tbl, digits = 3)
-
-phase_average <- phase_tbl |>
-  dplyr::summarise(
-    mean_start_time = mean(.data$start_time, na.rm = TRUE),
-    mean_end_time = mean(.data$end_time, na.rm = TRUE)
-  )
-
-knitr::kable(phase_average, digits = 3)
-```
-
-## Fit and plot one representative growth curve
-
-This section fits a logistic model to the averaged `H2O2(0mM)` curve and
-overlays observed and fitted values.
-
-```{r fit-one-sample}
-fit <- averaged_dd |>
-  filter(sample == "H2O2(0mM)") |>
-  fit_growth_curve(model = "logistic")
-
-extract_params(fit)
-```
-
-```{r plot-fit, fig.width=8, fig.height=5}
-plot_fitted_curve(fit)
 ```
