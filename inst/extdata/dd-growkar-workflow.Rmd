@@ -1,0 +1,96 @@
+---
+title: "growkar workflow for dd"
+output: html_document
+---
+
+```{r setup, message=FALSE, warning=FALSE}
+library(growkar)
+library(dplyr)
+library(knitr)
+```
+
+## Prepare data
+
+This example reads `CnH2O2_OD.txt`, converts it to the canonical tidy format
+used by `growkar`, and validates the result.
+
+```{r prepare-data}
+dd_path <- if (file.exists("CnH2O2_OD.txt")) {
+  "CnH2O2_OD.txt"
+} else {
+  system.file("extdata", "CnH2O2_OD.txt", package = "growkar")
+}
+
+dd <- read.delim(dd_path, check.names = FALSE)
+tidy_dd <- as_tidy_growth_data(dd)
+validate_growth_data(tidy_dd)
+
+head(tidy_dd)
+```
+
+## Plot growth curves with averaged replicates
+
+This plot averages replicates within each condition and returns a `ggplot2`
+object that can be customized further if needed.
+
+```{r average-growth-curve, fig.width=8, fig.height=5}
+plot_growth_curve(
+  tidy_dd,
+  average_replicates = TRUE,
+  colour_col = "condition",
+  palette_name = "Dark2"
+)
+```
+
+## Summarize doubling time with H2O2(0mM) as the reference
+
+This summary compares replicate-level doubling times for each condition against
+`H2O2(0mM)` and uses the default Benjamini-Hochberg adjustment for p-values.
+
+```{r doubling-time-summary}
+dt_stats <- summarize_growth_metrics(
+  tidy_dd,
+  method = "rolling_window",
+  comparison_col = "condition",
+  compare_to = "H2O2(0mM)"
+)
+
+knitr::kable(dt_stats, digits = 3)
+```
+
+## Plot doubling time comparisons
+
+This plot shows mean doubling time with error bars and comparison brackets
+against `H2O2(0mM)`.
+
+```{r doubling-time-plot, fig.width=8, fig.height=5}
+plot_doubling_time(
+  tidy_dd,
+  comparison_col = "condition",
+  compare_to = "H2O2(0mM)",
+  palette_name = "Dark2"
+)
+```
+
+## Fit and plot one representative growth curve
+
+This section fits a logistic model to the first sample in the reference
+condition and overlays observed and fitted values.
+
+```{r fit-one-sample}
+sample_to_fit <- tidy_dd |>
+  filter(condition == "H2O2(0mM)") |>
+  distinct(sample) |>
+  slice(1) |>
+  pull(sample)
+
+fit <- tidy_dd |>
+  filter(sample == sample_to_fit) |>
+  fit_growth_curve(model = "logistic")
+
+extract_params(fit)
+```
+
+```{r plot-fit, fig.width=8, fig.height=5}
+plot_fitted_curve(fit)
+```

@@ -20,13 +20,13 @@ jobs:
         with:
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: |
-            any::BiocManager
-            bioc::BiocCheck
-            local::.
-          needs: check
+      - name: Install BiocCheck and package dependencies
+        run: |
+          install.packages(c("BiocManager", "remotes"), repos = "https://cloud.r-project.org")
+          BiocManager::install(c("BiocCheck", "SummarizedExperiment", "S4Vectors"), ask = FALSE, update = FALSE)
+          remotes::install_deps(dependencies = TRUE, upgrade = "never")
+          remotes::install_local(upgrade = "never", dependencies = FALSE)
+        shell: Rscript {0}
 
       - name: Run BiocCheck
         run: BiocCheck::BiocCheck(".")

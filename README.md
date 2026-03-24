@@ -44,6 +44,10 @@ remotes::install_github("sethiyap/growkar")
 
 ## Example dataset
 
+For a standalone template built from `CnH2O2_OD.txt`, see
+<a href="inst/extdata/dd-growkar-workflow.Rmd" target="_blank">the dd
+growkar workflow example</a>.
+
 ``` r
 library(growkar)
 data(yeast_growth_data)
