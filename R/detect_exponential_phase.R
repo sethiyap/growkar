@@ -17,7 +17,10 @@
 #'   `r_squared`, ranked by highest positive slope and then `r_squared`. The
 #'   returned tibble also includes `rank`, `n_points`, `selection_reason`, and
 #'   `degraded` metadata describing how the candidate windows were selected. For
-#'   multi-sample input, windows are returned for each sample.
+#'   multi-sample input, windows are returned for each sample. Here
+#'   `degraded = TRUE` indicates that detection required fallback behavior, such
+#'   as reducing the requested window size or returning a placeholder result
+#'   because too few usable observations were available.
 #'
 #' @examples
 #' data(yeast_growth_data)

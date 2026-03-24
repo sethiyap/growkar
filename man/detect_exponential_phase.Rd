@@ -30,7 +30,10 @@ A tibble with \code{sample}, \code{start_time}, \code{end_time}, \code{slope}, a
 \code{r_squared}, ranked by highest positive slope and then \code{r_squared}. The
 returned tibble also includes \code{rank}, \code{n_points}, \code{selection_reason}, and
 \code{degraded} metadata describing how the candidate windows were selected. For
-multi-sample input, windows are returned for each sample.
+multi-sample input, windows are returned for each sample. Here
+\code{degraded = TRUE} indicates that detection required fallback behavior, such
+as reducing the requested window size or returning a placeholder result
+because too few usable observations were available.
 }
 \description{
 Identify rolling windows with the strongest evidence for exponential growth.

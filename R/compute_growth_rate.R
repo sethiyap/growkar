@@ -44,7 +44,10 @@
 #' @return A tibble with `sample`, `mu`, `start_time`, `end_time`, `r_squared`,
 #'   and `method`. Here `mu` is the estimated specific growth rate. Additional
 #'   diagnostic columns describe the number of points used and whether the
-#'   estimate required degraded fallback behavior.
+#'   estimate required degraded fallback behavior. Here `degraded = TRUE`
+#'   indicates that the preferred estimation path could not be used cleanly, so
+#'   the result comes from a reduced-window or fallback path and should be
+#'   interpreted with extra caution.
 #'
 #' @examples
 #' data(yeast_growth_data)

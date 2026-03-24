@@ -752,6 +752,9 @@ rate.</p>
 growth directly from observed data, using methods such as
 <code>&quot;rolling_window&quot;</code>, <code>&quot;defined_interval&quot;</code>, and
 <code>&quot;rule_based&quot;</code>.</p>
+<p>Briefly, growth rate is estimated as the slope of
+<code>log(OD)</code> versus time over the selected interval, and
+doubling time is then calculated as <code>log(2) / mu</code>.</p>
 <p>Method options:</p>
 <ul>
 <li><code>&quot;rolling_window&quot;</code> scans rolling windows across the time

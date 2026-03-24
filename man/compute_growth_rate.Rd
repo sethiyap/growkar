@@ -43,7 +43,10 @@ estimation when replicate metadata are available.}
 A tibble with \code{sample}, \code{mu}, \code{start_time}, \code{end_time}, \code{r_squared},
 and \code{method}. Here \code{mu} is the estimated specific growth rate. Additional
 diagnostic columns describe the number of points used and whether the
-estimate required degraded fallback behavior.
+estimate required degraded fallback behavior. Here \code{degraded = TRUE}
+indicates that the preferred estimation path could not be used cleanly, so
+the result comes from a reduced-window or fallback path and should be
+interpreted with extra caution.
 }
 \description{
 Estimate per-sample growth rate from tidy growth data.

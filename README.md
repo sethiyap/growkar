@@ -189,6 +189,10 @@ estimated growth rate.
 from observed data, using methods such as `"rolling_window"`,
 `"defined_interval"`, and `"rule_based"`.
 
+Briefly, growth rate is estimated as the slope of `log(OD)` versus time
+over the selected interval, and doubling time is then calculated as
+`log(2) / mu`.
+
 Method options:
 
 - `"rolling_window"` scans rolling windows across the time series and
