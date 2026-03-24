@@ -57,6 +57,7 @@ plot_growth_curve <- function(data,
   }
 
   y_col <- if ("od_mean" %in% names(plot_data)) "od_mean" else "od"
+  colour_levels <- growkar_plot_levels(plot_data[[colour_col]])
   p <- ggplot2::ggplot(
     plot_data,
     ggplot2::aes(x = .data$time, y = .data[[y_col]], colour = .data[[colour_col]])
@@ -83,12 +84,12 @@ plot_growth_curve <- function(data,
   }
 
   colour_values <- if (!is.null(custom_colors)) {
-    custom_colors
+    growkar_named_colors(custom_colors, colour_levels)
   } else {
     select_palette(length(unique(plot_data[[colour_col]])), palette_name = palette_name)
   }
 
-  p + ggplot2::scale_colour_manual(values = colour_values)
+  p + ggplot2::scale_colour_manual(values = colour_values, breaks = colour_levels)
 }
 
 growkar_average_replicates <- function(data) {
@@ -120,4 +121,24 @@ growkar_average_replicates <- function(data) {
   }
 
   averaged
+}
+
+growkar_plot_levels <- function(x) {
+  if (is.factor(x)) {
+    return(levels(x)[levels(x) %in% as.character(unique(x))])
+  }
+
+  unique(as.character(x))
+}
+
+growkar_named_colors <- function(colors, levels) {
+  if (is.null(names(colors))) {
+    if (length(colors) < length(levels)) {
+      return(colors)
+    }
+
+    stats::setNames(colors[seq_along(levels)], levels)
+  } else {
+    colors
+  }
 }

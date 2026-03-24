@@ -84,6 +84,8 @@ plot_doubling_time <- function(data,
     stop("`comparison_col` must be present in the summarized output.", call. = FALSE)
   }
 
+  comparison_levels <- growkar_plot_levels(summary_tbl[[comparison_col]])
+
   if (!is.null(exclude_groups)) {
     if (!isTRUE(average_replicates) && !is.null(compare_to) && compare_to %in% exclude_groups) {
       stop("`exclude_groups` cannot contain `compare_to`.", call. = FALSE)
@@ -96,6 +98,7 @@ plot_doubling_time <- function(data,
   }
 
   if (isTRUE(average_replicates)) {
+    summary_tbl[[comparison_col]] <- factor(summary_tbl[[comparison_col]], levels = comparison_levels)
     p <- ggplot2::ggplot(
       summary_tbl,
       ggplot2::aes(x = .data[[comparison_col]], y = .data$doubling_time, fill = .data[[comparison_col]])
@@ -109,6 +112,7 @@ plot_doubling_time <- function(data,
       ggplot2::xlab(comparison_col) +
       ggplot2::ylab("Doubling time")
   } else {
+    summary_tbl[[comparison_col]] <- factor(summary_tbl[[comparison_col]], levels = comparison_levels)
     y_max <- max(summary_tbl$mean_doubling_time + dplyr::coalesce(summary_tbl$error_bar, 0), na.rm = TRUE)
     offset <- if (is.finite(y_max)) max(y_max * 0.08, 0.05) else 0.05
 
@@ -168,12 +172,12 @@ plot_doubling_time <- function(data,
   }
 
   fill_values <- if (!is.null(custom_colors)) {
-    custom_colors
+    growkar_named_colors(custom_colors, comparison_levels)
   } else {
     select_palette(length(unique(summary_tbl[[comparison_col]])), palette_name = palette_name)
   }
 
-  p + ggplot2::scale_fill_manual(values = fill_values)
+  p + ggplot2::scale_fill_manual(values = fill_values, breaks = comparison_levels)
 }
 
 growkar_bracket_annotations <- function(summary_tbl, comparison_col, compare_to, offset) {
