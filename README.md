@@ -28,6 +28,8 @@ the canonical columns `sample`, `time`, and `od`. It is especially
 useful for plotting growth curves from tidy input and returning
 `ggplot2` objects that can be customized into publication-ready figures.
 
+## Input formats
+
 Input data can be supplied in either:
 
 - tidy format with columns `sample`, `time`, and `od`
