@@ -1038,22 +1038,120 @@ estimates. For a combined table across all samples, use
 </tr>
 </tbody>
 </table>
+<h2 id="detect-exponential-phase">Detect exponential phase</h2>
+<p><strong>What it does:</strong>
+<code>detect_exponential_phase()</code> identifies likely
+exponential-phase windows automatically.</p>
+<p><strong>Why use it:</strong> It is a diagnostic and explanatory
+function. Use it when you want to inspect which time interval appears
+most consistent with exponential growth before moving to final summary
+metrics.</p>
+<p><strong>Minimal example:</strong></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>phase_tbl <span class="ot">&lt;-</span> <span class="fu">detect_exponential_phase</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  <span class="fu">filter</span>(tidy_data, sample <span class="sc">==</span> sample_id)</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>)</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(phase_tbl), <span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th align="left">sample</th>
+<th align="right">rank</th>
+<th align="right">start_time</th>
+<th align="right">end_time</th>
+<th align="right">slope</th>
+<th align="right">r_squared</th>
+<th align="right">n_points</th>
+<th align="left">selection_reason</th>
+<th align="left">degraded</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">Cg_R1</td>
+<td align="right">1</td>
+<td align="right">4.5</td>
+<td align="right">6.5</td>
+<td align="right">0.576</td>
+<td align="right">1.000</td>
+<td align="right">5</td>
+<td align="left">rolling_window_ranked</td>
+<td align="left">FALSE</td>
+</tr>
+<tr>
+<td align="left">Cg_R1</td>
+<td align="right">2</td>
+<td align="right">4.0</td>
+<td align="right">6.0</td>
+<td align="right">0.551</td>
+<td align="right">0.997</td>
+<td align="right">5</td>
+<td align="left">rolling_window_ranked</td>
+<td align="left">FALSE</td>
+</tr>
+<tr>
+<td align="left">Cg_R1</td>
+<td align="right">3</td>
+<td align="right">5.0</td>
+<td align="right">7.0</td>
+<td align="right">0.551</td>
+<td align="right">0.997</td>
+<td align="right">5</td>
+<td align="left">rolling_window_ranked</td>
+<td align="left">FALSE</td>
+</tr>
+<tr>
+<td align="left">Cg_R1</td>
+<td align="right">4</td>
+<td align="right">3.5</td>
+<td align="right">5.5</td>
+<td align="right">0.490</td>
+<td align="right">0.990</td>
+<td align="right">5</td>
+<td align="left">rolling_window_ranked</td>
+<td align="left">FALSE</td>
+</tr>
+<tr>
+<td align="left">Cg_R1</td>
+<td align="right">5</td>
+<td align="right">5.5</td>
+<td align="right">7.5</td>
+<td align="right">0.490</td>
+<td align="right">0.991</td>
+<td align="right">5</td>
+<td align="left">rolling_window_ranked</td>
+<td align="left">FALSE</td>
+</tr>
+<tr>
+<td align="left">Cg_R1</td>
+<td align="right">6</td>
+<td align="right">6.0</td>
+<td align="right">8.0</td>
+<td align="right">0.414</td>
+<td align="right">0.987</td>
+<td align="right">5</td>
+<td align="left">rolling_window_ranked</td>
+<td align="left">FALSE</td>
+</tr>
+</tbody>
+</table>
 <h2 id="summarize-growth-metrics-across-samples">Summarize growth
 metrics across samples</h2>
 <p><strong>What it does:</strong>
 <code>summarize_growth_metrics()</code> computes growth rate and
 doubling time across all samples.</p>
-<p><strong>Why use it:</strong> It is useful for comparing strains,
-conditions, or replicates in one tidy summary table. Internally, it
-derives doubling time from the estimated growth rate using
+<p><strong>Why use it:</strong> It is the reporting function for final
+sample- or group-level results. Use it when you want a tidy table for
+comparing strains, conditions, or replicates. Internally, it derives
+doubling time from the estimated growth rate using
 <code>compute_doubling_time()</code>.</p>
 <p><strong>Minimal example:</strong></p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>metrics <span class="ot">&lt;-</span> <span class="fu">summarize_growth_metrics</span>(tidy_data)</span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive</span></span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; growth slope (rolling_window_ranked).</span></span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `YPD_R2`: Exponential phase detection did not yield a positive</span></span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt; growth slope (rolling_window_ranked).</span></span>
-<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(metrics, <span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>metrics <span class="ot">&lt;-</span> <span class="fu">summarize_growth_metrics</span>(tidy_data)</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="co">#&gt; growth slope (rolling_window_ranked).</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `YPD_R2`: Exponential phase detection did not yield a positive</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co">#&gt; growth slope (rolling_window_ranked).</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(metrics, <span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr>
@@ -1183,19 +1281,19 @@ derives doubling time from the estimated growth rate using
 <p>To summarize replicate-level doubling time by condition and compare
 each group to a reference condition, supply <code>comparison_col</code>
 and <code>compare_to</code>.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>dt_stats <span class="ot">&lt;-</span> <span class="fu">summarize_growth_metrics</span>(</span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  tidy_data,</span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;rolling_window&quot;</span>,</span>
-<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  <span class="at">comparison_col =</span> <span class="st">&quot;condition&quot;</span>,</span>
-<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>  <span class="at">compare_to =</span> <span class="st">&quot;Cg&quot;</span>,</span>
-<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>  <span class="at">select_replicates =</span> <span class="fu">c</span>(<span class="st">&quot;R1&quot;</span>, <span class="st">&quot;R2&quot;</span>, <span class="st">&quot;R3&quot;</span>)</span>
-<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>)</span>
-<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive</span></span>
-<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="co">#&gt; growth slope (rolling_window_ranked).</span></span>
-<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `YPD_R2`: Exponential phase detection did not yield a positive</span></span>
-<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt; growth slope (rolling_window_ranked).</span></span>
-<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a></span>
-<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(dt_stats, <span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>dt_stats <span class="ot">&lt;-</span> <span class="fu">summarize_growth_metrics</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>  tidy_data,</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;rolling_window&quot;</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>  <span class="at">comparison_col =</span> <span class="st">&quot;condition&quot;</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>  <span class="at">compare_to =</span> <span class="st">&quot;Cg&quot;</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>  <span class="at">select_replicates =</span> <span class="fu">c</span>(<span class="st">&quot;R1&quot;</span>, <span class="st">&quot;R2&quot;</span>, <span class="st">&quot;R3&quot;</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>)</span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive</span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="co">#&gt; growth slope (rolling_window_ranked).</span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `YPD_R2`: Exponential phase detection did not yield a positive</span></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="co">#&gt; growth slope (rolling_window_ranked).</span></span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(dt_stats, <span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr>
@@ -1244,102 +1342,6 @@ and <code>compare_to</code>.</p>
 </table>
 <p>This summary includes numeric p-values in <code>p_value</code> and
 asterisk-form significance labels in <code>p_value_label</code>.</p>
-<h2 id="detect-exponential-phase">Detect exponential phase</h2>
-<p><strong>What it does:</strong>
-<code>detect_exponential_phase()</code> identifies likely
-exponential-phase windows automatically.</p>
-<p><strong>Why use it:</strong> It helps show which time interval is
-most consistent with exponential growth and supports interpretation of
-the growth-rate estimate.</p>
-<p><strong>Minimal example:</strong></p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>phase_tbl <span class="ot">&lt;-</span> <span class="fu">detect_exponential_phase</span>(</span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>  <span class="fu">filter</span>(tidy_data, sample <span class="sc">==</span> sample_id)</span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>)</span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a></span>
-<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(phase_tbl), <span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
-<table>
-<thead>
-<tr>
-<th align="left">sample</th>
-<th align="right">rank</th>
-<th align="right">start_time</th>
-<th align="right">end_time</th>
-<th align="right">slope</th>
-<th align="right">r_squared</th>
-<th align="right">n_points</th>
-<th align="left">selection_reason</th>
-<th align="left">degraded</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="left">Cg_R1</td>
-<td align="right">1</td>
-<td align="right">4.5</td>
-<td align="right">6.5</td>
-<td align="right">0.576</td>
-<td align="right">1.000</td>
-<td align="right">5</td>
-<td align="left">rolling_window_ranked</td>
-<td align="left">FALSE</td>
-</tr>
-<tr>
-<td align="left">Cg_R1</td>
-<td align="right">2</td>
-<td align="right">4.0</td>
-<td align="right">6.0</td>
-<td align="right">0.551</td>
-<td align="right">0.997</td>
-<td align="right">5</td>
-<td align="left">rolling_window_ranked</td>
-<td align="left">FALSE</td>
-</tr>
-<tr>
-<td align="left">Cg_R1</td>
-<td align="right">3</td>
-<td align="right">5.0</td>
-<td align="right">7.0</td>
-<td align="right">0.551</td>
-<td align="right">0.997</td>
-<td align="right">5</td>
-<td align="left">rolling_window_ranked</td>
-<td align="left">FALSE</td>
-</tr>
-<tr>
-<td align="left">Cg_R1</td>
-<td align="right">4</td>
-<td align="right">3.5</td>
-<td align="right">5.5</td>
-<td align="right">0.490</td>
-<td align="right">0.990</td>
-<td align="right">5</td>
-<td align="left">rolling_window_ranked</td>
-<td align="left">FALSE</td>
-</tr>
-<tr>
-<td align="left">Cg_R1</td>
-<td align="right">5</td>
-<td align="right">5.5</td>
-<td align="right">7.5</td>
-<td align="right">0.490</td>
-<td align="right">0.991</td>
-<td align="right">5</td>
-<td align="left">rolling_window_ranked</td>
-<td align="left">FALSE</td>
-</tr>
-<tr>
-<td align="left">Cg_R1</td>
-<td align="right">6</td>
-<td align="right">6.0</td>
-<td align="right">8.0</td>
-<td align="right">0.414</td>
-<td align="right">0.987</td>
-<td align="right">5</td>
-<td align="left">rolling_window_ranked</td>
-<td align="left">FALSE</td>
-</tr>
-</tbody>
-</table>
 <h2 id="plot-doubling-time">Plot doubling time</h2>
 <p><strong>What it does:</strong> <code>plot_doubling_time()</code>
 summarizes replicate-level doubling times as a bar plot with error bars

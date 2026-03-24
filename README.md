@@ -353,14 +353,43 @@ knitr::kable(doubling_time_tbl, digits = 3)
 |:-------|------------:|--------------:|
 | Cg_R1  |       0.576 |         1.204 |
 
+## Detect exponential phase
+
+**What it does:** `detect_exponential_phase()` identifies likely
+exponential-phase windows automatically.
+
+**Why use it:** It is a diagnostic and explanatory function. Use it when
+you want to inspect which time interval appears most consistent with
+exponential growth before moving to final summary metrics.
+
+**Minimal example:**
+
+``` r
+phase_tbl <- detect_exponential_phase(
+  filter(tidy_data, sample == sample_id)
+)
+
+knitr::kable(head(phase_tbl), digits = 3)
+```
+
+| sample | rank | start_time | end_time | slope | r_squared | n_points | selection_reason | degraded |
+|:---|---:|---:|---:|---:|---:|---:|:---|:---|
+| Cg_R1 | 1 | 4.5 | 6.5 | 0.576 | 1.000 | 5 | rolling_window_ranked | FALSE |
+| Cg_R1 | 2 | 4.0 | 6.0 | 0.551 | 0.997 | 5 | rolling_window_ranked | FALSE |
+| Cg_R1 | 3 | 5.0 | 7.0 | 0.551 | 0.997 | 5 | rolling_window_ranked | FALSE |
+| Cg_R1 | 4 | 3.5 | 5.5 | 0.490 | 0.990 | 5 | rolling_window_ranked | FALSE |
+| Cg_R1 | 5 | 5.5 | 7.5 | 0.490 | 0.991 | 5 | rolling_window_ranked | FALSE |
+| Cg_R1 | 6 | 6.0 | 8.0 | 0.414 | 0.987 | 5 | rolling_window_ranked | FALSE |
+
 ## Summarize growth metrics across samples
 
 **What it does:** `summarize_growth_metrics()` computes growth rate and
 doubling time across all samples.
 
-**Why use it:** It is useful for comparing strains, conditions, or
-replicates in one tidy summary table. Internally, it derives doubling
-time from the estimated growth rate using `compute_doubling_time()`.
+**Why use it:** It is the reporting function for final sample- or
+group-level results. Use it when you want a tidy table for comparing
+strains, conditions, or replicates. Internally, it derives doubling time
+from the estimated growth rate using `compute_doubling_time()`.
 
 **Minimal example:**
 
@@ -413,34 +442,6 @@ knitr::kable(dt_stats, digits = 3)
 
 This summary includes numeric p-values in `p_value` and asterisk-form
 significance labels in `p_value_label`.
-
-## Detect exponential phase
-
-**What it does:** `detect_exponential_phase()` identifies likely
-exponential-phase windows automatically.
-
-**Why use it:** It helps show which time interval is most consistent
-with exponential growth and supports interpretation of the growth-rate
-estimate.
-
-**Minimal example:**
-
-``` r
-phase_tbl <- detect_exponential_phase(
-  filter(tidy_data, sample == sample_id)
-)
-
-knitr::kable(head(phase_tbl), digits = 3)
-```
-
-| sample | rank | start_time | end_time | slope | r_squared | n_points | selection_reason | degraded |
-|:---|---:|---:|---:|---:|---:|---:|:---|:---|
-| Cg_R1 | 1 | 4.5 | 6.5 | 0.576 | 1.000 | 5 | rolling_window_ranked | FALSE |
-| Cg_R1 | 2 | 4.0 | 6.0 | 0.551 | 0.997 | 5 | rolling_window_ranked | FALSE |
-| Cg_R1 | 3 | 5.0 | 7.0 | 0.551 | 0.997 | 5 | rolling_window_ranked | FALSE |
-| Cg_R1 | 4 | 3.5 | 5.5 | 0.490 | 0.990 | 5 | rolling_window_ranked | FALSE |
-| Cg_R1 | 5 | 5.5 | 7.5 | 0.490 | 0.991 | 5 | rolling_window_ranked | FALSE |
-| Cg_R1 | 6 | 6.0 | 8.0 | 0.414 | 0.987 | 5 | rolling_window_ranked | FALSE |
 
 ## Plot doubling time
 
