@@ -36,3 +36,13 @@ test_that("plot_doubling_time can exclude selected groups from the plot", {
 
   expect_s3_class(p, "ggplot")
 })
+
+test_that("plot_doubling_time supports averaged replicate summaries", {
+  p <- suppressWarnings(plot_doubling_time(
+    yeast_growth_data,
+    average_replicates = TRUE,
+    palette_name = "Dark2"
+  ))
+
+  expect_s3_class(p, "ggplot")
+})

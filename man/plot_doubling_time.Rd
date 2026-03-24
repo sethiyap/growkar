@@ -10,6 +10,7 @@ plot_doubling_time(
   compare_to = NULL,
   exclude_groups = NULL,
   select_replicates = NULL,
+  average_replicates = FALSE,
   method = c("rolling_window", "defined_interval", "rule_based"),
   error = c("se", "sd"),
   pvalue_method = c("t_test", "wilcox"),
@@ -31,6 +32,9 @@ to remove from the plotted summary.}
 
 \item{select_replicates}{Optional character vector of replicate IDs to retain
 before computing doubling times.}
+
+\item{average_replicates}{Logical; if \code{TRUE}, compute doubling time from
+averaged replicate trajectories and plot one bar per averaged sample.}
 
 \item{method}{Estimation method passed to \code{summarize_growth_metrics()}.}
 

@@ -80,61 +80,33 @@ plot_growth_curve(
 
 ## Summarize doubling time from averaged replicates
 
-This summary computes doubling time from the averaged growth trajectory for each
-condition using the rolling-window method.
+This summary computes replicate-level doubling times for the selected Sc
+conditions using the rolling-window method.
 
 ```{r doubling-time-summary}
 dt_stats <- summarize_growth_metrics(
   tidy_sc,
   method = "rolling_window",
-  average_replicates = TRUE
+  comparison_col = "condition",
+  compare_to = "Sc(0)"
 )
 
 dt_stats <- dt_stats |>
-  dplyr::mutate(sample = factor(.data$sample, levels = selected_conditions)) |>
-  dplyr::arrange(.data$sample)
+  dplyr::mutate(condition = factor(.data$condition, levels = selected_conditions)) |>
+  dplyr::arrange(.data$condition)
 
 knitr::kable(dt_stats, digits = 3)
 ```
 
-## Plot averaged doubling time
+## Plot doubling time with error bars and p-value annotations
 
 ```{r doubling-time-plot, fig.width=8, fig.height=5}
-ggplot2::ggplot(
-  dt_stats,
-  ggplot2::aes(x = .data$sample, y = .data$doubling_time, fill = .data$sample)
-) +
-  ggplot2::geom_col(width = 0.7) +
-  ggplot2::scale_fill_manual(values = sc_colors) +
-  ggplot2::theme_bw() +
-  ggplot2::theme(legend.position = "none", panel.grid.minor = ggplot2::element_blank()) +
-  ggplot2::labs(x = "Condition", y = "Doubling time")
-```
-
-## Rolling-window exponential phase in all averaged samples
-
-This section shows the highest-ranked rolling-window exponential interval for
-each averaged Sc condition and the mean start and end times across all
-conditions.
-
-```{r detect-exponential-phase}
-phase_tbl <- detect_exponential_phase(
+plot_doubling_time(
   tidy_sc,
-  average_replicates = TRUE
-) |>
-  dplyr::mutate(sample = factor(.data$sample, levels = selected_conditions)) |>
-  dplyr::arrange(.data$sample) |>
-  dplyr::group_by(.data$sample) |>
-  dplyr::slice_head(n = 1) |>
-  dplyr::ungroup()
-
-knitr::kable(phase_tbl, digits = 3)
-
-phase_average <- phase_tbl |>
-  dplyr::summarise(
-    mean_start_time = mean(.data$start_time, na.rm = TRUE),
-    mean_end_time = mean(.data$end_time, na.rm = TRUE)
-  )
-
-knitr::kable(phase_average, digits = 3)
+  comparison_col = "condition",
+  compare_to = "Sc(0)",
+  average_replicates = FALSE,
+  method = "rolling_window",
+  custom_colors = sc_colors
+)
 ```

@@ -103,84 +103,42 @@ plot_growth_curve(
 
 ## Summarize doubling time from averaged replicates
 
-This summary computes doubling time from the averaged growth trajectory
-for each condition using the rolling-window method.
+This summary computes replicate-level doubling times for the selected Sc
+conditions using the rolling-window method.
 
 ``` r
 dt_stats <- summarize_growth_metrics(
   tidy_sc,
   method = "rolling_window",
-  average_replicates = TRUE
+  comparison_col = "condition",
+  compare_to = "Sc(0)"
 )
 
 dt_stats <- dt_stats |>
-  dplyr::mutate(sample = factor(.data$sample, levels = selected_conditions)) |>
-  dplyr::arrange(.data$sample)
+  dplyr::mutate(condition = factor(.data$condition, levels = selected_conditions)) |>
+  dplyr::arrange(.data$condition)
 
 knitr::kable(dt_stats, digits = 3)
 ```
 
-| sample | mu | start_time | end_time | r_squared | method | n_points | degraded | note | doubling_time |
-|:---|---:|---:|---:|---:|:---|---:|:---|:---|---:|
-| Sc(100) | 0.469 | 20.667 | 22.001 | 1 | rolling_window | 5 | FALSE | rolling_window_ranked | 1.479 |
-| Sc(50) | 0.311 | 16.667 | 18.001 | 1 | rolling_window | 5 | FALSE | rolling_window_ranked | 2.227 |
-| Sc(25) | 0.327 | 14.334 | 15.667 | 1 | rolling_window | 5 | FALSE | rolling_window_ranked | 2.117 |
-| Sc(0) | 0.330 | 13.667 | 15.001 | 1 | rolling_window | 5 | FALSE | rolling_window_ranked | 2.103 |
+| condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
+|:---|---:|---:|---:|---:|---:|---:|:---|
+| Sc(100) | 0.482 | 1.440 | 0.028 | 3 | 0.016 | 0.000 | \*\*\*\* |
+| Sc(50) | 0.314 | 2.211 | 0.077 | 3 | 0.044 | 0.132 | ns |
+| Sc(25) | 0.330 | 2.101 | 0.068 | 3 | 0.039 | 0.959 | ns |
+| Sc(0) | 0.330 | 2.103 | 0.015 | 3 | 0.009 | 1.000 | ref |
 
-## Plot averaged doubling time
+## Plot doubling time with error bars and p-value annotations
 
 ``` r
-ggplot2::ggplot(
-  dt_stats,
-  ggplot2::aes(x = .data$sample, y = .data$doubling_time, fill = .data$sample)
-) +
-  ggplot2::geom_col(width = 0.7) +
-  ggplot2::scale_fill_manual(values = sc_colors) +
-  ggplot2::theme_bw() +
-  ggplot2::theme(legend.position = "none", panel.grid.minor = ggplot2::element_blank()) +
-  ggplot2::labs(x = "Condition", y = "Doubling time")
+plot_doubling_time(
+  tidy_sc,
+  comparison_col = "condition",
+  compare_to = "Sc(0)",
+  average_replicates = FALSE,
+  method = "rolling_window",
+  custom_colors = sc_colors
+)
 ```
 
 ![](scbs181-growkar-workflow-files/figure-gfm/doubling-time-plot-1.png)<!-- -->
-
-## Rolling-window exponential phase in all averaged samples
-
-This section shows the highest-ranked rolling-window exponential
-interval for each averaged Sc condition and the mean start and end times
-across all conditions.
-
-``` r
-phase_tbl <- detect_exponential_phase(
-  tidy_sc,
-  average_replicates = TRUE
-) |>
-  dplyr::mutate(sample = factor(.data$sample, levels = selected_conditions)) |>
-  dplyr::arrange(.data$sample) |>
-  dplyr::group_by(.data$sample) |>
-  dplyr::slice_head(n = 1) |>
-  dplyr::ungroup()
-
-knitr::kable(phase_tbl, digits = 3)
-```
-
-| sample | start_time | end_time | slope | r_squared | n_points | selection_reason | degraded | rank |
-|:---|---:|---:|---:|---:|---:|:---|:---|---:|
-| Sc(100) | 20.667 | 22.001 | 0.469 | 1 | 5 | rolling_window_ranked | FALSE | 1 |
-| Sc(50) | 16.667 | 18.001 | 0.311 | 1 | 5 | rolling_window_ranked | FALSE | 1 |
-| Sc(25) | 14.334 | 15.667 | 0.327 | 1 | 5 | rolling_window_ranked | FALSE | 1 |
-| Sc(0) | 13.667 | 15.001 | 0.330 | 1 | 5 | rolling_window_ranked | FALSE | 1 |
-
-``` r
-
-phase_average <- phase_tbl |>
-  dplyr::summarise(
-    mean_start_time = mean(.data$start_time, na.rm = TRUE),
-    mean_end_time = mean(.data$end_time, na.rm = TRUE)
-  )
-
-knitr::kable(phase_average, digits = 3)
-```
-
-| mean_start_time | mean_end_time |
-|----------------:|--------------:|
-|          16.334 |        17.667 |
