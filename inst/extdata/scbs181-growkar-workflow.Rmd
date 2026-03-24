@@ -1,0 +1,160 @@
+---
+title: "ScBS181 growkar workflow example"
+output: github_document
+---
+
+```{r setup, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "scbs181-growkar-workflow-files/figure-gfm/"
+)
+
+if (requireNamespace("pkgload", quietly = TRUE) && file.exists("DESCRIPTION")) {
+  pkg_root <- "."
+} else {
+  candidates <- c(".", "..", "../..")
+  match_idx <- which(file.exists(file.path(candidates, "DESCRIPTION")))
+  pkg_root <- if (length(match_idx) > 0L) candidates[[match_idx[[1]]]] else NULL
+}
+
+if (!is.null(pkg_root) && requireNamespace("pkgload", quietly = TRUE)) {
+  pkgload::load_all(pkg_root, export_all = FALSE, helpers = FALSE, quiet = TRUE)
+}
+
+library(growkar)
+library(dplyr)
+library(knitr)
+
+sc_colors <- c("blue4", "#E41A1C", "gold", "black")
+```
+
+## Prepare data
+
+This example reads `ScBS181_OD.txt`, converts it to the canonical tidy format
+used by `growkar`, and validates the result.
+
+```{r prepare-data}
+sc_path <- if (file.exists("ScBS181_OD.txt")) {
+  "ScBS181_OD.txt"
+} else {
+  system.file("extdata", "ScBS181_OD.txt", package = "growkar")
+}
+
+sc_raw <- read.delim(sc_path, check.names = FALSE)
+tidy_sc <- as_tidy_growth_data(sc_raw)
+validate_growth_data(tidy_sc)
+
+sc_levels <- tidy_sc |>
+  dplyr::distinct(condition) |>
+  dplyr::mutate(
+    concentration = as.numeric(sub("^Sc\\(([-0-9.]+)\\)$", "\\1", .data$condition))
+  ) |>
+  dplyr::arrange(.data$concentration) |>
+  dplyr::pull(condition)
+
+tidy_sc <- dplyr::mutate(
+  tidy_sc,
+  condition = factor(.data$condition, levels = sc_levels)
+)
+
+selected_conditions <- c("Sc(100)", "Sc(50)", "Sc(25)", "Sc(0)")
+
+tidy_sc <- tidy_sc |>
+  dplyr::filter(.data$condition %in% selected_conditions) |>
+  dplyr::mutate(condition = factor(.data$condition, levels = selected_conditions))
+
+averaged_sc <- tidy_sc |>
+  dplyr::group_by(.data$condition, .data$time) |>
+  dplyr::summarise(od = mean(.data$od, na.rm = TRUE), .groups = "drop") |>
+  dplyr::rename(sample = .data$condition) |>
+  dplyr::mutate(sample = factor(.data$sample, levels = selected_conditions))
+
+head(tidy_sc)
+```
+
+## Plot growth curves with averaged replicates
+
+```{r average-growth-curve, fig.width=8, fig.height=5}
+plot_growth_curve(
+  averaged_sc,
+  average_replicates = FALSE,
+  colour_col = "sample",
+  custom_colors = sc_colors
+)
+```
+
+## Summarize doubling time with Sc(0) as the reference
+
+This summary compares replicate-level doubling times for each condition against
+`Sc(0)` using the rolling-window method.
+
+```{r doubling-time-summary}
+dt_stats <- summarize_growth_metrics(
+  tidy_sc,
+  method = "rolling_window",
+  comparison_col = "condition",
+  compare_to = "Sc(0)"
+)
+
+dt_stats <- dplyr::arrange(dt_stats, .data$condition)
+
+knitr::kable(dt_stats, digits = 3)
+```
+
+## Plot doubling time comparisons
+
+```{r doubling-time-plot, fig.width=8, fig.height=5}
+plot_doubling_time(
+  tidy_sc,
+  comparison_col = "condition",
+  compare_to = "Sc(0)",
+  method = "rolling_window",
+  custom_colors = sc_colors
+)
+```
+
+## Rolling-window exponential phase in all averaged samples
+
+This section shows the highest-ranked rolling-window exponential interval for
+each averaged Sc condition and the mean start and end times across all
+conditions.
+
+```{r detect-exponential-phase}
+phase_tbl <- dplyr::bind_rows(
+  lapply(split(averaged_sc, averaged_sc$sample), function(sample_data) {
+    detect_exponential_phase(sample_data) |>
+      dplyr::slice_head(n = 1)
+  })
+)
+
+phase_tbl <- phase_tbl |>
+  dplyr::arrange(.data$sample)
+
+knitr::kable(phase_tbl, digits = 3)
+
+phase_average <- phase_tbl |>
+  dplyr::summarise(
+    mean_start_time = mean(.data$start_time, na.rm = TRUE),
+    mean_end_time = mean(.data$end_time, na.rm = TRUE)
+  )
+
+knitr::kable(phase_average, digits = 3)
+```
+
+## Fit and plot one representative growth curve
+
+This section fits a logistic model to the averaged `Sc(0)` curve and overlays
+observed and fitted values.
+
+```{r fit-one-sample}
+fit <- averaged_sc |>
+  filter(sample == "Sc(0)") |>
+  fit_growth_curve(model = "logistic")
+
+extract_params(fit)
+```
+
+```{r plot-fit, fig.width=8, fig.height=5}
+plot_fitted_curve(fit)
+```
