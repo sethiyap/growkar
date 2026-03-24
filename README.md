@@ -248,14 +248,6 @@ ggplot2::ggplot(method_plot_data, ggplot2::aes(time, od)) +
 
 ``` r
 library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
 library(knitr)
 
 sample_id <- unique(tidy_data$sample)[1]
@@ -391,7 +383,6 @@ dt_stats <- summarize_growth_metrics(
   method = "rolling_window",
   comparison_col = "condition",
   compare_to = "Cg",
-  p_adjust_method = "BH",
   select_replicates = c("R1", "R2", "R3")
 )
 #> Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive
@@ -402,16 +393,14 @@ dt_stats <- summarize_growth_metrics(
 knitr::kable(dt_stats, digits = 3)
 ```
 
-| condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_adjusted | p_value_label |
-|:---|---:|---:|---:|---:|---:|---:|---:|:---|
-| Cg | 0.569 | 1.219 | 0.017 | 3 | 0.010 | NA | NA | ref |
-| CgFlu | 0.404 | 1.714 | 0.010 | 3 | 0.006 | 0 | 0 | \*\*\*\* |
-| YPD | 0.004 | 179.350 | NA | 1 | NA | NA | NA | NA |
+| condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
+|:---|---:|---:|---:|---:|---:|---:|:---|
+| Cg | 0.569 | 1.219 | 0.017 | 3 | 0.010 | NA | ref |
+| CgFlu | 0.404 | 1.714 | 0.010 | 3 | 0.006 | 0 | \*\*\*\* |
+| YPD | 0.004 | 179.350 | NA | 1 | NA | NA | NA |
 
-This summary includes raw numeric p-values in `p_value`, adjusted
-p-values in `p_value_adjusted`, and asterisk-form significance labels in
-`p_value_label`. By default, p-values are adjusted with the
-Benjamini-Hochberg (`"BH"`) method.
+This summary includes numeric p-values in `p_value` and asterisk-form
+significance labels in `p_value_label`.
 
 ## Detect exponential phase
 
@@ -460,7 +449,6 @@ plot_doubling_time(
   compare_to = "Cg",
   exclude_groups = "YPD",
   select_replicates = c("R1", "R2", "R3"),
-  p_adjust_method = "BH",
   palette_name = "Dark2"
 )
 #> Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive

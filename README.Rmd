@@ -303,16 +303,14 @@ dt_stats <- summarize_growth_metrics(
   method = "rolling_window",
   comparison_col = "condition",
   compare_to = "Cg",
-  p_adjust_method = "BH",
   select_replicates = c("R1", "R2", "R3")
 )
 
 knitr::kable(dt_stats, digits = 3)
 ```
 
-This summary includes raw numeric p-values in `p_value`, adjusted p-values in
-`p_value_adjusted`, and asterisk-form significance labels in `p_value_label`.
-By default, p-values are adjusted with the Benjamini-Hochberg (`"BH"`) method.
+This summary includes numeric p-values in `p_value` and asterisk-form
+significance labels in `p_value_label`.
 
 ## Detect exponential phase
 
@@ -351,7 +349,6 @@ plot_doubling_time(
   compare_to = "Cg",
   exclude_groups = "YPD",
   select_replicates = c("R1", "R2", "R3"),
-  p_adjust_method = "BH",
   palette_name = "Dark2"
 )
 ```

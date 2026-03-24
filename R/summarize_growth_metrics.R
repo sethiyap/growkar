@@ -22,10 +22,6 @@
 #'   One of `"se"` or `"sd"`.
 #' @param pvalue_method Statistical test used when `compare_to` is supplied.
 #'   One of `"t_test"` or `"wilcox"`.
-#' @param p_adjust_method Multiple-testing adjustment applied to replicate-level
-#'   p-values when `compare_to` is supplied. Defaults to `"BH"`. One of
-#'   `"BH"`, `"none"`, `"bonferroni"`, `"holm"`, `"hochberg"`, `"hommel"`,
-#'   `"BY"`, or `"fdr"`.
 #' @param ... Additional arguments passed to `compute_growth_rate()`.
 #'
 #' @return A tidy tibble with one row per sample by default. When
@@ -49,13 +45,11 @@ summarize_growth_metrics <- function(data,
                                      compare_to = NULL,
                                      error = c("se", "sd"),
                                      pvalue_method = c("t_test", "wilcox"),
-                                     p_adjust_method = c("BH", "none", "bonferroni", "holm", "hochberg", "hommel", "BY", "fdr"),
                                      ...) {
   tidy_data <- as_tidy_growth_data(data)
   tidy_data <- validate_growth_data(tidy_data)
   error <- match.arg(error)
   pvalue_method <- match.arg(pvalue_method)
-  p_adjust_method <- match.arg(p_adjust_method)
 
   if (!is.null(comparison_col)) {
     if (!comparison_col %in% names(tidy_data)) {
@@ -89,8 +83,7 @@ summarize_growth_metrics <- function(data,
         comparison_col = comparison_col,
         compare_to = compare_to,
         error = error,
-        pvalue_method = pvalue_method,
-        p_adjust_method = p_adjust_method
+        pvalue_method = pvalue_method
       )
     )
   }
@@ -110,11 +103,9 @@ growkar_summarize_doubling_time_stats <- function(replicate_metrics,
                                                   comparison_col,
                                                   compare_to = NULL,
                                                   error = c("se", "sd"),
-                                                  pvalue_method = c("t_test", "wilcox"),
-                                                  p_adjust_method = c("BH", "none", "bonferroni", "holm", "hochberg", "hommel", "BY", "fdr")) {
+                                                  pvalue_method = c("t_test", "wilcox")) {
   error <- match.arg(error)
   pvalue_method <- match.arg(pvalue_method)
-  p_adjust_method <- match.arg(p_adjust_method)
 
   if (!is.null(compare_to) && !compare_to %in% replicate_metrics[[comparison_col]]) {
     stop("`compare_to` must match a value in `comparison_col`.", call. = FALSE)
@@ -145,8 +136,7 @@ growkar_summarize_doubling_time_stats <- function(replicate_metrics,
     replicate_metrics = replicate_metrics,
     comparison_col = comparison_col,
     compare_to = compare_to,
-    pvalue_method = pvalue_method,
-    p_adjust_method = p_adjust_method
+    pvalue_method = pvalue_method
   )
 
   dplyr::left_join(summarized, pvalues, by = comparison_col)
@@ -155,10 +145,8 @@ growkar_summarize_doubling_time_stats <- function(replicate_metrics,
 growkar_compute_doubling_time_pvalues <- function(replicate_metrics,
                                                   comparison_col,
                                                   compare_to = NULL,
-                                                  pvalue_method = c("t_test", "wilcox"),
-                                                  p_adjust_method = c("BH", "none", "bonferroni", "holm", "hochberg", "hommel", "BY", "fdr")) {
+                                                  pvalue_method = c("t_test", "wilcox")) {
   pvalue_method <- match.arg(pvalue_method)
-  p_adjust_method <- match.arg(p_adjust_method)
   groups <- unique(replicate_metrics[[comparison_col]])
 
   if (is.null(compare_to)) {
@@ -181,7 +169,6 @@ growkar_compute_doubling_time_pvalues <- function(replicate_metrics,
       return(tibble::tibble(
         group = group_value,
         p_value = NA_real_,
-        p_value_adjusted = NA_real_,
         p_value_label = "ref"
       ))
     }
@@ -195,7 +182,6 @@ growkar_compute_doubling_time_pvalues <- function(replicate_metrics,
       return(tibble::tibble(
         group = group_value,
         p_value = NA_real_,
-        p_value_adjusted = NA_real_,
         p_value_label = NA_character_
       ))
     }
@@ -214,17 +200,10 @@ growkar_compute_doubling_time_pvalues <- function(replicate_metrics,
     p_value <- if (is.null(test_result)) NA_real_ else unname(test_result$p.value)
     tibble::tibble(
       group = group_value,
-      p_value = p_value
+      p_value = p_value,
+      p_value_label = growkar_pvalue_label(p_value)
     )
   })
-
-  test_rows <- !is.na(out$p_value)
-  out$p_value_adjusted <- NA_real_
-  if (any(test_rows)) {
-    out$p_value_adjusted[test_rows] <- stats::p.adjust(out$p_value[test_rows], method = p_adjust_method)
-  }
-
-  out$p_value_label <- purrr::map_chr(out$p_value_adjusted, growkar_pvalue_label)
   out$p_value_label[out$group %in% compare_to] <- "ref"
 
   names(out)[names(out) == "group"] <- comparison_col

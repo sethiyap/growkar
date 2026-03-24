@@ -43,6 +43,19 @@ dd <- read.delim(dd_path, check.names = FALSE)
 tidy_dd <- as_tidy_growth_data(dd)
 validate_growth_data(tidy_dd)
 
+h2o2_levels <- tidy_dd |>
+  dplyr::distinct(condition) |>
+  dplyr::mutate(
+    concentration_mM = as.numeric(sub("^H2O2\\(([-0-9.]+)mM\\)$", "\\1", .data$condition))
+  ) |>
+  dplyr::arrange(.data$concentration_mM) |>
+  dplyr::pull(condition)
+
+tidy_dd <- dplyr::mutate(
+  tidy_dd,
+  condition = factor(.data$condition, levels = h2o2_levels)
+)
+
 head(tidy_dd)
 ```
 
@@ -63,7 +76,7 @@ plot_growth_curve(
 ## Summarize doubling time with H2O2(0mM) as the reference
 
 This summary compares replicate-level doubling times for each condition against
-`H2O2(0mM)` and uses the default Benjamini-Hochberg adjustment for p-values.
+`H2O2(0mM)`.
 
 ```{r doubling-time-summary}
 dt_stats <- summarize_growth_metrics(
@@ -72,6 +85,8 @@ dt_stats <- summarize_growth_metrics(
   comparison_col = "condition",
   compare_to = "H2O2(0mM)"
 )
+
+dt_stats <- dplyr::arrange(dt_stats, .data$condition)
 
 knitr::kable(dt_stats, digits = 3)
 ```

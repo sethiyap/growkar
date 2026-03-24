@@ -104,23 +104,9 @@ test_that("summarize_growth_metrics can compute doubling-time statistics by cond
     "n_replicates",
     "error_bar",
     "p_value",
-    "p_value_adjusted",
     "p_value_label"
   ) %in% names(stats_tbl)))
   expect_true("ref" %in% stats_tbl$p_value_label)
-})
-
-test_that("summarize_growth_metrics can adjust doubling-time p-values", {
-  stats_tbl <- suppressWarnings(summarize_growth_metrics(
-    yeast_growth_data,
-    method = "rolling_window",
-    comparison_col = "condition",
-    compare_to = "Cg",
-    p_adjust_method = "BH"
-  ))
-
-  expect_true("p_value_adjusted" %in% names(stats_tbl))
-  expect_true(all(is.na(stats_tbl$p_value_adjusted) | stats_tbl$p_value_adjusted >= stats_tbl$p_value))
 })
 
 test_that("summarize_growth_metrics can restrict doubling-time statistics to selected replicates", {

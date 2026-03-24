@@ -55,10 +55,23 @@ validate_growth_data(tidy_dd)
 #> 10     0 H2O2(1.1mM)_1 0.09  H2O2(1.1mM) 1        
 #> # ℹ 2,078 more rows
 
+h2o2_levels <- tidy_dd |>
+  dplyr::distinct(condition) |>
+  dplyr::mutate(
+    concentration_mM = as.numeric(sub("^H2O2\\(([-0-9.]+)mM\\)$", "\\1", .data$condition))
+  ) |>
+  dplyr::arrange(.data$concentration_mM) |>
+  dplyr::pull(condition)
+
+tidy_dd <- dplyr::mutate(
+  tidy_dd,
+  condition = factor(.data$condition, levels = h2o2_levels)
+)
+
 head(tidy_dd)
 #> # A tibble: 6 × 5
 #>    time sample           od condition   replicate
-#>   <dbl> <chr>         <dbl> <chr>       <chr>    
+#>   <dbl> <chr>         <dbl> <fct>       <chr>    
 #> 1     0 H2O2(8.8mM)_1 0.094 H2O2(8.8mM) 1        
 #> 2     0 H2O2(8.8mM)_2 0.102 H2O2(8.8mM) 2        
 #> 3     0 H2O2(8.8mM)_3 0.102 H2O2(8.8mM) 3        
@@ -86,8 +99,7 @@ plot_growth_curve(
 ## Summarize doubling time with H2O2(0mM) as the reference
 
 This summary compares replicate-level doubling times for each condition
-against `H2O2(0mM)` and uses the default Benjamini-Hochberg adjustment
-for p-values.
+against `H2O2(0mM)`.
 
 ``` r
 dt_stats <- summarize_growth_metrics(
@@ -97,19 +109,21 @@ dt_stats <- summarize_growth_metrics(
   compare_to = "H2O2(0mM)"
 )
 
+dt_stats <- dplyr::arrange(dt_stats, .data$condition)
+
 knitr::kable(dt_stats, digits = 3)
 ```
 
-| condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_adjusted | p_value_label |
-|:---|---:|---:|---:|---:|---:|---:|---:|:---|
-| H2O2(0.135mM) | 0.272 | 2.594 | 0.415 | 3 | 0.240 | 0.511 | 0.715 | ns |
-| H2O2(0.275mM) | 0.270 | 2.597 | 0.366 | 3 | 0.212 | 0.466 | 0.715 | ns |
-| H2O2(0.55mM) | 0.285 | 2.451 | 0.229 | 3 | 0.132 | 0.765 | 0.882 | ns |
-| H2O2(0mM) | 0.292 | 2.388 | 0.253 | 3 | 0.146 | NA | NA | ref |
-| H2O2(1.1mM) | 0.297 | 2.355 | 0.252 | 3 | 0.146 | 0.882 | 0.882 | ns |
-| H2O2(2.2mM) | 0.315 | 2.204 | 0.077 | 3 | 0.045 | 0.335 | 0.715 | ns |
-| H2O2(4.4mM) | 0.019 | 53.331 | 30.353 | 3 | 17.524 | 0.101 | 0.651 | ns |
-| H2O2(8.8mM) | 0.049 | 60.095 | 50.447 | 3 | 29.126 | 0.186 | 0.651 | ns |
+| condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
+|:---|---:|---:|---:|---:|---:|---:|:---|
+| H2O2(0mM) | 0.292 | 2.388 | 0.253 | 3 | 0.146 | 1.000 | ref |
+| H2O2(0.135mM) | 0.272 | 2.594 | 0.415 | 3 | 0.240 | 0.511 | ns |
+| H2O2(0.275mM) | 0.270 | 2.597 | 0.366 | 3 | 0.212 | 0.466 | ns |
+| H2O2(0.55mM) | 0.285 | 2.451 | 0.229 | 3 | 0.132 | 0.765 | ns |
+| H2O2(1.1mM) | 0.297 | 2.355 | 0.252 | 3 | 0.146 | 0.882 | ns |
+| H2O2(2.2mM) | 0.315 | 2.204 | 0.077 | 3 | 0.045 | 0.335 | ns |
+| H2O2(4.4mM) | 0.019 | 53.331 | 30.353 | 3 | 17.524 | 0.101 | ns |
+| H2O2(8.8mM) | 0.049 | 60.095 | 50.447 | 3 | 29.126 | 0.186 | ns |
 
 ## Plot doubling time comparisons
 

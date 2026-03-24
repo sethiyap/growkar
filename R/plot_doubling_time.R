@@ -15,10 +15,6 @@
 #' @param error Statistic used for error bars. One of `"se"` or `"sd"`.
 #' @param pvalue_method Statistical test used when `compare_to` is supplied.
 #'   One of `"t_test"` or `"wilcox"`.
-#' @param p_adjust_method Multiple-testing adjustment applied to replicate-level
-#'   p-values when `compare_to` is supplied. Defaults to `"BH"`. One of
-#'   `"BH"`, `"none"`, `"bonferroni"`, `"holm"`, `"hochberg"`, `"hommel"`,
-#'   `"BY"`, or `"fdr"`.
 #' @param palette_name Name of the qualitative palette used by
 #'   `select_palette()`.
 #' @param custom_colors Optional character vector of colours. When supplied,
@@ -44,14 +40,12 @@ plot_doubling_time <- function(data,
                                method = c("rolling_window", "defined_interval", "rule_based"),
                                error = c("se", "sd"),
                                pvalue_method = c("t_test", "wilcox"),
-                               p_adjust_method = c("BH", "none", "bonferroni", "holm", "hochberg", "hommel", "BY", "fdr"),
                                palette_name = "all_colors",
                                custom_colors = NULL,
                                ...) {
   method <- match.arg(method)
   error <- match.arg(error)
   pvalue_method <- match.arg(pvalue_method)
-  p_adjust_method <- match.arg(p_adjust_method)
 
   tidy_data <- as_tidy_growth_data(data)
   tidy_data <- validate_growth_data(tidy_data)
@@ -69,7 +63,6 @@ plot_doubling_time <- function(data,
     compare_to = compare_to,
     error = error,
     pvalue_method = pvalue_method,
-    p_adjust_method = p_adjust_method,
     ...
   )
 
