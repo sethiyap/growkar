@@ -103,8 +103,8 @@ head(tidy_sc)
 
 ``` r
 plot_growth_curve(
-  averaged_sc,
-  average_replicates = FALSE,
+  tidy_sc,
+  average_replicates = TRUE,
   colour_col = "sample",
   custom_colors = sc_colors
 )
@@ -112,41 +112,44 @@ plot_growth_curve(
 
 ![](scbs181-growkar-workflow-files/figure-gfm/average-growth-curve-1.png)<!-- -->
 
-## Summarize doubling time with Sc(0) as the reference
+## Summarize doubling time from averaged replicates
 
-This summary compares replicate-level doubling times for each condition
-against `Sc(0)` using the rolling-window method.
+This summary computes doubling time from the averaged growth trajectory
+for each condition using the rolling-window method.
 
 ``` r
 dt_stats <- summarize_growth_metrics(
   tidy_sc,
   method = "rolling_window",
-  comparison_col = "condition",
-  compare_to = "Sc(0)"
+  average_replicates = TRUE
 )
 
-dt_stats <- dplyr::arrange(dt_stats, .data$condition)
+dt_stats <- dt_stats |>
+  dplyr::mutate(sample = factor(.data$sample, levels = selected_conditions)) |>
+  dplyr::arrange(.data$sample)
 
 knitr::kable(dt_stats, digits = 3)
 ```
 
-| condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
-|:---|---:|---:|---:|---:|---:|---:|:---|
-| Sc(100) | 0.482 | 1.440 | 0.028 | 3 | 0.016 | 0.000 | \*\*\*\* |
-| Sc(50) | 0.314 | 2.211 | 0.077 | 3 | 0.044 | 0.132 | ns |
-| Sc(25) | 0.330 | 2.101 | 0.068 | 3 | 0.039 | 0.959 | ns |
-| Sc(0) | 0.330 | 2.103 | 0.015 | 3 | 0.009 | 1.000 | ref |
+| sample | mu | start_time | end_time | r_squared | method | n_points | degraded | note | doubling_time |
+|:---|---:|---:|---:|---:|:---|---:|:---|:---|---:|
+| Sc(100) | 0.469 | 20.667 | 22.001 | 1 | rolling_window | 5 | FALSE | rolling_window_ranked | 1.479 |
+| Sc(50) | 0.311 | 16.667 | 18.001 | 1 | rolling_window | 5 | FALSE | rolling_window_ranked | 2.227 |
+| Sc(25) | 0.327 | 14.334 | 15.667 | 1 | rolling_window | 5 | FALSE | rolling_window_ranked | 2.117 |
+| Sc(0) | 0.330 | 13.667 | 15.001 | 1 | rolling_window | 5 | FALSE | rolling_window_ranked | 2.103 |
 
-## Plot doubling time comparisons
+## Plot averaged doubling time
 
 ``` r
-plot_doubling_time(
-  tidy_sc,
-  comparison_col = "condition",
-  compare_to = "Sc(0)",
-  method = "rolling_window",
-  custom_colors = sc_colors
-)
+ggplot2::ggplot(
+  dt_stats,
+  ggplot2::aes(x = .data$sample, y = .data$doubling_time, fill = .data$sample)
+) +
+  ggplot2::geom_col(width = 0.7) +
+  ggplot2::scale_fill_manual(values = sc_colors) +
+  ggplot2::theme_bw() +
+  ggplot2::theme(legend.position = "none", panel.grid.minor = ggplot2::element_blank()) +
+  ggplot2::labs(x = "Condition", y = "Doubling time")
 ```
 
 ![](scbs181-growkar-workflow-files/figure-gfm/doubling-time-plot-1.png)<!-- -->
@@ -192,26 +195,3 @@ knitr::kable(phase_average, digits = 3)
 | mean_start_time | mean_end_time |
 |----------------:|--------------:|
 |          16.334 |        17.667 |
-
-## Fit and plot one representative growth curve
-
-This section fits a logistic model to the averaged `Sc(0)` curve and
-overlays observed and fitted values.
-
-``` r
-fit <- averaged_sc |>
-  filter(sample == "Sc(0)") |>
-  fit_growth_curve(model = "logistic")
-
-extract_params(fit)
-#> # A tibble: 1 × 6
-#>   sample model    asymptote     r    t0 doubling_time_model
-#>   <chr>  <chr>        <dbl> <dbl> <dbl>               <dbl>
-#> 1 Sc(0)  logistic      1.43 0.394  15.9                1.76
-```
-
-``` r
-plot_fitted_curve(fit)
-```
-
-![](scbs181-growkar-workflow-files/figure-gfm/plot-fit-1.png)<!-- -->

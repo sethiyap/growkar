@@ -18,7 +18,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Pooja Sethiya \email{poojasethiya24@gmail.com}
+\strong{Maintainer}: Pooja Sethiya \email{poojasethiya24@gmail.com} (\href{https://orcid.org/0000-0001-6584-3912}{ORCID})
 
 }
 \keyword{internal}

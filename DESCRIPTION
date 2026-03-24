@@ -4,7 +4,8 @@ Version: 0.99.0
 Authors@R: 
     person("Pooja", "Sethiya", 
            email = "poojasethiya24@gmail.com", 
-           role = c("aut", "cre"))
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-6584-3912"))
 Description: Tools to import, validate, visualize, summarize, and model
     microbial growth curves from optical density time-series data. The package
     supports a tidy workflow centered on canonical sample, time, and OD
