@@ -10,8 +10,8 @@
 #' can be inferred reliably. Common machine-exported column labels such as
 #' `Time [s]`, `Time [h]`, `Sample`, `Well`, `OD600`, `OD 600`, and
 #' `Absorbance 600` are detected automatically where possible, which helps
-#' when importing exports from Agilent, BioTek, Cytation 3, LogPhase 600, and
-#' similar plate-reader workflows.
+#' when importing exports from Agilent microplate readers, BioTek Cytation
+#' instruments, LogPhase 600, and similar OD600-based plate-reader workflows.
 #'
 #' @param data A data frame, tibble, `SummarizedExperiment`, `growkar_data`
 #'   object, or object coercible to a tibble.

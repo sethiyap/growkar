@@ -41,8 +41,8 @@ names, use a consistent suffix such as \verb{_R1} or \verb{_1} so replicate meta
 can be inferred reliably. Common machine-exported column labels such as
 \code{Time [s]}, \code{Time [h]}, \code{Sample}, \code{Well}, \code{OD600}, \verb{OD 600}, and
 \verb{Absorbance 600} are detected automatically where possible, which helps
-when importing exports from Agilent, BioTek, Cytation 3, LogPhase 600, and
-similar plate-reader workflows.
+when importing exports from Agilent microplate readers, BioTek Cytation
+instruments, LogPhase 600, and similar OD600-based plate-reader workflows.
 }
 \examples{
 data(yeast_growth_data)

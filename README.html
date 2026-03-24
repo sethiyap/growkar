@@ -616,6 +616,9 @@ using standard Bioconductor containers such as
 <code>SummarizedExperiment</code>. This allows growth-based phenotyping
 to be incorporated into broader multi-omics workflows for functional
 genomics and microbial systems biology.</p>
+<p>Data generated from Agilent microplate readers, BioTek Cytation
+instruments, and other OD600-based microbial growth measurement
+platforms can be directly analysed using <code>growkar</code>.</p>
 <p>The package is designed for tidy analysis of microbial growth data
 using the canonical columns <code>sample</code>, <code>time</code>, and
 <code>od</code>. It is especially useful for plotting growth curves from
@@ -635,8 +638,8 @@ consistent suffix such as <code>_R1</code> or <code>_1</code> so
 <code>Time [h]</code>, <code>Sample</code>, <code>Well</code>,
 <code>OD600</code>, <code>OD 600</code>, and <code>Absorbance 600</code>
 are detected automatically where possible, which helps when importing
-exports from instruments such as Agilent readers, BioTek/Cytation 3,
-LogPhase 600, and similar OD600 workflows.</p>
+exports from Agilent microplate readers, BioTek Cytation instruments,
+LogPhase 600, and related OD600 workflows.</p>
 <h2 id="installation">Installation</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;sethiyap/growkar&quot;</span>)</span></code></pre></div>
 <h2 id="example-dataset">Example dataset</h2>
