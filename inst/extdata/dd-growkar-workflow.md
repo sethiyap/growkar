@@ -109,15 +109,27 @@ plot_growth_curve(
 ## Summarize doubling time with H2O2(0mM) as the reference
 
 This summary compares replicate-level doubling times for each condition
-against `H2O2(0mM)`.
+against `H2O2(0mM)` using the rule-based exponential interval.
 
 ``` r
 dt_stats <- summarize_growth_metrics(
   tidy_dd,
-  method = "rolling_window",
+  method = "rule_based",
   comparison_col = "condition",
   compare_to = "H2O2(0mM)"
 )
+#> Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(8.8mM)_1`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(8.8mM)_2`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(8.8mM)_3`: Rule-based growth estimation did not yield a
+#> positive growth slope.
 
 dt_stats <- dplyr::arrange(dt_stats, .data$condition)
 
@@ -126,75 +138,95 @@ knitr::kable(dt_stats, digits = 3)
 
 | condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
 |:---|---:|---:|---:|---:|---:|---:|:---|
-| H2O2(0mM) | 0.292 | 2.388 | 0.253 | 3 | 0.146 | 1.000 | ref |
-| H2O2(0.135mM) | 0.272 | 2.594 | 0.415 | 3 | 0.240 | 0.511 | ns |
-| H2O2(0.275mM) | 0.270 | 2.597 | 0.366 | 3 | 0.212 | 0.466 | ns |
-| H2O2(0.55mM) | 0.285 | 2.451 | 0.229 | 3 | 0.132 | 0.765 | ns |
-| H2O2(1.1mM) | 0.297 | 2.355 | 0.252 | 3 | 0.146 | 0.882 | ns |
-| H2O2(2.2mM) | 0.315 | 2.204 | 0.077 | 3 | 0.045 | 0.335 | ns |
-| H2O2(4.4mM) | 0.019 | 53.331 | 30.353 | 3 | 17.524 | 0.101 | ns |
-| H2O2(8.8mM) | 0.049 | 60.095 | 50.447 | 3 | 29.126 | 0.186 | ns |
+| H2O2(0mM) | 0.176 | 3.998 | 0.665 | 3 | 0.384 | 1.000 | ref |
+| H2O2(0.135mM) | 0.200 | 3.533 | 0.576 | 3 | 0.333 | 0.412 | ns |
+| H2O2(0.275mM) | 0.185 | 3.783 | 0.480 | 3 | 0.277 | 0.676 | ns |
+| H2O2(0.55mM) | 0.165 | 4.207 | 0.241 | 3 | 0.139 | 0.651 | ns |
+| H2O2(1.1mM) | 0.179 | 3.883 | 0.185 | 3 | 0.107 | 0.796 | ns |
+| H2O2(2.2mM) | 0.276 | 2.522 | 0.165 | 3 | 0.095 | 0.054 | ns |
+| H2O2(4.4mM) | NaN | NaN | NA | 0 | NA | NA | NA |
+| H2O2(8.8mM) | NaN | NaN | NA | 0 | NA | NA | NA |
 
 ## Plot doubling time comparisons
 
 This plot shows mean doubling time with error bars and comparison
-brackets against `H2O2(0mM)`.
+brackets against `H2O2(0mM)` using the rule-based exponential interval.
 
 ``` r
 plot_doubling_time(
   tidy_dd,
   comparison_col = "condition",
   compare_to = "H2O2(0mM)",
+  method = "rule_based",
   palette_name = "Dark2"
 )
+#> Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(8.8mM)_1`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(8.8mM)_2`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(8.8mM)_3`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Removed 2 rows containing missing values or values outside the scale range
+#> (`geom_col()`).
 ```
 
 ![](dd-growkar-workflow-files/figure-gfm/doubling-time-plot-1.png)<!-- -->
 
-## Detect exponential phase in all averaged samples
+## Rule-based exponential interval in all averaged samples
 
-This section inspects the highest-ranked candidate exponential windows
-across all averaged H2O2 conditions.
+This section shows the rule-based exponential interval for each averaged
+H2O2 condition and the mean start and end times across all conditions.
 
 ``` r
-phase_tbl <- dplyr::bind_rows(
-  lapply(split(averaged_dd, averaged_dd$sample), detect_exponential_phase)
-)
+phase_tbl <- compute_growth_rate(
+  averaged_dd,
+  method = "rule_based"
+) |>
+  dplyr::mutate(doubling_time = compute_doubling_time(.data$mu)) |>
+  dplyr::select(sample, start_time, end_time, mu, doubling_time)
+#> Warning: Sample `H2O2(4.4mM)`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(8.8mM)`: Rule-based growth estimation did not yield a
+#> positive growth slope.
 
 phase_tbl <- phase_tbl |>
-  dplyr::group_by(.data$sample) |>
-  dplyr::slice_head(n = 3) |>
+  dplyr::arrange(.data$sample) |>
   dplyr::ungroup()
 
 knitr::kable(phase_tbl, digits = 3)
 ```
 
-| sample | rank | start_time | end_time | slope | r_squared | n_points | selection_reason | degraded |
-|:---|---:|---:|---:|---:|---:|---:|:---|:---|
-| H2O2(0.135mM) | 1 | 14.000 | 15.334 | 0.266 | 1.000 | 5 | rolling_window_ranked | FALSE |
-| H2O2(0.135mM) | 2 | 14.334 | 15.667 | 0.262 | 0.999 | 5 | rolling_window_ranked | FALSE |
-| H2O2(0.135mM) | 3 | 13.667 | 15.000 | 0.262 | 1.000 | 5 | rolling_window_ranked | FALSE |
-| H2O2(0.275mM) | 1 | 14.000 | 15.334 | 0.269 | 1.000 | 5 | rolling_window_ranked | FALSE |
-| H2O2(0.275mM) | 2 | 14.334 | 15.667 | 0.264 | 1.000 | 5 | rolling_window_ranked | FALSE |
-| H2O2(0.275mM) | 3 | 13.667 | 15.000 | 0.261 | 0.999 | 5 | rolling_window_ranked | FALSE |
-| H2O2(0.55mM) | 1 | 14.667 | 16.000 | 0.282 | 1.000 | 5 | rolling_window_ranked | FALSE |
-| H2O2(0.55mM) | 2 | 15.000 | 16.334 | 0.282 | 1.000 | 5 | rolling_window_ranked | FALSE |
-| H2O2(0.55mM) | 3 | 14.334 | 15.667 | 0.277 | 0.999 | 5 | rolling_window_ranked | FALSE |
-| H2O2(0mM) | 1 | 13.667 | 15.000 | 0.288 | 1.000 | 5 | rolling_window_ranked | FALSE |
-| H2O2(0mM) | 2 | 14.000 | 15.334 | 0.288 | 1.000 | 5 | rolling_window_ranked | FALSE |
-| H2O2(0mM) | 3 | 14.334 | 15.667 | 0.288 | 1.000 | 5 | rolling_window_ranked | FALSE |
-| H2O2(1.1mM) | 1 | 16.000 | 17.334 | 0.294 | 1.000 | 5 | rolling_window_ranked | FALSE |
-| H2O2(1.1mM) | 2 | 16.334 | 17.667 | 0.294 | 1.000 | 5 | rolling_window_ranked | FALSE |
-| H2O2(1.1mM) | 3 | 16.667 | 18.000 | 0.288 | 1.000 | 5 | rolling_window_ranked | FALSE |
-| H2O2(2.2mM) | 1 | 27.000 | 28.334 | 0.313 | 1.000 | 5 | rolling_window_ranked | FALSE |
-| H2O2(2.2mM) | 2 | 27.334 | 28.667 | 0.313 | 1.000 | 5 | rolling_window_ranked | FALSE |
-| H2O2(2.2mM) | 3 | 26.667 | 28.000 | 0.308 | 0.999 | 5 | rolling_window_ranked | FALSE |
-| H2O2(4.4mM) | 1 | 13.334 | 14.667 | 0.013 | 0.493 | 5 | rolling_window_ranked | FALSE |
-| H2O2(4.4mM) | 2 | 21.667 | 23.000 | 0.011 | 0.500 | 5 | rolling_window_ranked | FALSE |
-| H2O2(4.4mM) | 3 | 12.667 | 14.000 | 0.010 | 0.470 | 5 | rolling_window_ranked | FALSE |
-| H2O2(8.8mM) | 1 | 15.334 | 16.667 | 0.044 | 0.740 | 5 | rolling_window_ranked | FALSE |
-| H2O2(8.8mM) | 2 | 15.000 | 16.334 | 0.027 | 0.477 | 5 | rolling_window_ranked | FALSE |
-| H2O2(8.8mM) | 3 | 15.667 | 17.000 | 0.018 | 0.128 | 5 | rolling_window_ranked | FALSE |
+| sample        | start_time | end_time |    mu | doubling_time |
+|:--------------|-----------:|---------:|------:|--------------:|
+| H2O2(0.135mM) |      8.334 |   12.667 | 0.161 |         4.316 |
+| H2O2(0.275mM) |      9.000 |   12.667 | 0.183 |         3.791 |
+| H2O2(0.55mM)  |      9.667 |   14.000 | 0.166 |         4.168 |
+| H2O2(0mM)     |      9.000 |   13.000 | 0.171 |         4.049 |
+| H2O2(1.1mM)   |     11.667 |   15.667 | 0.179 |         3.864 |
+| H2O2(2.2mM)   |     25.000 |   27.667 | 0.266 |         2.605 |
+| H2O2(4.4mM)   |      0.000 |    0.000 |    NA |            NA |
+| H2O2(8.8mM)   |      1.000 |    1.000 |    NA |            NA |
+
+``` r
+
+phase_average <- phase_tbl |>
+  dplyr::summarise(
+    mean_start_time = mean(.data$start_time, na.rm = TRUE),
+    mean_end_time = mean(.data$end_time, na.rm = TRUE)
+  )
+
+knitr::kable(phase_average, digits = 3)
+```
+
+| mean_start_time | mean_end_time |
+|----------------:|--------------:|
+|           9.209 |        12.084 |
 
 ## Fit and plot one representative growth curve
 

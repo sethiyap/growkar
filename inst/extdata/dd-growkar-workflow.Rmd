@@ -81,12 +81,12 @@ plot_growth_curve(
 ## Summarize doubling time with H2O2(0mM) as the reference
 
 This summary compares replicate-level doubling times for each condition against
-`H2O2(0mM)`.
+`H2O2(0mM)` using the rule-based exponential interval.
 
 ```{r doubling-time-summary}
 dt_stats <- summarize_growth_metrics(
   tidy_dd,
-  method = "rolling_window",
+  method = "rule_based",
   comparison_col = "condition",
   compare_to = "H2O2(0mM)"
 )
@@ -99,33 +99,44 @@ knitr::kable(dt_stats, digits = 3)
 ## Plot doubling time comparisons
 
 This plot shows mean doubling time with error bars and comparison brackets
-against `H2O2(0mM)`.
+against `H2O2(0mM)` using the rule-based exponential interval.
 
 ```{r doubling-time-plot, fig.width=8, fig.height=5}
 plot_doubling_time(
   tidy_dd,
   comparison_col = "condition",
   compare_to = "H2O2(0mM)",
+  method = "rule_based",
   palette_name = "Dark2"
 )
 ```
 
-## Detect exponential phase in all averaged samples
+## Rule-based exponential interval in all averaged samples
 
-This section inspects the highest-ranked candidate exponential windows across
-all averaged H2O2 conditions.
+This section shows the rule-based exponential interval for each averaged H2O2
+condition and the mean start and end times across all conditions.
 
 ```{r detect-exponential-phase}
-phase_tbl <- dplyr::bind_rows(
-  lapply(split(averaged_dd, averaged_dd$sample), detect_exponential_phase)
-)
+phase_tbl <- compute_growth_rate(
+  averaged_dd,
+  method = "rule_based"
+) |>
+  dplyr::mutate(doubling_time = compute_doubling_time(.data$mu)) |>
+  dplyr::select(sample, start_time, end_time, mu, doubling_time)
 
 phase_tbl <- phase_tbl |>
-  dplyr::group_by(.data$sample) |>
-  dplyr::slice_head(n = 3) |>
+  dplyr::arrange(.data$sample) |>
   dplyr::ungroup()
 
 knitr::kable(phase_tbl, digits = 3)
+
+phase_average <- phase_tbl |>
+  dplyr::summarise(
+    mean_start_time = mean(.data$start_time, na.rm = TRUE),
+    mean_end_time = mean(.data$end_time, na.rm = TRUE)
+  )
+
+knitr::kable(phase_average, digits = 3)
 ```
 
 ## Fit and plot one representative growth curve
