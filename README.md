@@ -38,12 +38,6 @@ If replicate identifiers are encoded in sample names, use a consistent
 suffix such as `_R1` or `_1` so `growkar` can infer replicate metadata
 reliably.
 
-Common instrument-style column labels such as `Time [s]`, `Time [h]`,
-`Sample`, `Well`, `OD600`, `OD 600`, and `Absorbance 600` are detected
-automatically where possible, which helps when importing exports from
-Agilent microplate readers, BioTek Cytation instruments, LogPhase 600,
-and related OD600 workflows.
-
 ## Installation
 
 ``` r
