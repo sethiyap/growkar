@@ -67,6 +67,18 @@ tidy_sc <- tidy_sc |>
 head(tidy_sc)
 ```
 
+## Coerce to SummarizedExperiment
+
+`growkar` can also package the processed data into a lightweight
+`growkar_data` object and coerce it into a `SummarizedExperiment` for
+Bioconductor-oriented workflows.
+
+```{r summarized-experiment}
+growkar_obj <- as_growkar(tidy_sc)
+se <- methods::as(growkar_obj, "SummarizedExperiment")
+se
+```
+
 ## Plot growth curves with averaged replicates
 
 ```{r average-growth-curve, fig.width=8, fig.height=5}

@@ -1,18 +1,22 @@
 Package: growkar
-Title: Tidy Analysis of Microbial Growth Curve Time Series
+Title: High-Throughput Microbial Growth Curve Analysis and Phenotyping
 Version: 0.99.0
 Authors@R: 
     person("Pooja", "Sethiya", 
            email = "poojasethiya24@gmail.com", 
            role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-6584-3912"))
-Description: Tools to import, validate, visualize, summarize, and model
-    microbial growth curves from optical density time-series data. The package
-    supports a tidy workflow centered on canonical sample, time, and OD
-    columns, empirical estimation of growth rate and doubling time,
-    exponential-phase detection, model-based fitting with logistic and
-    Gompertz growth models, and coercion to Bioconductor-compatible
-    SummarizedExperiment containers.
+Description: growkar provides infrastructure and statistical tools for the
+    analysis of high-throughput microbial growth curve experiments, such as
+    plate-based optical density (OD) assays. The package supports data
+    import, quality control, normalization, and modeling of growth dynamics,
+    enabling extraction of biologically meaningful phenotypes including lag
+    time, growth rate, doubling time, and carrying capacity. growkar
+    integrates with Bioconductor data structures, including
+    SummarizedExperiment, allowing seamless incorporation of growth
+    phenotypes with transcriptomic, genomic, and other omics datasets. This
+    enables downstream multi-omics analysis and functional interpretation in
+    microbial systems.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -20,6 +24,7 @@ RoxygenNote: 7.3.3
 Depends:
     R (>= 4.5.0)
 Imports:
+    methods,
     S4Vectors,
     SummarizedExperiment,
     dplyr,
@@ -41,5 +46,5 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://github.com/sethiyap/growkar
 BugReports: https://github.com/sethiyap/growkar/issues
-biocViews: Software, DataImport, GeneExpression, Visualization,
+biocViews: Software, DataImport, ExperimentalDesign, Visualization,
     Infrastructure

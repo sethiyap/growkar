@@ -8,12 +8,16 @@
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-`growkar` is an R package for microbial growth curve analysis from
-optical density (OD) time-series data. It provides a tidy workflow for
-converting input data, validating growth measurements, plotting growth
-curves, estimating growth rate and doubling time, detecting exponential
-phase, fitting logistic or Gompertz growth models, and coercing data to
-`SummarizedExperiment` for Bioconductor-style workflows.
+`growkar` is a Bioconductor-oriented R package for the analysis of
+high-throughput microbial growth experiments, such as plate-based
+optical density assays. It provides a unified framework for extracting
+quantitative growth phenotypes, including lag time, growth rate, and
+carrying capacity, from time-series measurements, and enables
+integration of these phenotypes with genomic and transcriptomic data
+using standard Bioconductor containers such as `SummarizedExperiment`.
+This allows growth-based phenotyping to be incorporated into broader
+multi-omics workflows for functional genomics and microbial systems
+biology.
 
 The package is designed for tidy analysis of microbial growth data using
 the canonical columns `sample`, `time`, and `od`. It is especially
@@ -90,7 +94,9 @@ head(tidy_data)
 
 **What it does:** `as_summarized_experiment()` converts growth data into
 a `SummarizedExperiment` with an `od` assay, time in `rowData()`, and
-sample metadata in `colData()`.
+sample metadata in `colData()`. For workflows that keep a processed
+`growkar` object, `as_growkar()` creates a lightweight container that
+can be coerced with `methods::as(growkar_obj, "SummarizedExperiment")`.
 
 **Why use it:** It provides a lightweight Bioconductor-compatible
 container without replacing the tidy tibble workflow used throughout
@@ -99,11 +105,12 @@ container without replacing the tidy tibble workflow used throughout
 **Minimal example:**
 
 ``` r
-se <- as_summarized_experiment(yeast_growth_data)
+growkar_obj <- as_growkar(yeast_growth_data)
+se <- methods::as(growkar_obj, "SummarizedExperiment")
 se
 #> class: SummarizedExperiment 
 #> dim: 49 9 
-#> metadata(0):
+#> metadata(1): growth_metrics
 #> assays(1): od
 #> rownames(49): 0 0.5 ... 23.5 24
 #> rowData names(1): time

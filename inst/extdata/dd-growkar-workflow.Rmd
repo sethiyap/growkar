@@ -59,6 +59,18 @@ tidy_dd <- dplyr::mutate(
 head(tidy_dd)
 ```
 
+## Coerce to SummarizedExperiment
+
+`growkar` can also package the processed data into a lightweight
+`growkar_data` object and coerce it into a `SummarizedExperiment` for
+Bioconductor-oriented workflows.
+
+```{r summarized-experiment}
+growkar_obj <- as_growkar(tidy_dd)
+se <- methods::as(growkar_obj, "SummarizedExperiment")
+se
+```
+
 ## Plot growth curves with averaged replicates
 
 This plot uses the averaged replicate trajectories for each condition and

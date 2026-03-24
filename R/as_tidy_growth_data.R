@@ -13,8 +13,8 @@
 #' when importing exports from Agilent, BioTek, Cytation 3, LogPhase 600, and
 #' similar plate-reader workflows.
 #'
-#' @param data A data frame, tibble, `SummarizedExperiment`, or object
-#'   coercible to a tibble.
+#' @param data A data frame, tibble, `SummarizedExperiment`, `growkar_data`
+#'   object, or object coercible to a tibble.
 #' @param sample_col Name of the sample column for long-form input.
 #' @param time_col Name of the time column.
 #' @param od_col Name of the optical density column.
@@ -39,6 +39,10 @@ as_tidy_growth_data <- function(data,
                                 sample_sep = "_") {
   if (inherits(data, "SummarizedExperiment")) {
     return(growkar_tidy_from_summarized_experiment(data))
+  }
+
+  if (inherits(data, "growkar_data")) {
+    return(tibble::as_tibble(data$processed_data))
   }
 
   data <- tibble::as_tibble(data)

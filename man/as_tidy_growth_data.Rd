@@ -13,8 +13,8 @@ as_tidy_growth_data(
 )
 }
 \arguments{
-\item{data}{A data frame, tibble, \code{SummarizedExperiment}, or object
-coercible to a tibble.}
+\item{data}{A data frame, tibble, \code{SummarizedExperiment}, \code{growkar_data}
+object, or object coercible to a tibble.}
 
 \item{sample_col}{Name of the sample column for long-form input.}
 

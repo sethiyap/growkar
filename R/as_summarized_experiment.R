@@ -19,6 +19,9 @@
 #' data(yeast_growth_data)
 #' se <- as_summarized_experiment(yeast_growth_data)
 #' se
+#'
+#' growkar_obj <- as_growkar(yeast_growth_data)
+#' methods::as(growkar_obj, "SummarizedExperiment")
 #' @export
 as_summarized_experiment <- function(data,
                                      sample_col = "sample",
@@ -34,6 +37,10 @@ as_summarized_experiment <- function(data,
   )
   tidy_data <- validate_growth_data(tidy_data)
 
+  growkar_build_summarized_experiment(tidy_data)
+}
+
+growkar_build_summarized_experiment <- function(tidy_data, metadata = list()) {
   sample_metadata <- growkar_sample_metadata(tidy_data)
   timepoints <- sort(unique(tidy_data$time))
   samples <- sample_metadata$sample
@@ -61,7 +68,8 @@ as_summarized_experiment <- function(data,
   SummarizedExperiment::SummarizedExperiment(
     assays = list(od = assay_mat),
     rowData = row_data,
-    colData = col_data
+    colData = col_data,
+    metadata = metadata
   )
 }
 

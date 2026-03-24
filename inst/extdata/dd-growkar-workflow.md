@@ -80,6 +80,27 @@ head(tidy_dd)
 #> 6     0 H2O2(4.4mM)_3 0.109 H2O2(4.4mM) 3
 ```
 
+## Coerce to SummarizedExperiment
+
+`growkar` can also package the processed data into a lightweight
+`growkar_data` object and coerce it into a `SummarizedExperiment` for
+Bioconductor-oriented workflows.
+
+``` r
+growkar_obj <- as_growkar(tidy_dd)
+se <- methods::as(growkar_obj, "SummarizedExperiment")
+se
+#> class: SummarizedExperiment 
+#> dim: 87 24 
+#> metadata(1): growth_metrics
+#> assays(1): od
+#> rownames(87): 0 0.333333333333333 ... 28.3336111111111 28.6669444444444
+#> rowData names(1): time
+#> colnames(24): H2O2(0.135mM)_1 H2O2(0.135mM)_2 ... H2O2(8.8mM)_2
+#>   H2O2(8.8mM)_3
+#> colData names(3): sample condition replicate
+```
+
 ## Plot growth curves with averaged replicates
 
 This plot uses the averaged replicate trajectories for each condition

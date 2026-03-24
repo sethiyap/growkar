@@ -15,18 +15,38 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
+pkg_root <- if (file.exists("DESCRIPTION")) "." else ".."
+
+if (requireNamespace("pkgload", quietly = TRUE) &&
+    file.exists(file.path(pkg_root, "DESCRIPTION"))) {
+  pkgload::load_all(pkg_root, export_all = FALSE, helpers = FALSE, quiet = TRUE)
+}
+
 library(growkar)
 library(dplyr)
 library(knitr)
 data(yeast_growth_data)
 ```
 
-## Overview
+## Background
 
-`growkar` provides a tidy workflow for microbial growth curve analysis from
-optical density time-series data. Version 2 centers on a canonical input format
-with columns `sample`, `time`, and `od`, while preserving compatibility with
-legacy wide plate-reader data.
+High-throughput microbial growth assays are widely used to characterize
+phenotypic responses to genetic perturbations, environmental conditions, and
+drug treatments. These assays generate time-resolved measurements across large
+numbers of samples, analogous to other high-throughput experimental platforms in
+functional genomics.
+
+While tools exist for transcriptomic and epigenomic data analysis within the
+Bioconductor ecosystem, there is a relative lack of standardized infrastructure
+for analyzing growth-based phenotypic data and integrating it with omics
+datasets.
+
+The `growkar` package addresses this gap by providing a scalable and
+reproducible framework for growth curve analysis that interoperates with
+Bioconductor data structures, enabling downstream integrative analyses.
+
+`growkar` uses a canonical input format with columns `sample`, `time`, and
+`od`, while still supporting common wide plate-reader style inputs.
 
 The core workflow is:
 
@@ -56,7 +76,8 @@ For Bioconductor-oriented workflows, the same data can be represented as a
 entry point.
 
 ```{r summarized-experiment}
-se <- as_summarized_experiment(yeast_growth_data)
+growkar_obj <- as_growkar(yeast_growth_data)
+se <- methods::as(growkar_obj, "SummarizedExperiment")
 se
 ```
 

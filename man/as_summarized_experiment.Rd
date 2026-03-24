@@ -39,4 +39,7 @@ metadata in \code{colData(se)}, and optical density measurements in
 data(yeast_growth_data)
 se <- as_summarized_experiment(yeast_growth_data)
 se
+
+growkar_obj <- as_growkar(yeast_growth_data)
+methods::as(growkar_obj, "SummarizedExperiment")
 }

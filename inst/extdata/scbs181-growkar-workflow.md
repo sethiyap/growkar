@@ -88,6 +88,26 @@ head(tidy_sc)
 #> 6     0 Sc(50)_3  0.11  Sc(50)    3
 ```
 
+## Coerce to SummarizedExperiment
+
+`growkar` can also package the processed data into a lightweight
+`growkar_data` object and coerce it into a `SummarizedExperiment` for
+Bioconductor-oriented workflows.
+
+``` r
+growkar_obj <- as_growkar(tidy_sc)
+se <- methods::as(growkar_obj, "SummarizedExperiment")
+se
+#> class: SummarizedExperiment 
+#> dim: 86 12 
+#> metadata(1): growth_metrics
+#> assays(1): od
+#> rownames(86): 0 0.333333333333333 ... 28.0005555555556 28.3338888888889
+#> rowData names(1): time
+#> colnames(12): Sc(0)_1 Sc(0)_2 ... Sc(50)_2 Sc(50)_3
+#> colData names(3): sample condition replicate
+```
+
 ## Plot growth curves with averaged replicates
 
 ``` r

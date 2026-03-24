@@ -20,6 +20,24 @@ test_that("as_tidy_growth_data round-trips SummarizedExperiment input", {
   expect_equal(tidy_from_se, tidy_direct)
 })
 
+test_that("growkar_data coerces to SummarizedExperiment with attached metrics", {
+  metrics <- tibble::tibble(
+    sample = c("Cg_R1", "Cg_R2"),
+    doubling_time = c(1.1, 1.2)
+  )
+  growkar_obj <- as_growkar(yeast_growth_data, metrics = metrics)
+  se <- methods::as(growkar_obj, "SummarizedExperiment")
+
+  expect_s4_class(se, "SummarizedExperiment")
+  expect_true("od" %in% SummarizedExperiment::assayNames(se))
+  expect_true("growth_metrics" %in% names(S4Vectors::metadata(se)))
+  expect_equal(
+    S4Vectors::metadata(se)$growth_metrics,
+    metrics
+  )
+  expect_equal(as_tidy_growth_data(growkar_obj), as_tidy_growth_data(yeast_growth_data))
+})
+
 test_that("as_summarized_experiment rejects conflicting sample metadata", {
   bad_data <- tibble::tibble(
     sample = c("A", "A", "B", "B"),

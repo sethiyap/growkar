@@ -2,6 +2,7 @@
 
 S3method(print,growkar_fit)
 S3method(summary,growkar_fit)
+export(as_growkar)
 export(as_summarized_experiment)
 export(as_tidy_growth_data)
 export(augment_growth_fit)
