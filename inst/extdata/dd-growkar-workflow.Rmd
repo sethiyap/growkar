@@ -105,18 +105,31 @@ plot_doubling_time(
 )
 ```
 
-## Fit and plot one representative growth curve
+## Detect exponential phase in one representative sample
 
-This section fits a logistic model to the first sample in the reference
-condition and overlays observed and fitted values.
+This section inspects the highest-ranked candidate exponential windows for the
+first sample in the reference condition.
 
-```{r fit-one-sample}
+```{r detect-exponential-phase}
 sample_to_fit <- tidy_dd |>
   filter(condition == "H2O2(0mM)") |>
   distinct(sample) |>
   slice(1) |>
   pull(sample)
 
+phase_tbl <- tidy_dd |>
+  filter(sample == sample_to_fit) |>
+  detect_exponential_phase()
+
+knitr::kable(head(phase_tbl), digits = 3)
+```
+
+## Fit and plot one representative growth curve
+
+This section fits a logistic model to the first sample in the reference
+condition and overlays observed and fitted values.
+
+```{r fit-one-sample}
 fit <- tidy_dd |>
   filter(sample == sample_to_fit) |>
   fit_growth_curve(model = "logistic")

@@ -806,16 +806,24 @@ doubling anchors to estimate growth.</li>
 
 <p><strong>Minimal example:</strong></p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>sample_id <span class="ot">&lt;-</span> <span class="fu">unique</span>(tidy_data<span class="sc">$</span>sample)[<span class="dv">1</span>]</span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>gr <span class="ot">&lt;-</span> <span class="fu">compute_growth_rate</span>(</span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="fu">filter</span>(tidy_data, sample <span class="sc">==</span> sample_id),</span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;rolling_window&quot;</span></span>
-<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>)</span>
-<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a></span>
-<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(gr, <span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;dplyr&#39;</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:stats&#39;:</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt;     filter, lag</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; The following objects are masked from &#39;package:base&#39;:</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>sample_id <span class="ot">&lt;-</span> <span class="fu">unique</span>(tidy_data<span class="sc">$</span>sample)[<span class="dv">1</span>]</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>gr <span class="ot">&lt;-</span> <span class="fu">compute_growth_rate</span>(</span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>  <span class="fu">filter</span>(tidy_data, sample <span class="sc">==</span> sample_id),</span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;rolling_window&quot;</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>)</span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(gr, <span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr>
@@ -1421,7 +1429,7 @@ data, use <code>facet_col = &quot;replicate&quot;</code> with
 <h2 id="example-analysis">Example analysis</h2>
 <p>For a complete worked example built from <code>CnH2O2_OD.txt</code>,
 see the <a href="inst/extdata/dd-growkar-workflow.md">CnH2O2 growkar
-workflow example</a>. The source file is available at <a href="inst/extdata/dd-growkar-workflow.Rmd">dd-growkar-workflow.Rmd</a>.</p>
+workflow example</a>.</p>
 <h2 id="contributing-and-issues">Contributing and issues</h2>
 <p>Bug reports, feature requests, and suggestions are welcome at:</p>
 <p><a href="https://github.com/sethiyap/growkar/issues">https://github.com/sethiyap/growkar/issues</a></p>

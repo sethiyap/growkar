@@ -141,10 +141,10 @@ plot_doubling_time(
 
 ![](dd-growkar-workflow-files/figure-gfm/doubling-time-plot-1.png)<!-- -->
 
-## Fit and plot one representative growth curve
+## Detect exponential phase in one representative sample
 
-This section fits a logistic model to the first sample in the reference
-condition and overlays observed and fitted values.
+This section inspects the highest-ranked candidate exponential windows
+for the first sample in the reference condition.
 
 ``` r
 sample_to_fit <- tidy_dd |>
@@ -153,6 +153,28 @@ sample_to_fit <- tidy_dd |>
   slice(1) |>
   pull(sample)
 
+phase_tbl <- tidy_dd |>
+  filter(sample == sample_to_fit) |>
+  detect_exponential_phase()
+
+knitr::kable(head(phase_tbl), digits = 3)
+```
+
+| sample | rank | start_time | end_time | slope | r_squared | n_points | selection_reason | degraded |
+|:---|---:|---:|---:|---:|---:|---:|:---|:---|
+| H2O2(0mM)\_1 | 1 | 13.667 | 15.000 | 0.291 | 0.999 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0mM)\_1 | 2 | 14.334 | 15.667 | 0.290 | 0.999 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0mM)\_1 | 3 | 14.000 | 15.334 | 0.289 | 0.999 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0mM)\_1 | 4 | 13.334 | 14.667 | 0.283 | 0.998 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0mM)\_1 | 5 | 14.667 | 16.000 | 0.271 | 0.999 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0mM)\_1 | 6 | 13.000 | 14.334 | 0.264 | 0.999 | 5 | rolling_window_ranked | FALSE |
+
+## Fit and plot one representative growth curve
+
+This section fits a logistic model to the first sample in the reference
+condition and overlays observed and fitted values.
+
+``` r
 fit <- tidy_dd |>
   filter(sample == sample_to_fit) |>
   fit_growth_curve(model = "logistic")

@@ -248,6 +248,14 @@ ggplot2::ggplot(method_plot_data, ggplot2::aes(time, od)) +
 
 ``` r
 library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
 library(knitr)
 
 sample_id <- unique(tidy_data$sample)[1]
@@ -552,8 +560,6 @@ The supported interface is the current tidy workflow:
 
 For a complete worked example built from `CnH2O2_OD.txt`, see the
 [CnH2O2 growkar workflow example](inst/extdata/dd-growkar-workflow.md).
-The source file is available at
-[dd-growkar-workflow.Rmd](inst/extdata/dd-growkar-workflow.Rmd).
 
 ## Contributing and issues
 
