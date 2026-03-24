@@ -68,6 +68,16 @@ tidy_dd <- dplyr::mutate(
   condition = factor(.data$condition, levels = h2o2_levels)
 )
 
+averaged_dd <- tidy_dd |>
+  dplyr::group_by(.data$condition, .data$time) |>
+  dplyr::summarise(od = mean(.data$od, na.rm = TRUE), .groups = "drop") |>
+  dplyr::rename(sample = .data$condition)
+#> Warning: Use of .data in tidyselect expressions was deprecated in tidyselect 1.2.0.
+#> ℹ Please use `"condition"` instead of `.data$condition`
+#> This warning is displayed once per session.
+#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+#> generated.
+
 head(tidy_dd)
 #> # A tibble: 6 × 5
 #>    time sample           od condition   replicate
@@ -82,14 +92,14 @@ head(tidy_dd)
 
 ## Plot growth curves with averaged replicates
 
-This plot averages replicates within each condition and returns a
-`ggplot2` object that can be customized further if needed.
+This plot uses the averaged replicate trajectories for each condition
+and returns a `ggplot2` object that can be customized further if needed.
 
 ``` r
 plot_growth_curve(
-  tidy_dd,
-  average_replicates = TRUE,
-  colour_col = "condition",
+  averaged_dd,
+  average_replicates = FALSE,
+  colour_col = "sample",
   palette_name = "Dark2"
 )
 ```
@@ -141,49 +151,66 @@ plot_doubling_time(
 
 ![](dd-growkar-workflow-files/figure-gfm/doubling-time-plot-1.png)<!-- -->
 
-## Detect exponential phase in one representative sample
+## Detect exponential phase in all averaged samples
 
 This section inspects the highest-ranked candidate exponential windows
-for the first sample in the reference condition.
+across all averaged H2O2 conditions.
 
 ``` r
-sample_to_fit <- tidy_dd |>
-  filter(condition == "H2O2(0mM)") |>
-  distinct(sample) |>
-  slice(1) |>
-  pull(sample)
+phase_tbl <- dplyr::bind_rows(
+  lapply(split(averaged_dd, averaged_dd$sample), detect_exponential_phase)
+)
 
-phase_tbl <- tidy_dd |>
-  filter(sample == sample_to_fit) |>
-  detect_exponential_phase()
+phase_tbl <- phase_tbl |>
+  dplyr::group_by(.data$sample) |>
+  dplyr::slice_head(n = 3) |>
+  dplyr::ungroup()
 
-knitr::kable(head(phase_tbl), digits = 3)
+knitr::kable(phase_tbl, digits = 3)
 ```
 
 | sample | rank | start_time | end_time | slope | r_squared | n_points | selection_reason | degraded |
 |:---|---:|---:|---:|---:|---:|---:|:---|:---|
-| H2O2(0mM)\_1 | 1 | 13.667 | 15.000 | 0.291 | 0.999 | 5 | rolling_window_ranked | FALSE |
-| H2O2(0mM)\_1 | 2 | 14.334 | 15.667 | 0.290 | 0.999 | 5 | rolling_window_ranked | FALSE |
-| H2O2(0mM)\_1 | 3 | 14.000 | 15.334 | 0.289 | 0.999 | 5 | rolling_window_ranked | FALSE |
-| H2O2(0mM)\_1 | 4 | 13.334 | 14.667 | 0.283 | 0.998 | 5 | rolling_window_ranked | FALSE |
-| H2O2(0mM)\_1 | 5 | 14.667 | 16.000 | 0.271 | 0.999 | 5 | rolling_window_ranked | FALSE |
-| H2O2(0mM)\_1 | 6 | 13.000 | 14.334 | 0.264 | 0.999 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0.135mM) | 1 | 14.000 | 15.334 | 0.266 | 1.000 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0.135mM) | 2 | 14.334 | 15.667 | 0.262 | 0.999 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0.135mM) | 3 | 13.667 | 15.000 | 0.262 | 1.000 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0.275mM) | 1 | 14.000 | 15.334 | 0.269 | 1.000 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0.275mM) | 2 | 14.334 | 15.667 | 0.264 | 1.000 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0.275mM) | 3 | 13.667 | 15.000 | 0.261 | 0.999 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0.55mM) | 1 | 14.667 | 16.000 | 0.282 | 1.000 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0.55mM) | 2 | 15.000 | 16.334 | 0.282 | 1.000 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0.55mM) | 3 | 14.334 | 15.667 | 0.277 | 0.999 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0mM) | 1 | 13.667 | 15.000 | 0.288 | 1.000 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0mM) | 2 | 14.000 | 15.334 | 0.288 | 1.000 | 5 | rolling_window_ranked | FALSE |
+| H2O2(0mM) | 3 | 14.334 | 15.667 | 0.288 | 1.000 | 5 | rolling_window_ranked | FALSE |
+| H2O2(1.1mM) | 1 | 16.000 | 17.334 | 0.294 | 1.000 | 5 | rolling_window_ranked | FALSE |
+| H2O2(1.1mM) | 2 | 16.334 | 17.667 | 0.294 | 1.000 | 5 | rolling_window_ranked | FALSE |
+| H2O2(1.1mM) | 3 | 16.667 | 18.000 | 0.288 | 1.000 | 5 | rolling_window_ranked | FALSE |
+| H2O2(2.2mM) | 1 | 27.000 | 28.334 | 0.313 | 1.000 | 5 | rolling_window_ranked | FALSE |
+| H2O2(2.2mM) | 2 | 27.334 | 28.667 | 0.313 | 1.000 | 5 | rolling_window_ranked | FALSE |
+| H2O2(2.2mM) | 3 | 26.667 | 28.000 | 0.308 | 0.999 | 5 | rolling_window_ranked | FALSE |
+| H2O2(4.4mM) | 1 | 13.334 | 14.667 | 0.013 | 0.493 | 5 | rolling_window_ranked | FALSE |
+| H2O2(4.4mM) | 2 | 21.667 | 23.000 | 0.011 | 0.500 | 5 | rolling_window_ranked | FALSE |
+| H2O2(4.4mM) | 3 | 12.667 | 14.000 | 0.010 | 0.470 | 5 | rolling_window_ranked | FALSE |
+| H2O2(8.8mM) | 1 | 15.334 | 16.667 | 0.044 | 0.740 | 5 | rolling_window_ranked | FALSE |
+| H2O2(8.8mM) | 2 | 15.000 | 16.334 | 0.027 | 0.477 | 5 | rolling_window_ranked | FALSE |
+| H2O2(8.8mM) | 3 | 15.667 | 17.000 | 0.018 | 0.128 | 5 | rolling_window_ranked | FALSE |
 
 ## Fit and plot one representative growth curve
 
-This section fits a logistic model to the first sample in the reference
-condition and overlays observed and fitted values.
+This section fits a logistic model to the averaged `H2O2(0mM)` curve and
+overlays observed and fitted values.
 
 ``` r
-fit <- tidy_dd |>
-  filter(sample == sample_to_fit) |>
+fit <- averaged_dd |>
+  filter(sample == "H2O2(0mM)") |>
   fit_growth_curve(model = "logistic")
 
 extract_params(fit)
 #> # A tibble: 1 × 6
-#>   sample      model    asymptote     r    t0 doubling_time_model
-#>   <chr>       <chr>        <dbl> <dbl> <dbl>               <dbl>
-#> 1 H2O2(0mM)_1 logistic      1.85 0.360  16.3                1.92
+#>   sample    model    asymptote     r    t0 doubling_time_model
+#>   <chr>     <chr>        <dbl> <dbl> <dbl>               <dbl>
+#> 1 H2O2(0mM) logistic      1.85 0.357  16.4                1.94
 ```
 
 ``` r

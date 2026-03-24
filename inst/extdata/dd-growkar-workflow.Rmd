@@ -56,19 +56,24 @@ tidy_dd <- dplyr::mutate(
   condition = factor(.data$condition, levels = h2o2_levels)
 )
 
+averaged_dd <- tidy_dd |>
+  dplyr::group_by(.data$condition, .data$time) |>
+  dplyr::summarise(od = mean(.data$od, na.rm = TRUE), .groups = "drop") |>
+  dplyr::rename(sample = .data$condition)
+
 head(tidy_dd)
 ```
 
 ## Plot growth curves with averaged replicates
 
-This plot averages replicates within each condition and returns a `ggplot2`
-object that can be customized further if needed.
+This plot uses the averaged replicate trajectories for each condition and
+returns a `ggplot2` object that can be customized further if needed.
 
 ```{r average-growth-curve, fig.width=8, fig.height=5}
 plot_growth_curve(
-  tidy_dd,
-  average_replicates = TRUE,
-  colour_col = "condition",
+  averaged_dd,
+  average_replicates = FALSE,
+  colour_col = "sample",
   palette_name = "Dark2"
 )
 ```
@@ -105,33 +110,32 @@ plot_doubling_time(
 )
 ```
 
-## Detect exponential phase in one representative sample
+## Detect exponential phase in all averaged samples
 
-This section inspects the highest-ranked candidate exponential windows for the
-first sample in the reference condition.
+This section inspects the highest-ranked candidate exponential windows across
+all averaged H2O2 conditions.
 
 ```{r detect-exponential-phase}
-sample_to_fit <- tidy_dd |>
-  filter(condition == "H2O2(0mM)") |>
-  distinct(sample) |>
-  slice(1) |>
-  pull(sample)
+phase_tbl <- dplyr::bind_rows(
+  lapply(split(averaged_dd, averaged_dd$sample), detect_exponential_phase)
+)
 
-phase_tbl <- tidy_dd |>
-  filter(sample == sample_to_fit) |>
-  detect_exponential_phase()
+phase_tbl <- phase_tbl |>
+  dplyr::group_by(.data$sample) |>
+  dplyr::slice_head(n = 3) |>
+  dplyr::ungroup()
 
-knitr::kable(head(phase_tbl), digits = 3)
+knitr::kable(phase_tbl, digits = 3)
 ```
 
 ## Fit and plot one representative growth curve
 
-This section fits a logistic model to the first sample in the reference
-condition and overlays observed and fitted values.
+This section fits a logistic model to the averaged `H2O2(0mM)` curve and
+overlays observed and fitted values.
 
 ```{r fit-one-sample}
-fit <- tidy_dd |>
-  filter(sample == sample_to_fit) |>
+fit <- averaged_dd |>
+  filter(sample == "H2O2(0mM)") |>
   fit_growth_curve(model = "logistic")
 
 extract_params(fit)
