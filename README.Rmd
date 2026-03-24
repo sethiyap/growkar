@@ -147,31 +147,17 @@ p_rep <- plot_growth_curve(
 p_rep
 ```
 
-## Estimate growth rate
+## Detect exponential phase
 
-**What it does:** `compute_growth_rate()` estimates the specific growth rate
-from `log(od)` versus time. In the returned table, `mu` is the estimated growth
-rate.
+**What it does:** `detect_exponential_phase()` identifies likely
+exponential-phase windows automatically.
 
-**Why use it:** It is useful for estimating exponential growth directly from
-observed data, using methods such as `"rolling_window"`, `"defined_interval"`,
-and `"rule_based"`.
+**Why use it:** It is a diagnostic and explanatory function. Use it when you
+want to inspect which time interval appears most consistent with exponential
+growth before moving to final summary metrics.
 
-Briefly, growth rate is estimated as the slope of `log(OD)` versus time over
-the selected interval, and doubling time is then calculated as `log(2) / mu`.
-
-Method options:
-
-- `"rolling_window"` scans rolling windows across the time series and selects
-  the window with the strongest positive log-linear slope.
-- `"defined_interval"` fits the growth rate over a user-supplied start and end
-  time interval. You can provide one interval for all samples or a per-sample
-  interval table.
-- `"rule_based"` starts from a reference OD, finds the nearest successive OD
-  doublings, and uses the interval between those doubling anchors to estimate
-  growth.
-
-Method schematic on a mock growth curve:
+This schematic shows how the candidate interval is chosen on a mock growth
+curve for each empirical method.
 
 ```{r}
 mock_curve <- tibble::tibble(
@@ -221,6 +207,40 @@ library(knitr)
 
 sample_id <- unique(tidy_data$sample)[1]
 
+phase_tbl <- detect_exponential_phase(
+  filter(tidy_data, sample == sample_id)
+)
+
+knitr::kable(head(phase_tbl), digits = 3)
+```
+
+## Estimate growth rate
+
+**What it does:** `compute_growth_rate()` estimates the specific growth rate
+from `log(od)` versus time. In the returned table, `mu` is the estimated growth
+rate.
+
+**Why use it:** It is useful for estimating exponential growth directly from
+observed data, using methods such as `"rolling_window"`, `"defined_interval"`,
+and `"rule_based"`.
+
+Briefly, growth rate is estimated as the slope of `log(OD)` versus time over
+the selected interval, and doubling time is then calculated as `log(2) / mu`.
+
+Method options:
+
+- `"rolling_window"` scans rolling windows across the time series and selects
+  the window with the strongest positive log-linear slope.
+- `"defined_interval"` fits the growth rate over a user-supplied start and end
+  time interval. You can provide one interval for all samples or a per-sample
+  interval table.
+- `"rule_based"` starts from a reference OD, finds the nearest successive OD
+  doublings, and uses the interval between those doubling anchors to estimate
+  growth.
+
+**Minimal example:**
+
+```{r}
 gr <- compute_growth_rate(
   filter(tidy_data, sample == sample_id),
   method = "rolling_window"
@@ -279,25 +299,6 @@ doubling_time_tbl <- tibble::tibble(
 )
 
 knitr::kable(doubling_time_tbl, digits = 3)
-```
-
-## Detect exponential phase
-
-**What it does:** `detect_exponential_phase()` identifies likely
-exponential-phase windows automatically.
-
-**Why use it:** It is a diagnostic and explanatory function. Use it when you
-want to inspect which time interval appears most consistent with exponential
-growth before moving to final summary metrics.
-
-**Minimal example:**
-
-```{r}
-phase_tbl <- detect_exponential_phase(
-  filter(tidy_data, sample == sample_id)
-)
-
-knitr::kable(head(phase_tbl), digits = 3)
 ```
 
 ## Summarize growth metrics across samples
