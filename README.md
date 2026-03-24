@@ -551,10 +551,13 @@ The supported interface is the current tidy workflow:
 
 - `as_tidy_growth_data()`
 - `validate_growth_data()`
+- `plot_growth_curve()`
 - `compute_growth_rate()`
 - `summarize_growth_metrics()`
 - `detect_exponential_phase()`
+- `plot_doubling_time()`
 - `fit_growth_curve()`
+- `plot_fitted_curve()`
 
 ## Example analysis
 

@@ -4,10 +4,22 @@
 \alias{detect_exponential_phase}
 \title{Detect Candidate Exponential-Phase Windows}
 \usage{
-detect_exponential_phase(data, window_size = 5, min_od = 0.02)
+detect_exponential_phase(
+  data,
+  select_replicates = NULL,
+  average_replicates = FALSE,
+  window_size = 5,
+  min_od = 0.02
+)
 }
 \arguments{
-\item{data}{Tidy growth data for one sample.}
+\item{data}{Tidy growth data for one sample or multiple samples.}
+
+\item{select_replicates}{Optional character vector of replicate IDs to retain
+before detection. When \code{NULL}, all replicates are retained.}
+
+\item{average_replicates}{Logical; if \code{TRUE}, average replicate trajectories
+before detection when replicate metadata are available.}
 
 \item{window_size}{Number of observations in each rolling window.}
 
@@ -17,11 +29,14 @@ detect_exponential_phase(data, window_size = 5, min_od = 0.02)
 A tibble with \code{sample}, \code{start_time}, \code{end_time}, \code{slope}, and
 \code{r_squared}, ranked by highest positive slope and then \code{r_squared}. The
 returned tibble also includes \code{rank}, \code{n_points}, \code{selection_reason}, and
-\code{degraded} metadata describing how the candidate windows were selected.
+\code{degraded} metadata describing how the candidate windows were selected. For
+multi-sample input, windows are returned for each sample.
 }
 \description{
-Identify rolling windows with the strongest evidence for exponential growth
-in a single sample.
+Identify rolling windows with the strongest evidence for exponential growth.
+For multi-sample input, detection is performed separately for each sample.
+When \code{average_replicates = TRUE}, replicate trajectories are averaged first
+and exponential-phase detection is then run on the averaged curves.
 }
 \examples{
 data(yeast_growth_data)
@@ -29,4 +44,9 @@ tidy_growth <- as_tidy_growth_data(yeast_growth_data)
 sample_id <- unique(tidy_growth$sample)[1]
 phase_tbl <- detect_exponential_phase(dplyr::filter(tidy_growth, sample == sample_id))
 head(phase_tbl)
+averaged_phase_tbl <- detect_exponential_phase(
+  tidy_growth,
+  average_replicates = TRUE
+)
+head(averaged_phase_tbl)
 }

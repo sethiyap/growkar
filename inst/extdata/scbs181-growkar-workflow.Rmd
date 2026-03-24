@@ -64,12 +64,6 @@ tidy_sc <- tidy_sc |>
   dplyr::filter(.data$condition %in% selected_conditions) |>
   dplyr::mutate(condition = factor(.data$condition, levels = selected_conditions))
 
-averaged_sc <- tidy_sc |>
-  dplyr::group_by(.data$condition, .data$time) |>
-  dplyr::summarise(od = mean(.data$od, na.rm = TRUE), .groups = "drop") |>
-  dplyr::rename(sample = .data$condition) |>
-  dplyr::mutate(sample = factor(.data$sample, levels = selected_conditions))
-
 head(tidy_sc)
 ```
 
@@ -79,7 +73,7 @@ head(tidy_sc)
 plot_growth_curve(
   tidy_sc,
   average_replicates = TRUE,
-  colour_col = "sample",
+  colour_col = "condition",
   custom_colors = sc_colors
 )
 ```
@@ -124,15 +118,15 @@ each averaged Sc condition and the mean start and end times across all
 conditions.
 
 ```{r detect-exponential-phase}
-phase_tbl <- dplyr::bind_rows(
-  lapply(split(averaged_sc, averaged_sc$sample), function(sample_data) {
-    detect_exponential_phase(sample_data) |>
-      dplyr::slice_head(n = 1)
-  })
-)
-
-phase_tbl <- phase_tbl |>
-  dplyr::arrange(.data$sample)
+phase_tbl <- detect_exponential_phase(
+  tidy_sc,
+  average_replicates = TRUE
+) |>
+  dplyr::mutate(sample = factor(.data$sample, levels = selected_conditions)) |>
+  dplyr::arrange(.data$sample) |>
+  dplyr::group_by(.data$sample) |>
+  dplyr::slice_head(n = 1) |>
+  dplyr::ungroup()
 
 knitr::kable(phase_tbl, digits = 3)
 

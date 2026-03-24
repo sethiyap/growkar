@@ -76,17 +76,6 @@ tidy_sc <- tidy_sc |>
   dplyr::filter(.data$condition %in% selected_conditions) |>
   dplyr::mutate(condition = factor(.data$condition, levels = selected_conditions))
 
-averaged_sc <- tidy_sc |>
-  dplyr::group_by(.data$condition, .data$time) |>
-  dplyr::summarise(od = mean(.data$od, na.rm = TRUE), .groups = "drop") |>
-  dplyr::rename(sample = .data$condition) |>
-  dplyr::mutate(sample = factor(.data$sample, levels = selected_conditions))
-#> Warning: Use of .data in tidyselect expressions was deprecated in tidyselect 1.2.0.
-#> ℹ Please use `"condition"` instead of `.data$condition`
-#> This warning is displayed once per session.
-#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-#> generated.
-
 head(tidy_sc)
 #> # A tibble: 6 × 5
 #>    time sample       od condition replicate
@@ -105,7 +94,7 @@ head(tidy_sc)
 plot_growth_curve(
   tidy_sc,
   average_replicates = TRUE,
-  colour_col = "sample",
+  colour_col = "condition",
   custom_colors = sc_colors
 )
 ```
@@ -161,25 +150,25 @@ interval for each averaged Sc condition and the mean start and end times
 across all conditions.
 
 ``` r
-phase_tbl <- dplyr::bind_rows(
-  lapply(split(averaged_sc, averaged_sc$sample), function(sample_data) {
-    detect_exponential_phase(sample_data) |>
-      dplyr::slice_head(n = 1)
-  })
-)
-
-phase_tbl <- phase_tbl |>
-  dplyr::arrange(.data$sample)
+phase_tbl <- detect_exponential_phase(
+  tidy_sc,
+  average_replicates = TRUE
+) |>
+  dplyr::mutate(sample = factor(.data$sample, levels = selected_conditions)) |>
+  dplyr::arrange(.data$sample) |>
+  dplyr::group_by(.data$sample) |>
+  dplyr::slice_head(n = 1) |>
+  dplyr::ungroup()
 
 knitr::kable(phase_tbl, digits = 3)
 ```
 
 | sample | start_time | end_time | slope | r_squared | n_points | selection_reason | degraded | rank |
 |:---|---:|---:|---:|---:|---:|:---|:---|---:|
-| Sc(0) | 13.667 | 15.001 | 0.330 | 1 | 5 | rolling_window_ranked | FALSE | 1 |
 | Sc(100) | 20.667 | 22.001 | 0.469 | 1 | 5 | rolling_window_ranked | FALSE | 1 |
-| Sc(25) | 14.334 | 15.667 | 0.327 | 1 | 5 | rolling_window_ranked | FALSE | 1 |
 | Sc(50) | 16.667 | 18.001 | 0.311 | 1 | 5 | rolling_window_ranked | FALSE | 1 |
+| Sc(25) | 14.334 | 15.667 | 0.327 | 1 | 5 | rolling_window_ranked | FALSE | 1 |
+| Sc(0) | 13.667 | 15.001 | 0.330 | 1 | 5 | rolling_window_ranked | FALSE | 1 |
 
 ``` r
 

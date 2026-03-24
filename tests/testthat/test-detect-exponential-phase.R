@@ -38,3 +38,16 @@ test_that("detect_exponential_phase returns fallback row when no positive OD rem
   expect_true(all(is.na(windows$slope)))
   expect_equal(windows$selection_reason[[1]], "insufficient_positive_points")
 })
+
+test_that("detect_exponential_phase supports averaged multi-sample input", {
+  tidy_data <- as_tidy_growth_data(yeast_growth_data)
+
+  windows <- suppressWarnings(detect_exponential_phase(
+    tidy_data,
+    average_replicates = TRUE,
+    window_size = 4
+  ))
+
+  expect_s3_class(windows, "tbl_df")
+  expect_true(all(c("Cg", "CgFlu", "YPD") %in% unique(windows$sample)))
+})

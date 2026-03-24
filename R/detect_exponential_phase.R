@@ -1,16 +1,23 @@
 #' Detect Candidate Exponential-Phase Windows
 #'
-#' Identify rolling windows with the strongest evidence for exponential growth
-#' in a single sample.
+#' Identify rolling windows with the strongest evidence for exponential growth.
+#' For multi-sample input, detection is performed separately for each sample.
+#' When `average_replicates = TRUE`, replicate trajectories are averaged first
+#' and exponential-phase detection is then run on the averaged curves.
 #'
-#' @param data Tidy growth data for one sample.
+#' @param data Tidy growth data for one sample or multiple samples.
+#' @param select_replicates Optional character vector of replicate IDs to retain
+#'   before detection. When `NULL`, all replicates are retained.
+#' @param average_replicates Logical; if `TRUE`, average replicate trajectories
+#'   before detection when replicate metadata are available.
 #' @param window_size Number of observations in each rolling window.
 #' @param min_od Minimum OD retained for log-linear fitting.
 #'
 #' @return A tibble with `sample`, `start_time`, `end_time`, `slope`, and
 #'   `r_squared`, ranked by highest positive slope and then `r_squared`. The
 #'   returned tibble also includes `rank`, `n_points`, `selection_reason`, and
-#'   `degraded` metadata describing how the candidate windows were selected.
+#'   `degraded` metadata describing how the candidate windows were selected. For
+#'   multi-sample input, windows are returned for each sample.
 #'
 #' @examples
 #' data(yeast_growth_data)
@@ -18,15 +25,47 @@
 #' sample_id <- unique(tidy_growth$sample)[1]
 #' phase_tbl <- detect_exponential_phase(dplyr::filter(tidy_growth, sample == sample_id))
 #' head(phase_tbl)
+#' averaged_phase_tbl <- detect_exponential_phase(
+#'   tidy_growth,
+#'   average_replicates = TRUE
+#' )
+#' head(averaged_phase_tbl)
 #' @export
-detect_exponential_phase <- function(data, window_size = 5, min_od = 0.02) {
+detect_exponential_phase <- function(data,
+                                     select_replicates = NULL,
+                                     average_replicates = FALSE,
+                                     window_size = 5,
+                                     min_od = 0.02) {
   data <- as_tidy_growth_data(data)
   data <- validate_growth_data(data, warn_zero_od = TRUE)
-  sample_id <- unique(data$sample)
 
-  if (dplyr::n_distinct(data$sample) != 1L) {
-    stop("`detect_exponential_phase()` requires data for exactly one sample.", call. = FALSE)
+  if (!is.null(select_replicates)) {
+    if (!"replicate" %in% names(data)) {
+      stop(
+        "`select_replicates` requires a `replicate` column or sample names that encode replicates.",
+        call. = FALSE
+      )
+    }
+
+    data <- dplyr::filter(data, .data$replicate %in% select_replicates)
+    if (nrow(data) == 0L) {
+      stop("No rows remain after filtering `select_replicates`.", call. = FALSE)
+    }
   }
+
+  if (isTRUE(average_replicates)) {
+    data <- growkar_average_replicates(data) |>
+      dplyr::mutate(od = .data$od_mean) |>
+      dplyr::select(-dplyr::any_of(c("od_mean", "od_sd", "n")))
+    data <- validate_growth_data(data, warn_zero_od = TRUE)
+  }
+
+  sample_list <- split(data, data$sample)
+  purrr::map_dfr(sample_list, detect_exponential_phase_single_sample, window_size = window_size, min_od = min_od)
+}
+
+detect_exponential_phase_single_sample <- function(data, window_size = 5, min_od = 0.02) {
+  sample_id <- unique(data$sample)
 
   data <- data |>
     dplyr::arrange(.data$time) |>
