@@ -1,9 +1,27 @@
 ---
-title: "growkar workflow for dd"
-output: html_document
+title: "CnH2O2 growkar workflow example"
+output: github_document
 ---
 
 ```{r setup, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "dd-growkar-workflow-files/figure-gfm/"
+)
+
+if (requireNamespace("pkgload", quietly = TRUE) && file.exists("DESCRIPTION")) {
+  pkg_root <- "."
+} else {
+  candidates <- c(".", "..", "../..")
+  match_idx <- which(file.exists(file.path(candidates, "DESCRIPTION")))
+  pkg_root <- if (length(match_idx) > 0L) candidates[[match_idx[[1]]]] else NULL
+}
+
+if (!is.null(pkg_root) && requireNamespace("pkgload", quietly = TRUE)) {
+  pkgload::load_all(pkg_root, export_all = FALSE, helpers = FALSE, quiet = TRUE)
+}
+
 library(growkar)
 library(dplyr)
 library(knitr)

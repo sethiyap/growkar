@@ -637,9 +637,6 @@ LogPhase 600, and similar OD600 workflows.</p>
 <h2 id="installation">Installation</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;sethiyap/growkar&quot;</span>)</span></code></pre></div>
 <h2 id="example-dataset">Example dataset</h2>
-<p>For a standalone template built from <code>CnH2O2_OD.txt</code>, see
-<a href="inst/extdata/dd-growkar-workflow.Rmd" target="_blank">the dd
-growkar workflow example</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(growkar)</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">data</span>(yeast_growth_data)</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
@@ -1437,6 +1434,10 @@ data, use <code>facet_col = &quot;replicate&quot;</code> with
 <li><code>detect_exponential_phase()</code></li>
 <li><code>fit_growth_curve()</code></li>
 </ul>
+<h2 id="example-analysis">Example analysis</h2>
+<p>For a complete worked example built from <code>CnH2O2_OD.txt</code>,
+see the <a href="inst/extdata/dd-growkar-workflow.md">CnH2O2 growkar
+workflow example</a>. The source file is available at <a href="inst/extdata/dd-growkar-workflow.Rmd">dd-growkar-workflow.Rmd</a>.</p>
 <h2 id="contributing-and-issues">Contributing and issues</h2>
 <p>Bug reports, feature requests, and suggestions are welcome at:</p>
 <p><a href="https://github.com/sethiyap/growkar/issues">https://github.com/sethiyap/growkar/issues</a></p>
