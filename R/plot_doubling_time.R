@@ -69,7 +69,9 @@ plot_doubling_time <- function(data,
       ...
     )
     comparison_col <- "sample"
+    input_levels <- growkar_plot_levels(summary_tbl[[comparison_col]])
   } else {
+    input_levels <- growkar_plot_levels(tidy_data[[comparison_col]])
     summary_tbl <- summarize_growth_metrics(
       data = tidy_data,
       method = method,
@@ -87,7 +89,10 @@ plot_doubling_time <- function(data,
     stop("`comparison_col` must be present in the summarized output.", call. = FALSE)
   }
 
-  comparison_levels <- growkar_plot_levels(summary_tbl[[comparison_col]])
+  comparison_levels <- input_levels[input_levels %in% as.character(unique(summary_tbl[[comparison_col]]))]
+  if (length(comparison_levels) == 0L) {
+    comparison_levels <- growkar_plot_levels(summary_tbl[[comparison_col]])
+  }
 
   if (!is.null(exclude_groups)) {
     if (!isTRUE(average_replicates) && !is.null(compare_to) && compare_to %in% exclude_groups) {

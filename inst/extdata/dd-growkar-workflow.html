@@ -690,9 +690,8 @@ workflows.</p>
 <span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; assays(1): od</span></span>
 <span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; rownames(87): 0 0.333333333333333 ... 28.3336111111111 28.6669444444444</span></span>
 <span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; rowData names(1): time</span></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; colnames(24): H2O2(0.135mM)_1 H2O2(0.135mM)_2 ... H2O2(8.8mM)_2</span></span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt;   H2O2(8.8mM)_3</span></span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; colData names(3): sample condition replicate</span></span></code></pre></div>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; colnames(24): H2O2(8.8mM)_1 H2O2(8.8mM)_2 ... H2O2(0mM)_2 H2O2(0mM)_3</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; colData names(3): sample condition replicate</span></span></code></pre></div>
 <h2 id="analyze-using-summarizedexperiment-metadata">Analyze using
 SummarizedExperiment metadata</h2>
 <p>The same rule-based doubling-time summary can be computed directly on
@@ -704,17 +703,17 @@ the <code>SummarizedExperiment</code> object and stored in
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">comparison_col =</span> <span class="st">&quot;condition&quot;</span>,</span>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">compare_to =</span> <span class="st">&quot;H2O2(0mM)&quot;</span></span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>)</span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_1`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_2`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_3`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_1`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_2`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
-<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_3`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
 <span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a></span>
 <span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>se_metrics <span class="ot">&lt;-</span> S4Vectors<span class="sc">::</span><span class="fu">metadata</span>(se)<span class="sc">$</span>growth_metrics <span class="sc">|&gt;</span></span>
@@ -840,17 +839,17 @@ exponential interval.</p>
 <span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">comparison_col =</span> <span class="st">&quot;condition&quot;</span>,</span>
 <span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">compare_to =</span> <span class="st">&quot;H2O2(0mM)&quot;</span></span>
 <span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>)</span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_1`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_2`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_3`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
-<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_1`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
-<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_2`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
-<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_3`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
 <span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a></span>
 <span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>dt_stats <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">arrange</span>(dt_stats, .data<span class="sc">$</span>condition)</span>
@@ -964,17 +963,17 @@ interval.</p>
 <span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;rule_based&quot;</span>,</span>
 <span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="at">palette_name =</span> <span class="st">&quot;Dark2&quot;</span></span>
 <span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>)</span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_1`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_2`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_3`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_1`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_2`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
-<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(8.8mM)_3`: Rule-based growth estimation did not yield a</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt; Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a</span></span>
 <span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co">#&gt; positive growth slope.</span></span>
 <span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="co">#&gt; Warning: Removed 2 rows containing missing values or values outside the scale range</span></span>
 <span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co">#&gt; (`geom_col()`).</span></span></code></pre></div>

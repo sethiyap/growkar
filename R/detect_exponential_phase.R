@@ -65,7 +65,8 @@ detect_exponential_phase <- function(data,
     data <- validate_growth_data(data, warn_zero_od = TRUE)
   }
 
-  sample_list <- split(data, data$sample)
+  sample_levels <- unique(as.character(data$sample))
+  sample_list <- split(data, factor(data$sample, levels = sample_levels))
   purrr::map_dfr(sample_list, detect_exponential_phase_single_sample, window_size = window_size, min_od = min_od)
 }
 

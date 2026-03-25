@@ -99,7 +99,8 @@ compute_growth_rate <- function(data,
     tidy_data <- validate_growth_data(tidy_data, warn_zero_od = TRUE)
   }
 
-  sample_list <- split(tidy_data, tidy_data$sample)
+  sample_levels <- unique(as.character(tidy_data$sample))
+  sample_list <- split(tidy_data, factor(tidy_data$sample, levels = sample_levels))
   results <- purrr::map_dfr(sample_list, function(sample_data) {
     switch(
       method,

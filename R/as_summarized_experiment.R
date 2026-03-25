@@ -98,8 +98,7 @@ growkar_sample_metadata <- function(data) {
     )
   }
 
-  metadata |>
-    dplyr::arrange(.data$sample)
+  metadata
 }
 
 growkar_tidy_from_summarized_experiment <- function(data) {

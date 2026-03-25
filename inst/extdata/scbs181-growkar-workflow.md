@@ -104,7 +104,7 @@ se
 #> assays(1): od
 #> rownames(86): 0 0.333333333333333 ... 28.0005555555556 28.3338888888889
 #> rowData names(1): time
-#> colnames(12): Sc(0)_1 Sc(0)_2 ... Sc(50)_2 Sc(50)_3
+#> colnames(12): Sc(100)_1 Sc(100)_2 ... Sc(0)_2 Sc(0)_3
 #> colData names(3): sample condition replicate
 ```
 

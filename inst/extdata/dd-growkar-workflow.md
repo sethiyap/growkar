@@ -96,8 +96,7 @@ se
 #> assays(1): od
 #> rownames(87): 0 0.333333333333333 ... 28.3336111111111 28.6669444444444
 #> rowData names(1): time
-#> colnames(24): H2O2(0.135mM)_1 H2O2(0.135mM)_2 ... H2O2(8.8mM)_2
-#>   H2O2(8.8mM)_3
+#> colnames(24): H2O2(8.8mM)_1 H2O2(8.8mM)_2 ... H2O2(0mM)_2 H2O2(0mM)_3
 #> colData names(3): sample condition replicate
 ```
 
@@ -114,17 +113,17 @@ se <- growth_metrics(
   comparison_col = "condition",
   compare_to = "H2O2(0mM)"
 )
-#> Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a
-#> positive growth slope.
 #> Warning: Sample `H2O2(8.8mM)_1`: Rule-based growth estimation did not yield a
 #> positive growth slope.
 #> Warning: Sample `H2O2(8.8mM)_2`: Rule-based growth estimation did not yield a
 #> positive growth slope.
 #> Warning: Sample `H2O2(8.8mM)_3`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a
 #> positive growth slope.
 
 se_metrics <- S4Vectors::metadata(se)$growth_metrics |>
@@ -172,17 +171,17 @@ dt_stats <- summarize_growth_metrics(
   comparison_col = "condition",
   compare_to = "H2O2(0mM)"
 )
-#> Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a
-#> positive growth slope.
 #> Warning: Sample `H2O2(8.8mM)_1`: Rule-based growth estimation did not yield a
 #> positive growth slope.
 #> Warning: Sample `H2O2(8.8mM)_2`: Rule-based growth estimation did not yield a
 #> positive growth slope.
 #> Warning: Sample `H2O2(8.8mM)_3`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a
 #> positive growth slope.
 
 dt_stats <- dplyr::arrange(dt_stats, .data$condition)
@@ -214,17 +213,17 @@ plot_doubling_time(
   method = "rule_based",
   palette_name = "Dark2"
 )
-#> Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a
-#> positive growth slope.
 #> Warning: Sample `H2O2(8.8mM)_1`: Rule-based growth estimation did not yield a
 #> positive growth slope.
 #> Warning: Sample `H2O2(8.8mM)_2`: Rule-based growth estimation did not yield a
 #> positive growth slope.
 #> Warning: Sample `H2O2(8.8mM)_3`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a
+#> positive growth slope.
+#> Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a
 #> positive growth slope.
 #> Warning: Removed 2 rows containing missing values or values outside the scale range
 #> (`geom_col()`).

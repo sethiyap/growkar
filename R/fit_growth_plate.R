@@ -19,7 +19,8 @@ fit_growth_plate <- function(data, model = c("logistic", "gompertz")) {
   data <- as_tidy_growth_data(se)
   data <- validate_growth_data(data)
 
-  samples <- split(data, data$sample)
+  sample_levels <- unique(as.character(data$sample))
+  samples <- split(data, factor(data$sample, levels = sample_levels))
   tibble::tibble(
     sample = names(samples),
     fit = unname(purrr::map(samples, fit_growth_curve, model = model))
