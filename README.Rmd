@@ -465,11 +465,10 @@ The supported SE-native interface includes:
 
 ## Example analysis
 
-For a complete worked example built from
-`dose_response_BS181_20Dec24_Cdk7Tag.txt`, see the
-[KN99 CDK7 growkar workflow example](inst/extdata/dd-growkar-workflow.md).
-For a similar worked example built from `ScBS181_OD.txt`, see the
-[ScBS181 growkar workflow example](inst/extdata/scbs181-growkar-workflow.md).
+Complete worked examples can be found at:
+
+1. [KN99 CDK7 growkar workflow example](inst/extdata/dd-growkar-workflow.md)
+2. [ScBS181 growkar workflow example](inst/extdata/scbs181-growkar-workflow.md)
 
 ## Contributing and issues
 

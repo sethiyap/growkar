@@ -745,7 +745,7 @@ larger Bioconductor workflows.</p>
 <span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>S4Vectors<span class="sc">::</span><span class="fu">metadata</span>(se_from_obj)<span class="sc">$</span>growth_metrics</span>
 <span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 10</span></span>
 <span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt;   sample      mu start_time end_time r_squared method    n_points degraded note </span></span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt;   &lt;fct&gt;    &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;        &lt;int&gt; &lt;lgl&gt;    &lt;chr&gt;</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;    &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;        &lt;int&gt; &lt;lgl&gt;    &lt;chr&gt;</span></span>
 <span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; 1 Cg     0.569          4.5      6.5     1.000 rolling_…        5 FALSE    roll…</span></span>
 <span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; 2 CgFlu  0.404          4.5      6.5     1.000 rolling_…        5 FALSE    roll…</span></span>
 <span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; 3 YPD    0.00128       12.5     14.5     0.500 rolling_…        5 FALSE    roll…</span></span>
@@ -1448,7 +1448,7 @@ and <code>compare_to</code>.</p>
 <td align="right">0.017</td>
 <td align="right">3</td>
 <td align="right">0.010</td>
-<td align="right">1</td>
+<td align="right">NA</td>
 <td align="left">ref</td>
 </tr>
 <tr>
@@ -1569,11 +1569,13 @@ data, use <code>facet_col = &quot;replicate&quot;</code> with
 <li><code>plot_fitted_curve()</code></li>
 </ul>
 <h2 id="example-analysis">Example analysis</h2>
-<p>For a complete worked example built from
-<code>dose_response_BS181_20Dec24_Cdk7Tag.txt</code>, see the <a href="inst/extdata/dd-growkar-workflow.md">KN99 CDK7 growkar workflow
-example</a>. For a similar worked example built from
-<code>ScBS181_OD.txt</code>, see the <a href="inst/extdata/scbs181-growkar-workflow.md">ScBS181 growkar workflow
-example</a>.</p>
+<p>Complete worked examples can be found at:</p>
+<ol style="list-style-type: decimal">
+<li><a href="inst/extdata/dd-growkar-workflow.md">KN99 CDK7 growkar
+workflow example</a></li>
+<li><a href="inst/extdata/scbs181-growkar-workflow.md">ScBS181 growkar
+workflow example</a></li>
+</ol>
 <h2 id="contributing-and-issues">Contributing and issues</h2>
 <p>Bug reports, feature requests, and suggestions are welcome at:</p>
 <p><a href="https://github.com/sethiyap/growkar/issues">https://github.com/sethiyap/growkar/issues</a></p>

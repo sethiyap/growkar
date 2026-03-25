@@ -171,7 +171,7 @@ se_from_obj <- growth_metrics(
 S4Vectors::metadata(se_from_obj)$growth_metrics
 #> # A tibble: 3 × 10
 #>   sample      mu start_time end_time r_squared method    n_points degraded note 
-#>   <fct>    <dbl>      <dbl>    <dbl>     <dbl> <chr>        <int> <lgl>    <chr>
+#>   <chr>    <dbl>      <dbl>    <dbl>     <dbl> <chr>        <int> <lgl>    <chr>
 #> 1 Cg     0.569          4.5      6.5     1.000 rolling_…        5 FALSE    roll…
 #> 2 CgFlu  0.404          4.5      6.5     1.000 rolling_…        5 FALSE    roll…
 #> 3 YPD    0.00128       12.5     14.5     0.500 rolling_…        5 FALSE    roll…
@@ -488,7 +488,7 @@ knitr::kable(dt_stats, digits = 3)
 
 | condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
 |:---|---:|---:|---:|---:|---:|---:|:---|
-| Cg | 0.569 | 1.219 | 0.017 | 3 | 0.010 | 1 | ref |
+| Cg | 0.569 | 1.219 | 0.017 | 3 | 0.010 | NA | ref |
 | CgFlu | 0.404 | 1.714 | 0.010 | 3 | 0.006 | 0 | \*\*\*\* |
 | YPD | 0.004 | 179.350 | NA | 1 | NA | NA | NA |
 
@@ -619,11 +619,12 @@ The supported SE-native interface includes:
 
 ## Example analysis
 
-For a complete worked example built from
-`dose_response_BS181_20Dec24_Cdk7Tag.txt`, see the [KN99 CDK7 growkar
-workflow example](inst/extdata/dd-growkar-workflow.md). For a similar
-worked example built from `ScBS181_OD.txt`, see the [ScBS181 growkar
-workflow example](inst/extdata/scbs181-growkar-workflow.md).
+Complete worked examples can be found at:
+
+1.  [KN99 CDK7 growkar workflow
+    example](inst/extdata/dd-growkar-workflow.md)
+2.  [ScBS181 growkar workflow
+    example](inst/extdata/scbs181-growkar-workflow.md)
 
 ## Contributing and issues
 
