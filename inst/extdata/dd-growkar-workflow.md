@@ -77,13 +77,7 @@ Bioconductor-oriented workflows.
 growkar_obj <- as_growkar(tidy_dd)
 se <- methods::as(growkar_obj, "SummarizedExperiment")
 
-h2o2_levels <- as.data.frame(SummarizedExperiment::colData(se)) |>
-  dplyr::distinct(.data$condition) |>
-  dplyr::mutate(
-    concentration_mM = as.numeric(sub("^H2O2\\(([-0-9.]+)mM\\)$", "\\1", .data$condition))
-  ) |>
-  dplyr::arrange(.data$concentration_mM) |>
-  dplyr::pull(.data$condition)
+h2o2_levels <- unique(as.character(SummarizedExperiment::colData(se)$condition))
 
 SummarizedExperiment::colData(se)$condition <- factor(
   SummarizedExperiment::colData(se)$condition,
@@ -135,14 +129,14 @@ knitr::kable(se_metrics, digits = 3)
 
 | condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
 |:---|---:|---:|---:|---:|---:|---:|:---|
-| H2O2(0mM) | 0.176 | 3.998 | 0.665 | 3 | 0.384 | 1.000 | ref |
-| H2O2(0.135mM) | 0.200 | 3.533 | 0.576 | 3 | 0.333 | 0.412 | ns |
-| H2O2(0.275mM) | 0.185 | 3.783 | 0.480 | 3 | 0.277 | 0.676 | ns |
-| H2O2(0.55mM) | 0.165 | 4.207 | 0.241 | 3 | 0.139 | 0.651 | ns |
-| H2O2(1.1mM) | 0.179 | 3.883 | 0.185 | 3 | 0.107 | 0.796 | ns |
-| H2O2(2.2mM) | 0.276 | 2.522 | 0.165 | 3 | 0.095 | 0.054 | ns |
-| H2O2(4.4mM) | NaN | NaN | NA | 0 | NA | NA | NA |
 | H2O2(8.8mM) | NaN | NaN | NA | 0 | NA | NA | NA |
+| H2O2(4.4mM) | NaN | NaN | NA | 0 | NA | NA | NA |
+| H2O2(2.2mM) | 0.276 | 2.522 | 0.165 | 3 | 0.095 | 0.054 | ns |
+| H2O2(1.1mM) | 0.179 | 3.883 | 0.185 | 3 | 0.107 | 0.796 | ns |
+| H2O2(0.55mM) | 0.165 | 4.207 | 0.241 | 3 | 0.139 | 0.651 | ns |
+| H2O2(0.275mM) | 0.185 | 3.783 | 0.480 | 3 | 0.277 | 0.676 | ns |
+| H2O2(0.135mM) | 0.200 | 3.533 | 0.576 | 3 | 0.333 | 0.412 | ns |
+| H2O2(0mM) | 0.176 | 3.998 | 0.665 | 3 | 0.384 | 1.000 | ref |
 
 ## Plot growth curves with averaged replicates
 
@@ -192,14 +186,14 @@ knitr::kable(dt_stats, digits = 3)
 
 | condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
 |:---|---:|---:|---:|---:|---:|---:|:---|
-| H2O2(0mM) | 0.176 | 3.998 | 0.665 | 3 | 0.384 | 1.000 | ref |
-| H2O2(0.135mM) | 0.200 | 3.533 | 0.576 | 3 | 0.333 | 0.412 | ns |
-| H2O2(0.275mM) | 0.185 | 3.783 | 0.480 | 3 | 0.277 | 0.676 | ns |
-| H2O2(0.55mM) | 0.165 | 4.207 | 0.241 | 3 | 0.139 | 0.651 | ns |
-| H2O2(1.1mM) | 0.179 | 3.883 | 0.185 | 3 | 0.107 | 0.796 | ns |
-| H2O2(2.2mM) | 0.276 | 2.522 | 0.165 | 3 | 0.095 | 0.054 | ns |
-| H2O2(4.4mM) | NaN | NaN | NA | 0 | NA | NA | NA |
 | H2O2(8.8mM) | NaN | NaN | NA | 0 | NA | NA | NA |
+| H2O2(4.4mM) | NaN | NaN | NA | 0 | NA | NA | NA |
+| H2O2(2.2mM) | 0.276 | 2.522 | 0.165 | 3 | 0.095 | 0.054 | ns |
+| H2O2(1.1mM) | 0.179 | 3.883 | 0.185 | 3 | 0.107 | 0.796 | ns |
+| H2O2(0.55mM) | 0.165 | 4.207 | 0.241 | 3 | 0.139 | 0.651 | ns |
+| H2O2(0.275mM) | 0.185 | 3.783 | 0.480 | 3 | 0.277 | 0.676 | ns |
+| H2O2(0.135mM) | 0.200 | 3.533 | 0.576 | 3 | 0.333 | 0.412 | ns |
+| H2O2(0mM) | 0.176 | 3.998 | 0.665 | 3 | 0.384 | 1.000 | ref |
 
 ## Plot doubling time comparisons
 

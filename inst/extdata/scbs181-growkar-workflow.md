@@ -57,8 +57,6 @@ validate_growth_data(tidy_sc)
 #> 10     0 Sc(12.5)_1 0.105 Sc(12.5)  1        
 #> # ℹ 2,054 more rows
 
-selected_conditions <- c("Sc(100)", "Sc(50)", "Sc(25)", "Sc(0)")
-
 head(tidy_sc)
 #> # A tibble: 6 × 5
 #>    time sample       od condition replicate
@@ -81,11 +79,14 @@ Bioconductor-oriented workflows.
 growkar_obj <- as_growkar(tidy_sc)
 se <- methods::as(growkar_obj, "SummarizedExperiment")
 
+selected_conditions <- c("Sc(100)", "Sc(50)", "Sc(25)", "Sc(0)")
+
 keep <- SummarizedExperiment::colData(se)$condition %in% selected_conditions
 se <- se[, keep]
+selected_levels <- unique(as.character(SummarizedExperiment::colData(se)$condition))
 SummarizedExperiment::colData(se)$condition <- factor(
   SummarizedExperiment::colData(se)$condition,
-  levels = selected_conditions
+  levels = selected_levels
 )
 
 se

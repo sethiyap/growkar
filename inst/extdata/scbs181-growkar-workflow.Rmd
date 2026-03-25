@@ -45,8 +45,6 @@ sc_raw <- read.delim(sc_path, check.names = FALSE)
 tidy_sc <- as_tidy_growth_data(sc_raw)
 validate_growth_data(tidy_sc)
 
-selected_conditions <- c("Sc(100)", "Sc(50)", "Sc(25)", "Sc(0)")
-
 head(tidy_sc)
 ```
 
@@ -60,11 +58,14 @@ Bioconductor-oriented workflows.
 growkar_obj <- as_growkar(tidy_sc)
 se <- methods::as(growkar_obj, "SummarizedExperiment")
 
+selected_conditions <- c("Sc(100)", "Sc(50)", "Sc(25)", "Sc(0)")
+
 keep <- SummarizedExperiment::colData(se)$condition %in% selected_conditions
 se <- se[, keep]
+selected_levels <- unique(as.character(SummarizedExperiment::colData(se)$condition))
 SummarizedExperiment::colData(se)$condition <- factor(
   SummarizedExperiment::colData(se)$condition,
-  levels = selected_conditions
+  levels = selected_levels
 )
 
 se

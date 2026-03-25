@@ -56,13 +56,7 @@ Bioconductor-oriented workflows.
 growkar_obj <- as_growkar(tidy_dd)
 se <- methods::as(growkar_obj, "SummarizedExperiment")
 
-h2o2_levels <- as.data.frame(SummarizedExperiment::colData(se)) |>
-  dplyr::distinct(.data$condition) |>
-  dplyr::mutate(
-    concentration_mM = as.numeric(sub("^H2O2\\(([-0-9.]+)mM\\)$", "\\1", .data$condition))
-  ) |>
-  dplyr::arrange(.data$concentration_mM) |>
-  dplyr::pull(.data$condition)
+h2o2_levels <- unique(as.character(SummarizedExperiment::colData(se)$condition))
 
 SummarizedExperiment::colData(se)$condition <- factor(
   SummarizedExperiment::colData(se)$condition,
