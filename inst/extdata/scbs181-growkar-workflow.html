@@ -654,35 +654,22 @@ result.</p>
 <span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt; 10     0 Sc(12.5)_1 0.105 Sc(12.5)  1        </span></span>
 <span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt; # ℹ 2,054 more rows</span></span>
 <span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a></span>
-<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>sc_levels <span class="ot">&lt;-</span> tidy_sc <span class="sc">|&gt;</span></span>
-<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>(condition) <span class="sc">|&gt;</span></span>
-<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>    <span class="at">concentration =</span> <span class="fu">as.numeric</span>(<span class="fu">sub</span>(<span class="st">&quot;^Sc</span><span class="sc">\\</span><span class="st">(([-0-9.]+)</span><span class="sc">\\</span><span class="st">)$&quot;</span>, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">1&quot;</span>, .data<span class="sc">$</span>condition))</span>
-<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(.data<span class="sc">$</span>concentration) <span class="sc">|&gt;</span></span>
-<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(condition)</span>
-<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a></span>
-<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>tidy_sc <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>  tidy_sc,</span>
-<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>  <span class="at">condition =</span> <span class="fu">factor</span>(.data<span class="sc">$</span>condition, <span class="at">levels =</span> sc_levels)</span>
-<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a>)</span>
-<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a></span>
-<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a>selected_conditions <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Sc(100)&quot;</span>, <span class="st">&quot;Sc(50)&quot;</span>, <span class="st">&quot;Sc(25)&quot;</span>, <span class="st">&quot;Sc(0)&quot;</span>)</span>
-<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a></span>
-<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a>tidy_sc <span class="ot">&lt;-</span> tidy_sc <span class="sc">|&gt;</span></span>
-<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(.data<span class="sc">$</span>condition <span class="sc">%in%</span> selected_conditions) <span class="sc">|&gt;</span></span>
-<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">condition =</span> <span class="fu">factor</span>(.data<span class="sc">$</span>condition, <span class="at">levels =</span> selected_conditions))</span>
-<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a></span>
-<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a><span class="fu">head</span>(tidy_sc)</span>
-<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 5</span></span>
-<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a><span class="co">#&gt;    time sample       od condition replicate</span></span>
-<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;fct&gt;     &lt;chr&gt;    </span></span>
-<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a><span class="co">#&gt; 1     0 Sc(100)_1 0.095 Sc(100)   1        </span></span>
-<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a><span class="co">#&gt; 2     0 Sc(100)_2 0.099 Sc(100)   2        </span></span>
-<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a><span class="co">#&gt; 3     0 Sc(100)_3 0.099 Sc(100)   3        </span></span>
-<span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a><span class="co">#&gt; 4     0 Sc(50)_1  0.106 Sc(50)    1        </span></span>
-<span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a><span class="co">#&gt; 5     0 Sc(50)_2  0.106 Sc(50)    2        </span></span>
-<span id="cb2-53"><a href="#cb2-53" tabindex="-1"></a><span class="co">#&gt; 6     0 Sc(50)_3  0.11  Sc(50)    3</span></span></code></pre></div>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>selected_conditions <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Sc(100)&quot;</span>, <span class="st">&quot;Sc(50)&quot;</span>, <span class="st">&quot;Sc(25)&quot;</span>, <span class="st">&quot;Sc(0)&quot;</span>)</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>tidy_sc <span class="ot">&lt;-</span> tidy_sc <span class="sc">|&gt;</span></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(.data<span class="sc">$</span>condition <span class="sc">%in%</span> selected_conditions) <span class="sc">|&gt;</span></span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">condition =</span> <span class="fu">factor</span>(.data<span class="sc">$</span>condition, <span class="at">levels =</span> selected_conditions))</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a><span class="fu">head</span>(tidy_sc)</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 5</span></span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a><span class="co">#&gt;    time sample       od condition replicate</span></span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;fct&gt;     &lt;chr&gt;    </span></span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a><span class="co">#&gt; 1     0 Sc(100)_1 0.095 Sc(100)   1        </span></span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a><span class="co">#&gt; 2     0 Sc(100)_2 0.099 Sc(100)   2        </span></span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a><span class="co">#&gt; 3     0 Sc(100)_3 0.099 Sc(100)   3        </span></span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a><span class="co">#&gt; 4     0 Sc(50)_1  0.106 Sc(50)    1        </span></span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a><span class="co">#&gt; 5     0 Sc(50)_2  0.106 Sc(50)    2        </span></span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a><span class="co">#&gt; 6     0 Sc(50)_3  0.11  Sc(50)    3</span></span></code></pre></div>
 <h2 id="create-the-canonical-summarizedexperiment">Create the canonical
 SummarizedExperiment</h2>
 <p><code>growkar</code> can also package the processed data into a

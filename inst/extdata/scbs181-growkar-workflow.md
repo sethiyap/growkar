@@ -57,19 +57,6 @@ validate_growth_data(tidy_sc)
 #> 10     0 Sc(12.5)_1 0.105 Sc(12.5)  1        
 #> # ℹ 2,054 more rows
 
-sc_levels <- tidy_sc |>
-  dplyr::distinct(condition) |>
-  dplyr::mutate(
-    concentration = as.numeric(sub("^Sc\\(([-0-9.]+)\\)$", "\\1", .data$condition))
-  ) |>
-  dplyr::arrange(.data$concentration) |>
-  dplyr::pull(condition)
-
-tidy_sc <- dplyr::mutate(
-  tidy_sc,
-  condition = factor(.data$condition, levels = sc_levels)
-)
-
 selected_conditions <- c("Sc(100)", "Sc(50)", "Sc(25)", "Sc(0)")
 
 tidy_sc <- tidy_sc |>

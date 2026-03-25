@@ -45,19 +45,6 @@ sc_raw <- read.delim(sc_path, check.names = FALSE)
 tidy_sc <- as_tidy_growth_data(sc_raw)
 validate_growth_data(tidy_sc)
 
-sc_levels <- tidy_sc |>
-  dplyr::distinct(condition) |>
-  dplyr::mutate(
-    concentration = as.numeric(sub("^Sc\\(([-0-9.]+)\\)$", "\\1", .data$condition))
-  ) |>
-  dplyr::arrange(.data$concentration) |>
-  dplyr::pull(condition)
-
-tidy_sc <- dplyr::mutate(
-  tidy_sc,
-  condition = factor(.data$condition, levels = sc_levels)
-)
-
 selected_conditions <- c("Sc(100)", "Sc(50)", "Sc(25)", "Sc(0)")
 
 tidy_sc <- tidy_sc |>
