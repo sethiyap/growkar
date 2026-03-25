@@ -132,6 +132,13 @@ growkar_tidy_from_summarized_experiment <- function(data) {
   assay_mat <- SummarizedExperiment::assay(data, assay_name)
   time_df <- as.data.frame(SummarizedExperiment::rowData(data))
   col_df <- as.data.frame(SummarizedExperiment::colData(data))
+  col_df[] <- lapply(col_df, function(column) {
+    if (is.factor(column)) {
+      as.character(column)
+    } else {
+      column
+    }
+  })
 
   if ("time" %in% names(time_df)) {
     time_values <- time_df$time
