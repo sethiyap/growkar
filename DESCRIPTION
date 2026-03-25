@@ -1,23 +1,24 @@
 Package: growkar
-Title: Infrastructure for High-Throughput Microbial Phenotyping from Growth Assays
+Title: SummarizedExperiment Infrastructure for Microbial Growth Phenotyping
 Version: 0.99.0
 Authors@R: 
     person("Pooja", "Sethiya", 
            email = "poojasethiya24@gmail.com", 
            role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-6584-3912"))
-Description: growkar provides infrastructure and statistical tools for the
-    analysis of high-throughput microbial phenotyping experiments based on
-    plate-based growth assays, such as optical density (OD) measurements.
-    The package supports data import, quality control, normalization,
-    empirical growth-rate estimation, exponential-phase detection, and
-    parametric modeling of growth dynamics. These workflows enable extraction
-    of biologically meaningful phenotypes including lag time, growth rate,
-    doubling time, and carrying capacity. growkar uses Bioconductor data
-    structures, including SummarizedExperiment, to represent assay data and
-    derived phenotypes in a form that can be integrated with transcriptomic,
-    genomic, and other omics datasets for downstream multi-omics analysis in
-    microbial systems biology.
+Description: growkar provides Bioconductor-native infrastructure for
+    high-throughput microbial growth phenotyping from plate-based assays such
+    as optical density (OD) measurements. The package is built around
+    SummarizedExperiment as its canonical data model, with OD measurements in
+    assays, timepoint annotations in rowData, sample annotations in colData,
+    and derived phenotypes in metadata. growkar supports data import, quality
+    control, normalization, empirical growth-rate estimation,
+    exponential-phase detection, and parametric modeling of growth dynamics.
+    These workflows enable extraction of biologically meaningful phenotypes
+    including lag time, growth rate, doubling time, and carrying capacity,
+    and allow growth-derived phenotypes to be integrated with other
+    Bioconductor analyses in microbial systems biology and multi-omics
+    studies.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
