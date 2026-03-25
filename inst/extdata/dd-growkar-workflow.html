@@ -652,29 +652,16 @@ result.</p>
 <span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt; 10     0 H2O2(1.1mM)_1 0.09  H2O2(1.1mM) 1        </span></span>
 <span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt; # ℹ 2,078 more rows</span></span>
 <span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a></span>
-<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>h2o2_levels <span class="ot">&lt;-</span> tidy_dd <span class="sc">|&gt;</span></span>
-<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>(condition) <span class="sc">|&gt;</span></span>
-<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>    <span class="at">concentration_mM =</span> <span class="fu">as.numeric</span>(<span class="fu">sub</span>(<span class="st">&quot;^H2O2</span><span class="sc">\\</span><span class="st">(([-0-9.]+)mM</span><span class="sc">\\</span><span class="st">)$&quot;</span>, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">1&quot;</span>, .data<span class="sc">$</span>condition))</span>
-<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(.data<span class="sc">$</span>concentration_mM) <span class="sc">|&gt;</span></span>
-<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(condition)</span>
-<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a></span>
-<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>tidy_dd <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
-<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>  tidy_dd,</span>
-<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>  <span class="at">condition =</span> <span class="fu">factor</span>(.data<span class="sc">$</span>condition, <span class="at">levels =</span> h2o2_levels)</span>
-<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a>)</span>
-<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a></span>
-<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a><span class="fu">head</span>(tidy_dd)</span>
-<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 5</span></span>
-<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a><span class="co">#&gt;    time sample           od condition   replicate</span></span>
-<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt; &lt;fct&gt;       &lt;chr&gt;    </span></span>
-<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a><span class="co">#&gt; 1     0 H2O2(8.8mM)_1 0.094 H2O2(8.8mM) 1        </span></span>
-<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a><span class="co">#&gt; 2     0 H2O2(8.8mM)_2 0.102 H2O2(8.8mM) 2        </span></span>
-<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a><span class="co">#&gt; 3     0 H2O2(8.8mM)_3 0.102 H2O2(8.8mM) 3        </span></span>
-<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a><span class="co">#&gt; 4     0 H2O2(4.4mM)_1 0.091 H2O2(4.4mM) 1        </span></span>
-<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a><span class="co">#&gt; 5     0 H2O2(4.4mM)_2 0.102 H2O2(4.4mM) 2        </span></span>
-<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a><span class="co">#&gt; 6     0 H2O2(4.4mM)_3 0.109 H2O2(4.4mM) 3</span></span></code></pre></div>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="fu">head</span>(tidy_dd)</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 5</span></span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="co">#&gt;    time sample           od condition   replicate</span></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a><span class="co">#&gt;   &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;    </span></span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a><span class="co">#&gt; 1     0 H2O2(8.8mM)_1 0.094 H2O2(8.8mM) 1        </span></span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a><span class="co">#&gt; 2     0 H2O2(8.8mM)_2 0.102 H2O2(8.8mM) 2        </span></span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a><span class="co">#&gt; 3     0 H2O2(8.8mM)_3 0.102 H2O2(8.8mM) 3        </span></span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="co">#&gt; 4     0 H2O2(4.4mM)_1 0.091 H2O2(4.4mM) 1        </span></span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a><span class="co">#&gt; 5     0 H2O2(4.4mM)_2 0.102 H2O2(4.4mM) 2        </span></span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a><span class="co">#&gt; 6     0 H2O2(4.4mM)_3 0.109 H2O2(4.4mM) 3</span></span></code></pre></div>
 <h2 id="create-the-canonical-summarizedexperiment">Create the canonical
 SummarizedExperiment</h2>
 <p><code>growkar</code> can also package the processed data into a
@@ -683,15 +670,29 @@ lightweight <code>growkar_data</code> object and coerce it into a
 workflows.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>growkar_obj <span class="ot">&lt;-</span> <span class="fu">as_growkar</span>(tidy_dd)</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>se <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">as</span>(growkar_obj, <span class="st">&quot;SummarizedExperiment&quot;</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>se</span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; class: SummarizedExperiment </span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; dim: 87 24 </span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; metadata(2): growkar_schema growth_metrics</span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; assays(1): od</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; rownames(87): 0 0.333333333333333 ... 28.3336111111111 28.6669444444444</span></span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; rowData names(1): time</span></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; colnames(24): H2O2(8.8mM)_1 H2O2(8.8mM)_2 ... H2O2(0mM)_2 H2O2(0mM)_3</span></span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; colData names(3): sample condition replicate</span></span></code></pre></div>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>h2o2_levels <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(SummarizedExperiment<span class="sc">::</span><span class="fu">colData</span>(se)) <span class="sc">|&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>(.data<span class="sc">$</span>condition) <span class="sc">|&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    <span class="at">concentration_mM =</span> <span class="fu">as.numeric</span>(<span class="fu">sub</span>(<span class="st">&quot;^H2O2</span><span class="sc">\\</span><span class="st">(([-0-9.]+)mM</span><span class="sc">\\</span><span class="st">)$&quot;</span>, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">1&quot;</span>, .data<span class="sc">$</span>condition))</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">arrange</span>(.data<span class="sc">$</span>concentration_mM) <span class="sc">|&gt;</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">pull</span>(.data<span class="sc">$</span>condition)</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>SummarizedExperiment<span class="sc">::</span><span class="fu">colData</span>(se)<span class="sc">$</span>condition <span class="ot">&lt;-</span> <span class="fu">factor</span>(</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  SummarizedExperiment<span class="sc">::</span><span class="fu">colData</span>(se)<span class="sc">$</span>condition,</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="at">levels =</span> h2o2_levels</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>)</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>se</span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; class: SummarizedExperiment </span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; dim: 87 24 </span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; metadata(2): growkar_schema growth_metrics</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt; assays(1): od</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt; rownames(87): 0 0.333333333333333 ... 28.3336111111111 28.6669444444444</span></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt; rowData names(1): time</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt; colnames(24): H2O2(8.8mM)_1 H2O2(8.8mM)_2 ... H2O2(0mM)_2 H2O2(0mM)_3</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt; colData names(3): sample condition replicate</span></span></code></pre></div>
 <h2 id="analyze-using-summarizedexperiment-metadata">Analyze using
 SummarizedExperiment metadata</h2>
 <p>The same rule-based doubling-time summary can be computed directly on

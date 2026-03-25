@@ -47,10 +47,6 @@ validate_growth_data(tidy_sc)
 
 selected_conditions <- c("Sc(100)", "Sc(50)", "Sc(25)", "Sc(0)")
 
-tidy_sc <- tidy_sc |>
-  dplyr::filter(.data$condition %in% selected_conditions) |>
-  dplyr::mutate(condition = factor(.data$condition, levels = selected_conditions))
-
 head(tidy_sc)
 ```
 
@@ -63,6 +59,14 @@ Bioconductor-oriented workflows.
 ```{r summarized-experiment}
 growkar_obj <- as_growkar(tidy_sc)
 se <- methods::as(growkar_obj, "SummarizedExperiment")
+
+keep <- SummarizedExperiment::colData(se)$condition %in% selected_conditions
+se <- se[, keep]
+SummarizedExperiment::colData(se)$condition <- factor(
+  SummarizedExperiment::colData(se)$condition,
+  levels = selected_conditions
+)
+
 se
 ```
 

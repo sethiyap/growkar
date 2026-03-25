@@ -59,14 +59,10 @@ validate_growth_data(tidy_sc)
 
 selected_conditions <- c("Sc(100)", "Sc(50)", "Sc(25)", "Sc(0)")
 
-tidy_sc <- tidy_sc |>
-  dplyr::filter(.data$condition %in% selected_conditions) |>
-  dplyr::mutate(condition = factor(.data$condition, levels = selected_conditions))
-
 head(tidy_sc)
 #> # A tibble: 6 × 5
 #>    time sample       od condition replicate
-#>   <dbl> <chr>     <dbl> <fct>     <chr>    
+#>   <dbl> <chr>     <dbl> <chr>     <chr>    
 #> 1     0 Sc(100)_1 0.095 Sc(100)   1        
 #> 2     0 Sc(100)_2 0.099 Sc(100)   2        
 #> 3     0 Sc(100)_3 0.099 Sc(100)   3        
@@ -84,6 +80,14 @@ Bioconductor-oriented workflows.
 ``` r
 growkar_obj <- as_growkar(tidy_sc)
 se <- methods::as(growkar_obj, "SummarizedExperiment")
+
+keep <- SummarizedExperiment::colData(se)$condition %in% selected_conditions
+se <- se[, keep]
+SummarizedExperiment::colData(se)$condition <- factor(
+  SummarizedExperiment::colData(se)$condition,
+  levels = selected_conditions
+)
+
 se
 #> class: SummarizedExperiment 
 #> dim: 86 12 

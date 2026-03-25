@@ -55,23 +55,10 @@ validate_growth_data(tidy_dd)
 #> 10     0 H2O2(1.1mM)_1 0.09  H2O2(1.1mM) 1        
 #> # ℹ 2,078 more rows
 
-h2o2_levels <- tidy_dd |>
-  dplyr::distinct(condition) |>
-  dplyr::mutate(
-    concentration_mM = as.numeric(sub("^H2O2\\(([-0-9.]+)mM\\)$", "\\1", .data$condition))
-  ) |>
-  dplyr::arrange(.data$concentration_mM) |>
-  dplyr::pull(condition)
-
-tidy_dd <- dplyr::mutate(
-  tidy_dd,
-  condition = factor(.data$condition, levels = h2o2_levels)
-)
-
 head(tidy_dd)
 #> # A tibble: 6 × 5
 #>    time sample           od condition   replicate
-#>   <dbl> <chr>         <dbl> <fct>       <chr>    
+#>   <dbl> <chr>         <dbl> <chr>       <chr>    
 #> 1     0 H2O2(8.8mM)_1 0.094 H2O2(8.8mM) 1        
 #> 2     0 H2O2(8.8mM)_2 0.102 H2O2(8.8mM) 2        
 #> 3     0 H2O2(8.8mM)_3 0.102 H2O2(8.8mM) 3        
@@ -89,6 +76,20 @@ Bioconductor-oriented workflows.
 ``` r
 growkar_obj <- as_growkar(tidy_dd)
 se <- methods::as(growkar_obj, "SummarizedExperiment")
+
+h2o2_levels <- as.data.frame(SummarizedExperiment::colData(se)) |>
+  dplyr::distinct(.data$condition) |>
+  dplyr::mutate(
+    concentration_mM = as.numeric(sub("^H2O2\\(([-0-9.]+)mM\\)$", "\\1", .data$condition))
+  ) |>
+  dplyr::arrange(.data$concentration_mM) |>
+  dplyr::pull(.data$condition)
+
+SummarizedExperiment::colData(se)$condition <- factor(
+  SummarizedExperiment::colData(se)$condition,
+  levels = h2o2_levels
+)
+
 se
 #> class: SummarizedExperiment 
 #> dim: 87 24 
