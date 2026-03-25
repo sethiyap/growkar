@@ -64,7 +64,10 @@ growkar_build_summarized_experiment <- function(tidy_data, metadata = list()) {
   assay_mat <- assay_mat[, samples, drop = FALSE]
 
   row_data <- S4Vectors::DataFrame(time = timepoints, row.names = as.character(timepoints))
-  col_data <- S4Vectors::DataFrame(sample_metadata, row.names = sample_metadata$sample)
+  col_data <- S4Vectors::DataFrame(
+    growkar_ordered_coldata(sample_metadata),
+    row.names = sample_metadata$sample
+  )
 
   schema_meta <- list(
     growkar_schema = list(
@@ -80,6 +83,23 @@ growkar_build_summarized_experiment <- function(tidy_data, metadata = list()) {
     colData = col_data,
     metadata = utils::modifyList(schema_meta, metadata)
   )
+}
+
+growkar_ordered_coldata <- function(sample_metadata) {
+  sample_metadata[] <- lapply(names(sample_metadata), function(column_name) {
+    column <- sample_metadata[[column_name]]
+
+    if (identical(column_name, "sample") || !is.character(column)) {
+      return(column)
+    }
+
+    stats::setNames(
+      list(factor(column, levels = unique(column))),
+      column_name
+    )[[1]]
+  })
+
+  sample_metadata
 }
 
 growkar_sample_metadata <- function(data) {

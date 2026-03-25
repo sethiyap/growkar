@@ -62,11 +62,6 @@ selected_conditions <- c("Sc(100)", "Sc(50)", "Sc(25)", "Sc(0)")
 
 keep <- SummarizedExperiment::colData(se)$condition %in% selected_conditions
 se <- se[, keep]
-selected_levels <- unique(as.character(SummarizedExperiment::colData(se)$condition))
-SummarizedExperiment::colData(se)$condition <- factor(
-  SummarizedExperiment::colData(se)$condition,
-  levels = selected_levels
-)
 
 se
 ```

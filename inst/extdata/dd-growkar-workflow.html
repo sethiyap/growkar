@@ -670,23 +670,15 @@ lightweight <code>growkar_data</code> object and coerce it into a
 workflows.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>growkar_obj <span class="ot">&lt;-</span> <span class="fu">as_growkar</span>(tidy_dd)</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>se <span class="ot">&lt;-</span> methods<span class="sc">::</span><span class="fu">as</span>(growkar_obj, <span class="st">&quot;SummarizedExperiment&quot;</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>h2o2_levels <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">as.character</span>(SummarizedExperiment<span class="sc">::</span><span class="fu">colData</span>(se)<span class="sc">$</span>condition))</span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>SummarizedExperiment<span class="sc">::</span><span class="fu">colData</span>(se)<span class="sc">$</span>condition <span class="ot">&lt;-</span> <span class="fu">factor</span>(</span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  SummarizedExperiment<span class="sc">::</span><span class="fu">colData</span>(se)<span class="sc">$</span>condition,</span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="at">levels =</span> h2o2_levels</span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>)</span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>se</span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; class: SummarizedExperiment </span></span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; dim: 87 24 </span></span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; metadata(2): growkar_schema growth_metrics</span></span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; assays(1): od</span></span>
-<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; rownames(87): 0 0.333333333333333 ... 28.3336111111111 28.6669444444444</span></span>
-<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; rowData names(1): time</span></span>
-<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; colnames(24): H2O2(8.8mM)_1 H2O2(8.8mM)_2 ... H2O2(0mM)_2 H2O2(0mM)_3</span></span>
-<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; colData names(3): sample condition replicate</span></span></code></pre></div>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>se</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; class: SummarizedExperiment </span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; dim: 87 24 </span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; metadata(2): growkar_schema growth_metrics</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; assays(1): od</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; rownames(87): 0 0.333333333333333 ... 28.3336111111111 28.6669444444444</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; rowData names(1): time</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; colnames(24): H2O2(8.8mM)_1 H2O2(8.8mM)_2 ... H2O2(0mM)_2 H2O2(0mM)_3</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; colData names(3): sample condition replicate</span></span></code></pre></div>
 <h2 id="analyze-using-summarizedexperiment-metadata">Analyze using
 SummarizedExperiment metadata</h2>
 <p>The same rule-based doubling-time summary can be computed directly on

@@ -76,14 +76,6 @@ Bioconductor-oriented workflows.
 ``` r
 growkar_obj <- as_growkar(tidy_dd)
 se <- methods::as(growkar_obj, "SummarizedExperiment")
-
-h2o2_levels <- unique(as.character(SummarizedExperiment::colData(se)$condition))
-
-SummarizedExperiment::colData(se)$condition <- factor(
-  SummarizedExperiment::colData(se)$condition,
-  levels = h2o2_levels
-)
-
 se
 #> class: SummarizedExperiment 
 #> dim: 87 24 
