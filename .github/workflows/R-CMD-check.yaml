@@ -22,6 +22,16 @@ jobs:
         with:
           use-public-rspm: true
 
+      - name: Install Bioconductor core dependencies
+        run: |
+          install.packages("BiocManager", repos = "https://cloud.r-project.org")
+          BiocManager::install(
+            c("SummarizedExperiment", "S4Vectors"),
+            ask = FALSE,
+            update = FALSE
+          )
+        shell: Rscript {0}
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
