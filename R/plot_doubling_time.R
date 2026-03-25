@@ -3,7 +3,9 @@
 #' Plot replicate-based doubling-time summaries as a bar chart with error bars
 #' and optional bracketed p-value annotations.
 #'
-#' @param data Growth curve data in tidy or wide format.
+#' @param data Growth curve data in tidy, wide, or `SummarizedExperiment`
+#'   format. Inputs are standardized internally to the canonical
+#'   `SummarizedExperiment` representation before plotting.
 #' @param comparison_col Column used to group replicate-level doubling times.
 #'   Typical values are `"condition"` or `"sample"`.
 #' @param compare_to Optional reference group used for p-value comparisons.
@@ -50,7 +52,8 @@ plot_doubling_time <- function(data,
   error <- match.arg(error)
   pvalue_method <- match.arg(pvalue_method)
 
-  tidy_data <- as_tidy_growth_data(data)
+  se <- growkar_as_se(data)
+  tidy_data <- as_tidy_growth_data(se)
   tidy_data <- validate_growth_data(tidy_data)
 
   if (is.null(comparison_col)) {

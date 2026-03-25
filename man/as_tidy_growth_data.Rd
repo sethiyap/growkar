@@ -30,10 +30,15 @@ A tibble containing at least \code{sample}, \code{time}, and \code{od}. Addition
 metadata columns are preserved where available.
 }
 \description{
-Convert growth curve data supplied in either wide or long form into the
-canonical tidy representation used throughout \code{growkar}.
+Convert growth data into a tidy adapter representation.
 }
 \details{
+Convert growth curve data supplied in either wide or long form into a tidy
+representation for inspection, import convenience, and interoperability.
+Within \code{growkar}, the canonical analysis container is
+\code{SummarizedExperiment}; tidy data are supported as a user-facing adapter
+layer.
+
 Wide input is expected to contain time in the first column and sample names
 in the remaining column names. Tidy input is expected to contain at least
 \code{sample}, \code{time}, and \code{od}. When replicate identifiers are encoded in sample

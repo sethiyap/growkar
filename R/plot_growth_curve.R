@@ -1,6 +1,7 @@
 #' Plot Growth Curves
 #'
-#' Plot observed growth curves from tidy or wide input data.
+#' Plot observed growth curves from growth data standardized internally to a
+#' canonical `SummarizedExperiment`.
 #'
 #' @param data Growth curve data in tidy, wide, or `SummarizedExperiment`
 #'   format.
@@ -32,7 +33,8 @@ plot_growth_curve <- function(data,
                               facet_col = NULL,
                               palette_name = "all_colors",
                               custom_colors = NULL) {
-  tidy_data <- as_tidy_growth_data(data)
+  se <- growkar_as_se(data)
+  tidy_data <- as_tidy_growth_data(se)
   tidy_data <- validate_growth_data(tidy_data)
 
   if (!colour_col %in% names(tidy_data)) {

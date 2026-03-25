@@ -2,7 +2,7 @@
 % Please edit documentation in R/as_summarized_experiment.R
 \name{as_summarized_experiment}
 \alias{as_summarized_experiment}
-\title{Coerce Growth Data to a SummarizedExperiment}
+\title{Build the Canonical \code{SummarizedExperiment} Growth Container}
 \usage{
 as_summarized_experiment(
   data,
@@ -27,8 +27,9 @@ as_summarized_experiment(
 A \code{SummarizedExperiment} object with one assay named \code{od}.
 }
 \description{
-Convert tidy or wide growth curve data into a
-\code{SummarizedExperiment::SummarizedExperiment} with an \code{od} assay.
+Convert tidy or wide growth curve data into the canonical
+\code{SummarizedExperiment::SummarizedExperiment} used internally by \code{growkar},
+with an \code{od} assay.
 }
 \details{
 The resulting object stores time points in \code{rowData(se)$time}, sample-level

@@ -47,6 +47,18 @@ growth_metrics <- function(data,
   growkar_store_se_metadata(
     data,
     growth_metrics = metrics_tbl,
+    analysis_params = list(
+      growth_metrics = list(
+        method = method,
+        average_replicates = average_replicates,
+        select_replicates = select_replicates,
+        comparison_col = comparison_col,
+        compare_to = compare_to,
+        error = error,
+        pvalue_method = pvalue_method,
+        extra_args = list(...)
+      )
+    ),
     growth_metrics_parameters = list(
       method = method,
       average_replicates = average_replicates,
@@ -102,6 +114,14 @@ phase_windows <- function(data,
   growkar_store_se_metadata(
     data,
     exponential_phase_windows = windows_tbl,
+    analysis_params = list(
+      exponential_phase_windows = list(
+        window_size = window_size,
+        min_od = min_od,
+        average_replicates = average_replicates,
+        select_replicates = select_replicates
+      )
+    ),
     exponential_phase_parameters = list(
       window_size = window_size,
       min_od = min_od,
@@ -148,6 +168,11 @@ fit_growth_models <- function(data,
 
   growkar_store_se_metadata(
     data,
+    model_fits = fit_tbl,
+    model_parameters = param_tbl,
+    analysis_params = list(
+      model_fits = list(model = model)
+    ),
     growth_model_fits = fit_tbl,
     growth_model_parameters = param_tbl,
     growth_model_settings = list(model = model)
@@ -159,7 +184,13 @@ growkar_store_se_metadata <- function(data, ...) {
   additions <- list(...)
 
   for (name in names(additions)) {
-    meta[[name]] <- additions[[name]]
+    if (identical(name, "analysis_params") &&
+        is.list(meta[[name]]) &&
+        is.list(additions[[name]])) {
+      meta[[name]] <- utils::modifyList(meta[[name]], additions[[name]])
+    } else {
+      meta[[name]] <- additions[[name]]
+    }
   }
 
   S4Vectors::metadata(data) <- meta

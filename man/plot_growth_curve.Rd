@@ -36,7 +36,8 @@ these user-defined colours are used instead of the selected palette.}
 A \code{ggplot2} object.
 }
 \description{
-Plot observed growth curves from tidy or wide input data.
+Plot observed growth curves from growth data standardized internally to a
+canonical \code{SummarizedExperiment}.
 }
 \examples{
 data(yeast_growth_data)

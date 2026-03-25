@@ -4,7 +4,9 @@
 #'
 #' This is the convenience wrapper for obtaining both metrics across multiple
 #' samples in one tidy table. Internally, doubling time is derived from the
-#' estimated growth rate using `compute_doubling_time()`.
+#' estimated growth rate using `compute_doubling_time()`. Inputs are
+#' standardized internally to the canonical `SummarizedExperiment`
+#' representation before summary tables are derived.
 #'
 #' @param data Growth curve data in tidy, wide, or `SummarizedExperiment`
 #'   format.
@@ -47,7 +49,8 @@ summarize_growth_metrics <- function(data,
                                      error = c("se", "sd"),
                                      pvalue_method = c("t_test", "wilcox"),
                                      ...) {
-  tidy_data <- as_tidy_growth_data(data)
+  se <- growkar_as_se(data)
+  tidy_data <- as_tidy_growth_data(se)
   tidy_data <- validate_growth_data(tidy_data)
   error <- match.arg(error)
   pvalue_method <- match.arg(pvalue_method)

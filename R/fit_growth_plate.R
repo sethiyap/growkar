@@ -15,7 +15,8 @@
 #' @export
 fit_growth_plate <- function(data, model = c("logistic", "gompertz")) {
   model <- match.arg(model)
-  data <- as_tidy_growth_data(data)
+  se <- growkar_as_se(data)
+  data <- as_tidy_growth_data(se)
   data <- validate_growth_data(data)
 
   samples <- split(data, data$sample)

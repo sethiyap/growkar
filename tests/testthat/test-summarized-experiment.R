@@ -7,6 +7,7 @@ test_that("as_summarized_experiment creates a SummarizedExperiment with od assay
   expect_equal(ncol(se), ncol(yeast_growth_data) - 1L)
   expect_true(all(c("sample", "condition", "replicate") %in% names(SummarizedExperiment::colData(se))))
   expect_equal(SummarizedExperiment::rowData(se)$time, yeast_growth_data$Time)
+  expect_true("growkar_schema" %in% names(S4Vectors::metadata(se)))
 })
 
 test_that("as_tidy_growth_data round-trips SummarizedExperiment input", {
@@ -74,6 +75,45 @@ test_that("plot_growth_curve accepts SummarizedExperiment input", {
   p <- plot_growth_curve(se, average_replicates = TRUE, colour_col = "condition")
 
   expect_s3_class(p, "ggplot")
+})
+
+test_that("accessor helpers expose canonical SummarizedExperiment components", {
+  se <- as_summarized_experiment(yeast_growth_data)
+  se <- fit_growth_models(se, model = "logistic")
+
+  expect_true(is.matrix(growth_assay(se)))
+  expect_s3_class(timepoints(se), "tbl_df")
+  expect_s3_class(sample_data(se), "tbl_df")
+  expect_s3_class(growth_model_fits(se), "tbl_df")
+})
+
+test_that("growth metrics agree across wide, tidy, and SummarizedExperiment inputs", {
+  tidy_data <- as_tidy_growth_data(yeast_growth_data)
+  se <- as_summarized_experiment(yeast_growth_data)
+
+  from_wide <- summarize_growth_metrics(
+    yeast_growth_data,
+    method = "rolling_window",
+    average_replicates = TRUE
+  ) |>
+    dplyr::arrange(.data$sample)
+
+  from_tidy <- summarize_growth_metrics(
+    tidy_data,
+    method = "rolling_window",
+    average_replicates = TRUE
+  ) |>
+    dplyr::arrange(.data$sample)
+
+  from_se <- summarize_growth_metrics(
+    se,
+    method = "rolling_window",
+    average_replicates = TRUE
+  ) |>
+    dplyr::arrange(.data$sample)
+
+  expect_equal(from_wide, from_tidy)
+  expect_equal(from_tidy, from_se)
 })
 
 test_that("as_summarized_experiment rejects conflicting sample metadata", {

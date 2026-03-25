@@ -21,7 +21,8 @@
 #' @export
 fit_growth_curve <- function(data, model = c("logistic", "gompertz")) {
   model <- match.arg(model)
-  data <- as_tidy_growth_data(data)
+  se <- growkar_as_se(data)
+  data <- as_tidy_growth_data(se)
   data <- validate_growth_data(data, min_points_per_sample = 2L)
 
   if (dplyr::n_distinct(data$sample) != 1L) {

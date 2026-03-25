@@ -20,7 +20,9 @@ plot_doubling_time(
 )
 }
 \arguments{
-\item{data}{Growth curve data in tidy or wide format.}
+\item{data}{Growth curve data in tidy, wide, or \code{SummarizedExperiment}
+format. Inputs are standardized internally to the canonical
+\code{SummarizedExperiment} representation before plotting.}
 
 \item{comparison_col}{Column used to group replicate-level doubling times.
 Typical values are \code{"condition"} or \code{"sample"}.}

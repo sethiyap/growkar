@@ -1,7 +1,8 @@
-#' Coerce Growth Data to a SummarizedExperiment
+#' Build the Canonical `SummarizedExperiment` Growth Container
 #'
-#' Convert tidy or wide growth curve data into a
-#' `SummarizedExperiment::SummarizedExperiment` with an `od` assay.
+#' Convert tidy or wide growth curve data into the canonical
+#' `SummarizedExperiment::SummarizedExperiment` used internally by `growkar`,
+#' with an `od` assay.
 #'
 #' The resulting object stores time points in `rowData(se)$time`, sample-level
 #' metadata in `colData(se)`, and optical density measurements in
@@ -65,11 +66,19 @@ growkar_build_summarized_experiment <- function(tidy_data, metadata = list()) {
   row_data <- S4Vectors::DataFrame(time = timepoints, row.names = as.character(timepoints))
   col_data <- S4Vectors::DataFrame(sample_metadata, row.names = sample_metadata$sample)
 
+  schema_meta <- list(
+    growkar_schema = list(
+      assay = "od",
+      rows = "timepoints",
+      columns = "samples"
+    )
+  )
+
   SummarizedExperiment::SummarizedExperiment(
     assays = list(od = assay_mat),
     rowData = row_data,
     colData = col_data,
-    metadata = metadata
+    metadata = utils::modifyList(schema_meta, metadata)
   )
 }
 

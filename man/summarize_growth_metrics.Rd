@@ -55,7 +55,9 @@ Compute growth rate and doubling time per sample.
 \details{
 This is the convenience wrapper for obtaining both metrics across multiple
 samples in one tidy table. Internally, doubling time is derived from the
-estimated growth rate using \code{compute_doubling_time()}.
+estimated growth rate using \code{compute_doubling_time()}. Inputs are
+standardized internally to the canonical \code{SummarizedExperiment}
+representation before summary tables are derived.
 }
 \examples{
 data(yeast_growth_data)

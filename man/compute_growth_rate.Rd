@@ -16,7 +16,9 @@ compute_growth_rate(
 )
 }
 \arguments{
-\item{data}{Growth curve data in tidy or wide format.}
+\item{data}{Growth curve data in tidy, wide, or \code{SummarizedExperiment}
+format. All inputs are standardized internally to the canonical
+\code{SummarizedExperiment} representation before analysis.}
 
 \item{method}{Estimation method. One of \code{"rolling_window"},
 \code{"defined_interval"}, or \code{"rule_based"}.}

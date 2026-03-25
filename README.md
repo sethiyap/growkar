@@ -23,13 +23,15 @@ Data generated from Agilent microplate readers, BioTek Cytation
 instruments, and other OD600-based microbial growth measurement
 platforms can be directly analysed using `growkar`.
 
-`growkar` supports both tidy analysis workflows based on the canonical
-columns `sample`, `time`, and `od`, and Bioconductor-oriented container
-workflows based on `SummarizedExperiment`. Plotting functions return
-`ggplot2` objects that can be customized into publication-ready figures,
-while SE-aware helpers can store derived results in `metadata()` for
-downstream analysis. Core analysis functions accept tidy tables, wide
-plate-reader exports, and `SummarizedExperiment` input.
+`growkar` is built around `SummarizedExperiment` as its canonical data
+model. Tidy tables using the canonical columns `sample`, `time`, and
+`od`, and wide plate-reader exports, are accepted as import adapters and
+converted into the SE representation early in the workflow. Plotting
+functions return `ggplot2` objects that can be customized into
+publication-ready figures, while SE-aware helpers store derived results
+in `metadata()` for downstream analysis. Core analysis functions accept
+tidy tables, wide plate-reader exports, and `SummarizedExperiment`
+input.
 
 ## Input formats
 
@@ -42,6 +44,17 @@ Input data can be supplied in either:
 If replicate identifiers are encoded in sample names, use a consistent
 suffix such as `_R1` or `_1` so `growkar` can infer replicate metadata
 reliably.
+
+## Data model
+
+- primary object: `SummarizedExperiment`
+- assay layout: rows are timepoints and columns are samples in
+  `assay(se, "od")`
+- sample annotations live in `colData(se)`
+- timepoint annotations live in `rowData(se)`
+- derived summaries and fit results live in `metadata(se)`
+- tidy and wide inputs are accepted and converted into this SE
+  representation
 
 ## Installation
 
@@ -93,15 +106,18 @@ S4Vectors::metadata(se)$growth_metrics
 #> # ℹ 1 more variable: doubling_time <dbl>
 ```
 
+Useful accessors for SE-based workflows include `growth_assay()`,
+`timepoints()`, `sample_data()`, and `growth_model_fits()`.
+
 ## Convert data to tidy format
 
-**What it does:** `as_tidy_growth_data()` converts growth data into the
-canonical tidy format used throughout the package, with core columns
-`sample`, `time`, and `od`.
+**What it does:** `as_tidy_growth_data()` converts growth data into a
+tidy inspection/export format with core columns `sample`, `time`, and
+`od`.
 
-**Why use it:** A standard tidy structure makes downstream validation,
-visualization, empirical summaries, and model fitting easier and more
-consistent.
+**Why use it:** It is useful for import inspection, interoperability,
+and exporting results, while the primary analysis container remains
+`SummarizedExperiment`.
 
 **Minimal example:**
 
@@ -135,7 +151,7 @@ se_direct <- as_summarized_experiment(yeast_growth_data)
 se_direct
 #> class: SummarizedExperiment 
 #> dim: 49 9 
-#> metadata(0):
+#> metadata(1): growkar_schema
 #> assays(1): od
 #> rownames(49): 0 0.5 ... 23.5 24
 #> rowData names(1): time
@@ -585,7 +601,7 @@ pf_rep
 
 ## Supported API
 
-The supported interface is the current tidy workflow:
+The supported SE-native interface includes:
 
 - `as_tidy_growth_data()`
 - `validate_growth_data()`

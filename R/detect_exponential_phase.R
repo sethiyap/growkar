@@ -40,7 +40,8 @@ detect_exponential_phase <- function(data,
                                      average_replicates = FALSE,
                                      window_size = 5,
                                      min_od = 0.02) {
-  data <- as_tidy_growth_data(data)
+  se <- growkar_as_se(data)
+  data <- as_tidy_growth_data(se)
   data <- validate_growth_data(data, warn_zero_od = TRUE)
 
   if (!is.null(select_replicates)) {

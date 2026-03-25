@@ -1,7 +1,12 @@
 #' Coerce Growth Data to Canonical Tidy Format
 #'
-#' Convert growth curve data supplied in either wide or long form into the
-#' canonical tidy representation used throughout `growkar`.
+#' Convert growth data into a tidy adapter representation.
+#'
+#' Convert growth curve data supplied in either wide or long form into a tidy
+#' representation for inspection, import convenience, and interoperability.
+#' Within `growkar`, the canonical analysis container is
+#' `SummarizedExperiment`; tidy data are supported as a user-facing adapter
+#' layer.
 #'
 #' Wide input is expected to contain time in the first column and sample names
 #' in the remaining column names. Tidy input is expected to contain at least

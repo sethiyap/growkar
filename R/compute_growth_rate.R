@@ -25,7 +25,9 @@
 #' want a heuristic interval rather than a rolling search or manually defined
 #' bounds.
 #'
-#' @param data Growth curve data in tidy or wide format.
+#' @param data Growth curve data in tidy, wide, or `SummarizedExperiment`
+#'   format. All inputs are standardized internally to the canonical
+#'   `SummarizedExperiment` representation before analysis.
 #' @param method Estimation method. One of `"rolling_window"`,
 #'   `"defined_interval"`, or `"rule_based"`.
 #' @param interval Interval definition for `defined_interval`. Supply either a
@@ -72,7 +74,8 @@ compute_growth_rate <- function(data,
                                 min_od = 0.02,
                                 first_timepoint = NULL) {
   method <- match.arg(method)
-  tidy_data <- as_tidy_growth_data(data)
+  se <- growkar_as_se(data)
+  tidy_data <- as_tidy_growth_data(se)
   tidy_data <- validate_growth_data(tidy_data, warn_zero_od = TRUE)
 
   if (!is.null(select_replicates)) {
