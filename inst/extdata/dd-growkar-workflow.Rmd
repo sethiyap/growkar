@@ -1,5 +1,5 @@
 ---
-title: "CnH2O2 growkar workflow example"
+title: "KN99 CDK7 growkar workflow example"
 output: github_document
 ---
 
@@ -29,14 +29,14 @@ library(knitr)
 
 ## Import and validate data
 
-This example reads `CnH2O2_OD.txt`, converts it to the canonical tidy format
-used by `growkar`, and validates the result.
+This example reads `dose_response_BS181_20Dec24_Cdk7Tag.txt`, converts it to
+the canonical tidy format used by `growkar`, and validates the result.
 
 ```{r prepare-data}
-dd_path <- if (file.exists("CnH2O2_OD.txt")) {
-  "CnH2O2_OD.txt"
+dd_path <- if (file.exists("dose_response_BS181_20Dec24_Cdk7Tag.txt")) {
+  "dose_response_BS181_20Dec24_Cdk7Tag.txt"
 } else {
-  system.file("extdata", "CnH2O2_OD.txt", package = "growkar")
+  system.file("extdata", "dose_response_BS181_20Dec24_Cdk7Tag.txt", package = "growkar")
 }
 
 dd <- read.delim(dd_path, check.names = FALSE)
@@ -50,29 +50,33 @@ head(tidy_dd)
 
 `growkar` can also package the processed data into a lightweight
 `growkar_data` object and coerce it into a `SummarizedExperiment` for
-Bioconductor-oriented workflows.
+Bioconductor-oriented workflows. After creating the canonical
+`SummarizedExperiment`, this example keeps only the `KN99` samples.
 
 ```{r summarized-experiment}
 growkar_obj <- as_growkar(tidy_dd)
 se <- methods::as(growkar_obj, "SummarizedExperiment")
+
+keep_kn99 <- grepl("^KN99", SummarizedExperiment::colData(se)$sample)
+se <- se[, keep_kn99]
+
 se
 ```
 
 ## Analyze using SummarizedExperiment metadata
 
-The same rule-based doubling-time summary can be computed directly on the
+The same doubling-time summary can be computed directly on the
 `SummarizedExperiment` object and stored in `metadata(se)$growth_metrics`.
 
 ```{r summarized-experiment-metrics}
 se <- growth_metrics(
   se,
-  method = "rule_based",
+  method = "rolling_window",
   comparison_col = "condition",
-  compare_to = "H2O2(0mM)"
+  compare_to = "KN99(0)"
 )
 
-se_metrics <- S4Vectors::metadata(se)$growth_metrics |>
-  dplyr::arrange(.data$condition)
+se_metrics <- S4Vectors::metadata(se)$growth_metrics
 
 knitr::kable(se_metrics, digits = 3)
 ```
@@ -91,20 +95,18 @@ plot_growth_curve(
 )
 ```
 
-## Summarize doubling time with H2O2(0mM) as the reference
+## Summarize doubling time with KN99(0) as the reference
 
 This summary compares replicate-level doubling times for each condition against
-`H2O2(0mM)` using the rule-based exponential interval.
+`KN99(0)` using the rolling-window exponential interval.
 
 ```{r doubling-time-summary}
 dt_stats <- summarize_growth_metrics(
   se,
-  method = "rule_based",
+  method = "rolling_window",
   comparison_col = "condition",
-  compare_to = "H2O2(0mM)"
+  compare_to = "KN99(0)"
 )
-
-dt_stats <- dplyr::arrange(dt_stats, .data$condition)
 
 knitr::kable(dt_stats, digits = 3)
 ```
@@ -112,14 +114,14 @@ knitr::kable(dt_stats, digits = 3)
 ## Plot doubling time comparisons
 
 This plot shows mean doubling time with error bars and comparison brackets
-against `H2O2(0mM)` using the rule-based exponential interval.
+against `KN99(0)` using the rolling-window exponential interval.
 
 ```{r doubling-time-plot, fig.width=8, fig.height=5}
 plot_doubling_time(
   se,
   comparison_col = "condition",
-  compare_to = "H2O2(0mM)",
-  method = "rule_based",
+  compare_to = "KN99(0)",
+  method = "rolling_window",
   palette_name = "Dark2"
 )
 ```

@@ -1,4 +1,4 @@
-CnH2O2 growkar workflow example
+KN99 CDK7 growkar workflow example
 ================
 
 ``` r
@@ -27,108 +27,101 @@ library(knitr)
 
 ## Import and validate data
 
-This example reads `CnH2O2_OD.txt`, converts it to the canonical tidy
-format used by `growkar`, and validates the result.
+This example reads `dose_response_BS181_20Dec24_Cdk7Tag.txt`, converts
+it to the canonical tidy format used by `growkar`, and validates the
+result.
 
 ``` r
-dd_path <- if (file.exists("CnH2O2_OD.txt")) {
-  "CnH2O2_OD.txt"
+dd_path <- if (file.exists("dose_response_BS181_20Dec24_Cdk7Tag.txt")) {
+  "dose_response_BS181_20Dec24_Cdk7Tag.txt"
 } else {
-  system.file("extdata", "CnH2O2_OD.txt", package = "growkar")
+  system.file("extdata", "dose_response_BS181_20Dec24_Cdk7Tag.txt", package = "growkar")
 }
 
 dd <- read.delim(dd_path, check.names = FALSE)
 tidy_dd <- as_tidy_growth_data(dd)
 validate_growth_data(tidy_dd)
-#> # A tibble: 2,088 × 5
+#> # A tibble: 8,064 × 5
 #>     time sample           od condition   replicate
 #>    <dbl> <chr>         <dbl> <chr>       <chr>    
-#>  1     0 H2O2(8.8mM)_1 0.094 H2O2(8.8mM) 1        
-#>  2     0 H2O2(8.8mM)_2 0.102 H2O2(8.8mM) 2        
-#>  3     0 H2O2(8.8mM)_3 0.102 H2O2(8.8mM) 3        
-#>  4     0 H2O2(4.4mM)_1 0.091 H2O2(4.4mM) 1        
-#>  5     0 H2O2(4.4mM)_2 0.102 H2O2(4.4mM) 2        
-#>  6     0 H2O2(4.4mM)_3 0.109 H2O2(4.4mM) 3        
-#>  7     0 H2O2(2.2mM)_1 0.091 H2O2(2.2mM) 1        
-#>  8     0 H2O2(2.2mM)_2 0.103 H2O2(2.2mM) 2        
-#>  9     0 H2O2(2.2mM)_3 0.102 H2O2(2.2mM) 3        
-#> 10     0 H2O2(1.1mM)_1 0.09  H2O2(1.1mM) 1        
-#> # ℹ 2,078 more rows
+#>  1     0 KN99(100)_1   0.096 KN99(100)   1        
+#>  2     0 KN99(100)_2   0.098 KN99(100)   2        
+#>  3     0 KN99(100)_3   0.097 KN99(100)   3        
+#>  4     0 CM2444(100)_1 0.096 CM2444(100) 1        
+#>  5     0 CM2444(100)_2 0.096 CM2444(100) 2        
+#>  6     0 CM2444(100)_3 0.097 CM2444(100) 3        
+#>  7     0 CM2446(100)_1 0.099 CM2446(100) 1        
+#>  8     0 CM2446(100)_2 0.099 CM2446(100) 2        
+#>  9     0 CM2446(100)_3 0.097 CM2446(100) 3        
+#> 10     0 CM2448(100)_1 0.098 CM2448(100) 1        
+#> # ℹ 8,054 more rows
 
 head(tidy_dd)
 #> # A tibble: 6 × 5
 #>    time sample           od condition   replicate
 #>   <dbl> <chr>         <dbl> <chr>       <chr>    
-#> 1     0 H2O2(8.8mM)_1 0.094 H2O2(8.8mM) 1        
-#> 2     0 H2O2(8.8mM)_2 0.102 H2O2(8.8mM) 2        
-#> 3     0 H2O2(8.8mM)_3 0.102 H2O2(8.8mM) 3        
-#> 4     0 H2O2(4.4mM)_1 0.091 H2O2(4.4mM) 1        
-#> 5     0 H2O2(4.4mM)_2 0.102 H2O2(4.4mM) 2        
-#> 6     0 H2O2(4.4mM)_3 0.109 H2O2(4.4mM) 3
+#> 1     0 KN99(100)_1   0.096 KN99(100)   1        
+#> 2     0 KN99(100)_2   0.098 KN99(100)   2        
+#> 3     0 KN99(100)_3   0.097 KN99(100)   3        
+#> 4     0 CM2444(100)_1 0.096 CM2444(100) 1        
+#> 5     0 CM2444(100)_2 0.096 CM2444(100) 2        
+#> 6     0 CM2444(100)_3 0.097 CM2444(100) 3
 ```
 
 ## Create the canonical SummarizedExperiment
 
 `growkar` can also package the processed data into a lightweight
 `growkar_data` object and coerce it into a `SummarizedExperiment` for
-Bioconductor-oriented workflows.
+Bioconductor-oriented workflows. After creating the canonical
+`SummarizedExperiment`, this example keeps only the `KN99` samples.
 
 ``` r
 growkar_obj <- as_growkar(tidy_dd)
 se <- methods::as(growkar_obj, "SummarizedExperiment")
+
+keep_kn99 <- grepl("^KN99", SummarizedExperiment::colData(se)$sample)
+se <- se[, keep_kn99]
+
 se
 #> class: SummarizedExperiment 
-#> dim: 87 24 
+#> dim: 84 24 
 #> metadata(2): growkar_schema growth_metrics
 #> assays(1): od
-#> rownames(87): 0 0.333333333333333 ... 28.3336111111111 28.6669444444444
+#> rownames(84): 0 0.333333333333333 ... 27.3336111111111 27.6669444444444
 #> rowData names(1): time
-#> colnames(24): H2O2(8.8mM)_1 H2O2(8.8mM)_2 ... H2O2(0mM)_2 H2O2(0mM)_3
+#> colnames(24): KN99(100)_1 KN99(100)_2 ... KN99(0)_2 KN99(0)_3
 #> colData names(3): sample condition replicate
 ```
 
 ## Analyze using SummarizedExperiment metadata
 
-The same rule-based doubling-time summary can be computed directly on
-the `SummarizedExperiment` object and stored in
+The same doubling-time summary can be computed directly on the
+`SummarizedExperiment` object and stored in
 `metadata(se)$growth_metrics`.
 
 ``` r
 se <- growth_metrics(
   se,
-  method = "rule_based",
+  method = "rolling_window",
   comparison_col = "condition",
-  compare_to = "H2O2(0mM)"
+  compare_to = "KN99(0)"
 )
-#> Warning: Sample `H2O2(8.8mM)_1`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(8.8mM)_2`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(8.8mM)_3`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a
-#> positive growth slope.
 
-se_metrics <- S4Vectors::metadata(se)$growth_metrics |>
-  dplyr::arrange(.data$condition)
+se_metrics <- S4Vectors::metadata(se)$growth_metrics
 
 knitr::kable(se_metrics, digits = 3)
 ```
 
 | condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
 |:---|---:|---:|---:|---:|---:|---:|:---|
-| H2O2(8.8mM) | NaN | NaN | NA | 0 | NA | NA | NA |
-| H2O2(4.4mM) | NaN | NaN | NA | 0 | NA | NA | NA |
-| H2O2(2.2mM) | 0.276 | 2.522 | 0.165 | 3 | 0.095 | 0.054 | ns |
-| H2O2(1.1mM) | 0.179 | 3.883 | 0.185 | 3 | 0.107 | 0.796 | ns |
-| H2O2(0.55mM) | 0.165 | 4.207 | 0.241 | 3 | 0.139 | 0.651 | ns |
-| H2O2(0.275mM) | 0.185 | 3.783 | 0.480 | 3 | 0.277 | 0.676 | ns |
-| H2O2(0.135mM) | 0.200 | 3.533 | 0.576 | 3 | 0.333 | 0.412 | ns |
-| H2O2(0mM) | 0.176 | 3.998 | 0.665 | 3 | 0.384 | 1.000 | ref |
+| KN99(100) | 0.010 | 72.780 | 0.770 | 3 | 0.445 | 0.000 | \*\*\*\* |
+| KN99(50) | 0.037 | 42.852 | 33.020 | 3 | 19.064 | 0.169 | ns |
+| KN99(25) | 0.266 | 2.621 | 0.201 | 3 | 0.116 | 0.850 | ns |
+| KN99(12.5) | 0.271 | 2.584 | 0.330 | 3 | 0.190 | 0.778 | ns |
+| KN99(6.25) | 0.308 | 2.263 | 0.206 | 3 | 0.119 | 0.080 | ns |
+| KN99(3.125) | 0.273 | 2.569 | 0.318 | 3 | 0.183 | 0.719 | ns |
+| KN99(1.56) | 0.290 | 2.431 | 0.378 | 3 | 0.218 | 0.430 | ns |
+| KN99(0) | 0.262 | 2.646 | 0.037 | 3 | 0.021 | 1.000 | ref |
 
 ## Plot growth curves with averaged replicates
 
@@ -146,74 +139,47 @@ plot_growth_curve(
 
 ![](dd-growkar-workflow-files/figure-gfm/average-growth-curve-1.png)<!-- -->
 
-## Summarize doubling time with H2O2(0mM) as the reference
+## Summarize doubling time with KN99(0) as the reference
 
 This summary compares replicate-level doubling times for each condition
-against `H2O2(0mM)` using the rule-based exponential interval.
+against `KN99(0)` using the rolling-window exponential interval.
 
 ``` r
 dt_stats <- summarize_growth_metrics(
   se,
-  method = "rule_based",
+  method = "rolling_window",
   comparison_col = "condition",
-  compare_to = "H2O2(0mM)"
+  compare_to = "KN99(0)"
 )
-#> Warning: Sample `H2O2(8.8mM)_1`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(8.8mM)_2`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(8.8mM)_3`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-
-dt_stats <- dplyr::arrange(dt_stats, .data$condition)
 
 knitr::kable(dt_stats, digits = 3)
 ```
 
 | condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
 |:---|---:|---:|---:|---:|---:|---:|:---|
-| H2O2(8.8mM) | NaN | NaN | NA | 0 | NA | NA | NA |
-| H2O2(4.4mM) | NaN | NaN | NA | 0 | NA | NA | NA |
-| H2O2(2.2mM) | 0.276 | 2.522 | 0.165 | 3 | 0.095 | 0.054 | ns |
-| H2O2(1.1mM) | 0.179 | 3.883 | 0.185 | 3 | 0.107 | 0.796 | ns |
-| H2O2(0.55mM) | 0.165 | 4.207 | 0.241 | 3 | 0.139 | 0.651 | ns |
-| H2O2(0.275mM) | 0.185 | 3.783 | 0.480 | 3 | 0.277 | 0.676 | ns |
-| H2O2(0.135mM) | 0.200 | 3.533 | 0.576 | 3 | 0.333 | 0.412 | ns |
-| H2O2(0mM) | 0.176 | 3.998 | 0.665 | 3 | 0.384 | 1.000 | ref |
+| KN99(100) | 0.010 | 72.780 | 0.770 | 3 | 0.445 | 0.000 | \*\*\*\* |
+| KN99(50) | 0.037 | 42.852 | 33.020 | 3 | 19.064 | 0.169 | ns |
+| KN99(25) | 0.266 | 2.621 | 0.201 | 3 | 0.116 | 0.850 | ns |
+| KN99(12.5) | 0.271 | 2.584 | 0.330 | 3 | 0.190 | 0.778 | ns |
+| KN99(6.25) | 0.308 | 2.263 | 0.206 | 3 | 0.119 | 0.080 | ns |
+| KN99(3.125) | 0.273 | 2.569 | 0.318 | 3 | 0.183 | 0.719 | ns |
+| KN99(1.56) | 0.290 | 2.431 | 0.378 | 3 | 0.218 | 0.430 | ns |
+| KN99(0) | 0.262 | 2.646 | 0.037 | 3 | 0.021 | 1.000 | ref |
 
 ## Plot doubling time comparisons
 
 This plot shows mean doubling time with error bars and comparison
-brackets against `H2O2(0mM)` using the rule-based exponential interval.
+brackets against `KN99(0)` using the rolling-window exponential
+interval.
 
 ``` r
 plot_doubling_time(
   se,
   comparison_col = "condition",
-  compare_to = "H2O2(0mM)",
-  method = "rule_based",
+  compare_to = "KN99(0)",
+  method = "rolling_window",
   palette_name = "Dark2"
 )
-#> Warning: Sample `H2O2(8.8mM)_1`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(8.8mM)_2`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(8.8mM)_3`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(4.4mM)_1`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(4.4mM)_2`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Sample `H2O2(4.4mM)_3`: Rule-based growth estimation did not yield a
-#> positive growth slope.
-#> Warning: Removed 2 rows containing missing values or values outside the scale range
-#> (`geom_col()`).
 ```
 
 ![](dd-growkar-workflow-files/figure-gfm/doubling-time-plot-1.png)<!-- -->
