@@ -27,7 +27,7 @@ library(dplyr)
 library(knitr)
 ```
 
-## Prepare data
+## Import and validate data
 
 This example reads `CnH2O2_OD.txt`, converts it to the canonical tidy format
 used by `growkar`, and validates the result.
@@ -59,7 +59,7 @@ tidy_dd <- dplyr::mutate(
 head(tidy_dd)
 ```
 
-## Coerce to SummarizedExperiment
+## Create the canonical SummarizedExperiment
 
 `growkar` can also package the processed data into a lightweight
 `growkar_data` object and coerce it into a `SummarizedExperiment` for
@@ -71,7 +71,7 @@ se <- methods::as(growkar_obj, "SummarizedExperiment")
 se
 ```
 
-## Store growth metrics in SummarizedExperiment metadata
+## Analyze using SummarizedExperiment metadata
 
 The same rule-based doubling-time summary can be computed directly on the
 `SummarizedExperiment` object and stored in `metadata(se)$growth_metrics`.
@@ -97,7 +97,7 @@ returns a `ggplot2` object that can be customized further if needed.
 
 ```{r average-growth-curve, fig.width=8, fig.height=5}
 plot_growth_curve(
-  tidy_dd,
+  se,
   average_replicates = TRUE,
   colour_col = "condition",
   palette_name = "Dark2"
@@ -111,7 +111,7 @@ This summary compares replicate-level doubling times for each condition against
 
 ```{r doubling-time-summary}
 dt_stats <- summarize_growth_metrics(
-  tidy_dd,
+  se,
   method = "rule_based",
   comparison_col = "condition",
   compare_to = "H2O2(0mM)"
@@ -129,7 +129,7 @@ against `H2O2(0mM)` using the rule-based exponential interval.
 
 ```{r doubling-time-plot, fig.width=8, fig.height=5}
 plot_doubling_time(
-  tidy_dd,
+  se,
   comparison_col = "condition",
   compare_to = "H2O2(0mM)",
   method = "rule_based",

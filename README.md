@@ -80,96 +80,20 @@ head(yeast_growth_data)
 #> 6   2.5 0.136 0.139 0.136    0.165    0.168    0.166  0.104  0.104  0.104
 ```
 
-## SummarizedExperiment workflow
-
-**What it does:** `as_growkar()` creates a lightweight processed
-`growkar` object that can be coerced to `SummarizedExperiment`, and
-`growth_metrics()` stores derived phenotype summaries in `metadata()`.
-
-**Why use it:** This is the preferred path when growth phenotypes need
-to be kept alongside sample metadata and reused in larger Bioconductor
-workflows.
-
-**Minimal example:**
-
-``` r
-growkar_obj <- as_growkar(yeast_growth_data)
-se <- methods::as(growkar_obj, "SummarizedExperiment")
-se <- growth_metrics(se, method = "rolling_window", average_replicates = TRUE)
-S4Vectors::metadata(se)$growth_metrics
-#> # A tibble: 3 × 10
-#>   sample      mu start_time end_time r_squared method    n_points degraded note 
-#>   <chr>    <dbl>      <dbl>    <dbl>     <dbl> <chr>        <int> <lgl>    <chr>
-#> 1 Cg     0.569          4.5      6.5     1.000 rolling_…        5 FALSE    roll…
-#> 2 CgFlu  0.404          4.5      6.5     1.000 rolling_…        5 FALSE    roll…
-#> 3 YPD    0.00128       12.5     14.5     0.500 rolling_…        5 FALSE    roll…
-#> # ℹ 1 more variable: doubling_time <dbl>
-```
-
-Useful accessors for SE-based workflows include `growth_assay()`,
-`timepoints()`, `sample_data()`, and `growth_model_fits()`.
-
-## Convert data to tidy format
+## Import and validate data
 
 **What it does:** `as_tidy_growth_data()` converts growth data into a
 tidy inspection/export format with core columns `sample`, `time`, and
 `od`.
 
-**Why use it:** It is useful for import inspection, interoperability,
-and exporting results, while the primary analysis container remains
-`SummarizedExperiment`.
+**Why use it:** It is the import layer for user-supplied assay tables.
+Once the data have been standardized and checked, the primary workflow
+should continue with a `SummarizedExperiment`.
 
 **Minimal example:**
 
 ``` r
 tidy_data <- as_tidy_growth_data(yeast_growth_data)
-head(tidy_data)
-#> # A tibble: 6 × 5
-#>    time sample      od condition replicate
-#>   <dbl> <chr>    <dbl> <chr>     <chr>    
-#> 1     0 Cg_R1    0.115 Cg        R1       
-#> 2     0 Cg_R2    0.116 Cg        R2       
-#> 3     0 Cg_R3    0.117 Cg        R3       
-#> 4     0 CgFlu_R1 0.131 CgFlu     R1       
-#> 5     0 CgFlu_R2 0.133 CgFlu     R2       
-#> 6     0 CgFlu_R3 0.132 CgFlu     R3
-```
-
-## Build a SummarizedExperiment directly
-
-**What it does:** `as_summarized_experiment()` converts growth data
-directly into a `SummarizedExperiment` with an `od` assay, time in
-`rowData()`, and sample metadata in `colData()`.
-
-**Why use it:** It is useful when you want a compact Bioconductor
-container immediately, without first creating a `growkar_data` object.
-
-**Minimal example:**
-
-``` r
-se_direct <- as_summarized_experiment(yeast_growth_data)
-se_direct
-#> class: SummarizedExperiment 
-#> dim: 49 9 
-#> metadata(1): growkar_schema
-#> assays(1): od
-#> rownames(49): 0 0.5 ... 23.5 24
-#> rowData names(1): time
-#> colnames(9): CgFlu_R1 CgFlu_R2 ... YPD_R2 YPD_R3
-#> colData names(3): sample condition replicate
-```
-
-## Validate tidy input
-
-**What it does:** `validate_growth_data()` checks that tidy growth data
-has the required columns and valid values.
-
-**Why use it:** It helps catch structural or value problems before
-downstream analysis.
-
-**Minimal example:**
-
-``` r
 validate_growth_data(tidy_data)
 #> # A tibble: 441 × 5
 #>     time sample      od condition replicate
@@ -185,6 +109,73 @@ validate_growth_data(tidy_data)
 #>  9   0   YPD_R3   0.104 YPD       R3       
 #> 10   0.5 Cg_R1    0.116 Cg        R1       
 #> # ℹ 431 more rows
+head(tidy_data)
+#> # A tibble: 6 × 5
+#>    time sample      od condition replicate
+#>   <dbl> <chr>    <dbl> <chr>     <chr>    
+#> 1     0 Cg_R1    0.115 Cg        R1       
+#> 2     0 Cg_R2    0.116 Cg        R2       
+#> 3     0 Cg_R3    0.117 Cg        R3       
+#> 4     0 CgFlu_R1 0.131 CgFlu     R1       
+#> 5     0 CgFlu_R2 0.133 CgFlu     R2       
+#> 6     0 CgFlu_R3 0.132 CgFlu     R3
+```
+
+## Create the canonical SummarizedExperiment
+
+**What it does:** `as_summarized_experiment()` converts growth data
+directly into a `SummarizedExperiment` with an `od` assay, time in
+`rowData()`, and sample metadata in `colData()`.
+
+**Why use it:** This is the primary data object for analysis, plotting,
+and Bioconductor integration.
+
+**Minimal example:**
+
+``` r
+se <- as_summarized_experiment(tidy_data)
+se
+#> class: SummarizedExperiment 
+#> dim: 49 9 
+#> metadata(1): growkar_schema
+#> assays(1): od
+#> rownames(49): 0 0.5 ... 23.5 24
+#> rowData names(1): time
+#> colnames(9): CgFlu_R1 CgFlu_R2 ... YPD_R2 YPD_R3
+#> colData names(3): sample condition replicate
+```
+
+Useful accessors for SE-based workflows include `growth_assay()`,
+`timepoints()`, `sample_data()`, and `growth_model_fits()`.
+
+## SE-native workflow
+
+**What it does:** `as_growkar()` creates a lightweight processed
+`growkar` object that can be coerced to `SummarizedExperiment`, and
+`growth_metrics()` stores derived phenotype summaries in `metadata()`.
+
+**Why use it:** This is the preferred path when growth phenotypes need
+to be kept alongside sample metadata and reused in larger Bioconductor
+workflows.
+
+**Minimal example:**
+
+``` r
+growkar_obj <- as_growkar(tidy_data)
+se_from_obj <- methods::as(growkar_obj, "SummarizedExperiment")
+se_from_obj <- growth_metrics(
+  se_from_obj,
+  method = "rolling_window",
+  average_replicates = TRUE
+)
+S4Vectors::metadata(se_from_obj)$growth_metrics
+#> # A tibble: 3 × 10
+#>   sample      mu start_time end_time r_squared method    n_points degraded note 
+#>   <chr>    <dbl>      <dbl>    <dbl>     <dbl> <chr>        <int> <lgl>    <chr>
+#> 1 Cg     0.569          4.5      6.5     1.000 rolling_…        5 FALSE    roll…
+#> 2 CgFlu  0.404          4.5      6.5     1.000 rolling_…        5 FALSE    roll…
+#> 3 YPD    0.00128       12.5     14.5     0.500 rolling_…        5 FALSE    roll…
+#> # ℹ 1 more variable: doubling_time <dbl>
 ```
 
 ## Plot growth curves
@@ -200,7 +191,7 @@ users can further customize it with `ggplot2`.
 
 ``` r
 p <- plot_growth_curve(
-  tidy_data,
+  se,
   average_replicates = TRUE,
   colour_col = "condition",
   palette_name = "Dark2"
@@ -208,14 +199,14 @@ p <- plot_growth_curve(
 p
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" alt="" width="100%" />
 
 To view individual replicates as separate panels, use
 `facet_col = "replicate"` with `average_replicates = FALSE`.
 
 ``` r
 p_rep <- plot_growth_curve(
-  tidy_data,
+  se,
   average_replicates = FALSE,
   colour_col = "condition",
   facet_col = "replicate",
@@ -225,7 +216,7 @@ p_rep <- plot_growth_curve(
 p_rep
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" alt="" width="100%" />
 
 ## Detect exponential phase
 
@@ -279,7 +270,7 @@ ggplot2::ggplot(method_plot_data, ggplot2::aes(time, od)) +
   ggplot2::theme_minimal(base_size = 11)
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-8-1.png" alt="" width="100%" />
 
 **Minimal example:**
 
@@ -295,11 +286,7 @@ library(dplyr)
 #>     intersect, setdiff, setequal, union
 library(knitr)
 
-sample_id <- unique(tidy_data$sample)[1]
-
-phase_tbl <- detect_exponential_phase(
-  filter(tidy_data, sample == sample_id)
-)
+phase_tbl <- detect_exponential_phase(se)
 
 knitr::kable(head(phase_tbl), digits = 3)
 ```
@@ -341,23 +328,29 @@ Method options:
 **Minimal example:**
 
 ``` r
-gr <- compute_growth_rate(
-  filter(tidy_data, sample == sample_id),
-  method = "rolling_window"
-)
+gr <- compute_growth_rate(se, method = "rolling_window")
+#> Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive
+#> growth slope (rolling_window_ranked).
+#> Warning: Sample `YPD_R2`: Exponential phase detection did not yield a positive
+#> growth slope (rolling_window_ranked).
 
-knitr::kable(gr, digits = 3)
+knitr::kable(head(gr), digits = 3)
 ```
 
 | sample | mu | start_time | end_time | r_squared | method | n_points | degraded | note |
 |:---|---:|---:|---:|---:|:---|---:|:---|:---|
-| Cg_R1 | 0.576 | 4.5 | 6.5 | 1 | rolling_window | 5 | FALSE | rolling_window_ranked |
+| Cg_R1 | 0.576 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked |
+| Cg_R2 | 0.560 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked |
+| Cg_R3 | 0.571 | 4.5 | 6.5 | 0.999 | rolling_window | 5 | FALSE | rolling_window_ranked |
+| CgFlu_R1 | 0.403 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked |
+| CgFlu_R2 | 0.407 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked |
+| CgFlu_R3 | 0.403 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked |
 
 Use the same interval for all samples:
 
 ``` r
 gr_defined_all <- compute_growth_rate(
-  tidy_data,
+  se,
   method = "defined_interval",
   interval = c(2, 6)
 )
@@ -384,13 +377,15 @@ Use different intervals for different samples:
 
 ``` r
 interval_tbl <- tibble::tibble(
-  sample = unique(tidy_data$sample)[1:2],
+  sample = unique(gr$sample)[1:2],
   start_time = c(2, 3),
   end_time = c(5, 6)
 )
 
+se_subset <- se[, SummarizedExperiment::colData(se)$sample %in% interval_tbl$sample]
+
 gr_defined_by_sample <- compute_growth_rate(
-  dplyr::filter(tidy_data, sample %in% interval_tbl$sample),
+  se_subset,
   method = "defined_interval",
   interval = interval_tbl
 )
@@ -426,9 +421,17 @@ doubling_time_tbl <- tibble::tibble(
 knitr::kable(doubling_time_tbl, digits = 3)
 ```
 
-| sample | growth_rate | doubling_time |
-|:-------|------------:|--------------:|
-| Cg_R1  |       0.576 |         1.204 |
+| sample   | growth_rate | doubling_time |
+|:---------|------------:|--------------:|
+| Cg_R1    |       0.576 |         1.204 |
+| Cg_R2    |       0.560 |         1.238 |
+| Cg_R3    |       0.571 |         1.214 |
+| CgFlu_R1 |       0.403 |         1.719 |
+| CgFlu_R2 |       0.407 |         1.702 |
+| CgFlu_R3 |       0.403 |         1.721 |
+| YPD_R1   |          NA |            NA |
+| YPD_R2   |          NA |            NA |
+| YPD_R3   |       0.004 |       179.350 |
 
 ## Summarize growth metrics across samples
 
@@ -443,7 +446,7 @@ from the estimated growth rate using `compute_doubling_time()`.
 **Minimal example:**
 
 ``` r
-metrics <- summarize_growth_metrics(tidy_data)
+metrics <- summarize_growth_metrics(se)
 #> Warning: Sample `YPD_R1`: Exponential phase detection did not yield a positive
 #> growth slope (rolling_window_ranked).
 #> Warning: Sample `YPD_R2`: Exponential phase detection did not yield a positive
@@ -469,7 +472,7 @@ group to a reference condition, supply `comparison_col` and
 
 ``` r
 dt_stats <- summarize_growth_metrics(
-  tidy_data,
+  se,
   method = "rolling_window",
   comparison_col = "condition",
   compare_to = "Cg",
@@ -506,7 +509,7 @@ reference-group comparison.
 
 ``` r
 plot_doubling_time(
-  tidy_data,
+  se,
   comparison_col = "condition",
   compare_to = "Cg",
   exclude_groups = "YPD",
@@ -519,7 +522,7 @@ plot_doubling_time(
 #> growth slope (rolling_window_ranked).
 ```
 
-<img src="man/figures/README-unnamed-chunk-17-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-16-1.png" alt="" width="100%" />
 
 ## Fit a growth model
 
@@ -532,10 +535,11 @@ full growth curve is preferred over a purely empirical estimate.
 **Minimal example:**
 
 ``` r
-fit <- fit_growth_curve(
-  filter(tidy_data, sample == sample_id),
-  model = "logistic"
-)
+sample_id <- unique(gr$sample)[1]
+fit_input <- as_tidy_growth_data(se) |>
+  filter(.data$sample == sample_id)
+
+fit <- fit_growth_curve(fit_input, model = "logistic")
 
 fit
 #> <growkar_fit> sample=Cg_R1, model=logistic, status=converged, n_points=49
@@ -579,14 +583,14 @@ pf <- plot_fitted_curve(fit)
 pf
 ```
 
-<img src="man/figures/README-unnamed-chunk-20-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-19-1.png" alt="" width="100%" />
 
 To fit and view individual replicates as separate panels from raw data,
 use `facet_col = "replicate"` with `average_replicates = FALSE`.
 
 ``` r
 pf_rep <- plot_fitted_curve(
-  tidy_data,
+  se,
   model = "logistic",
   average_replicates = FALSE,
   colour_col = "condition",
@@ -597,7 +601,7 @@ pf_rep <- plot_fitted_curve(
 pf_rep
 ```
 
-<img src="man/figures/README-unnamed-chunk-21-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-20-1.png" alt="" width="100%" />
 
 ## Supported API
 

@@ -27,7 +27,7 @@ library(knitr)
 sc_colors <- c("blue4", "#E41A1C", "gold", "black")
 ```
 
-## Prepare data
+## Import and validate data
 
 This example reads `ScBS181_OD.txt`, converts it to the canonical tidy
 format used by `growkar`, and validates the result.
@@ -88,7 +88,7 @@ head(tidy_sc)
 #> 6     0 Sc(50)_3  0.11  Sc(50)    3
 ```
 
-## Coerce to SummarizedExperiment
+## Create the canonical SummarizedExperiment
 
 `growkar` can also package the processed data into a lightweight
 `growkar_data` object and coerce it into a `SummarizedExperiment` for
@@ -100,7 +100,7 @@ se <- methods::as(growkar_obj, "SummarizedExperiment")
 se
 #> class: SummarizedExperiment 
 #> dim: 86 12 
-#> metadata(1): growth_metrics
+#> metadata(2): growkar_schema growth_metrics
 #> assays(1): od
 #> rownames(86): 0 0.333333333333333 ... 28.0005555555556 28.3338888888889
 #> rowData names(1): time
@@ -108,7 +108,7 @@ se
 #> colData names(3): sample condition replicate
 ```
 
-## Store growth metrics in SummarizedExperiment metadata
+## Analyze using SummarizedExperiment metadata
 
 The rolling-window doubling-time summary can also be computed directly
 on the `SummarizedExperiment` object and retrieved from
@@ -140,7 +140,7 @@ knitr::kable(se_metrics, digits = 3)
 
 ``` r
 plot_growth_curve(
-  tidy_sc,
+  se,
   average_replicates = TRUE,
   colour_col = "condition",
   custom_colors = sc_colors
@@ -156,7 +156,7 @@ conditions using the rolling-window method.
 
 ``` r
 dt_stats <- summarize_growth_metrics(
-  tidy_sc,
+  se,
   method = "rolling_window",
   comparison_col = "condition",
   compare_to = "Sc(0)"
@@ -180,7 +180,7 @@ knitr::kable(dt_stats, digits = 3)
 
 ``` r
 plot_doubling_time(
-  tidy_sc,
+  se,
   comparison_col = "condition",
   compare_to = "Sc(0)",
   average_replicates = FALSE,

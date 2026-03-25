@@ -112,11 +112,12 @@ as_summarized_experiment(yeast_growth_data)
 
 ## Exploratory plotting and quality control
 
-Observed growth curves can be plotted directly from tidy data:
+Observed growth curves can be plotted directly from the canonical
+`SummarizedExperiment`:
 
 ```{r plot-averaged-curves}
 plot_growth_curve(
-  tidy_growth,
+  se,
   average_replicates = TRUE,
   colour_col = "condition",
   palette_name = "Dark2"
@@ -127,7 +128,7 @@ Replicate-level faceting remains available when averaging is disabled:
 
 ```{r plot-replicate-facets}
 plot_growth_curve(
-  tidy_growth,
+  se,
   average_replicates = FALSE,
   colour_col = "condition",
   facet_col = "replicate",
@@ -139,7 +140,7 @@ plot_growth_curve(
 
 ```{r summarize-metrics}
 metrics <- summarize_growth_metrics(
-  tidy_growth,
+  se,
   method = "rolling_window",
   average_replicates = TRUE
 )
@@ -151,14 +152,9 @@ For a single sample, the empirical growth-rate estimate can be inspected in
 more detail:
 
 ```{r single-sample-growth-rate}
-sample_id <- unique(tidy_growth$sample)[1]
+gr <- compute_growth_rate(se, method = "rolling_window")
 
-gr <- compute_growth_rate(
-  filter(tidy_growth, sample == sample_id),
-  method = "rolling_window"
-)
-
-knitr::kable(gr, digits = 3)
+knitr::kable(head(gr), digits = 3)
 ```
 
 The doubling time helper is useful when you already have growth-rate values:
@@ -180,9 +176,7 @@ knitr::kable(
 describing whether the chosen interval required any degraded fallback.
 
 ```{r detect-phase}
-phase_tbl <- detect_exponential_phase(
-  filter(tidy_growth, sample == sample_id)
-)
+phase_tbl <- detect_exponential_phase(se)
 
 knitr::kable(head(phase_tbl), digits = 3)
 ```
@@ -193,9 +187,11 @@ For a full-curve model-based summary, fit one of the supported parametric
 models:
 
 ```{r fit-logistic-model}
-cg_fit <- tidy_growth |>
-  filter(sample == sample_id) |>
-  fit_growth_curve(model = "logistic")
+sample_id <- unique(gr$sample)[1]
+fit_input <- as_tidy_growth_data(se) |>
+  filter(sample == sample_id)
+
+cg_fit <- fit_growth_curve(fit_input, model = "logistic")
 
 extract_params(cg_fit)
 summary(cg_fit)
