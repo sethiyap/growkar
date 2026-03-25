@@ -7,7 +7,8 @@
 fit_growth_curve(data, model = c("logistic", "gompertz"))
 }
 \arguments{
-\item{data}{Tidy growth data for one sample.}
+\item{data}{Growth curve data for one sample in tidy, wide, or
+\code{SummarizedExperiment} format.}
 
 \item{model}{Model type: \code{"logistic"} or \code{"gompertz"}.}
 }

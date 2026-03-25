@@ -9,3 +9,5 @@
 ^hexasticker2\.png$
 ^\.github$
 ^growkar\.BiocCheck$
+^vignettes/.*\.html$
+^bioconductor-submission-note\.md$

@@ -2,7 +2,8 @@
 #'
 #' Plot observed growth curves from tidy or wide input data.
 #'
-#' @param data Growth curve data in tidy or wide format.
+#' @param data Growth curve data in tidy, wide, or `SummarizedExperiment`
+#'   format.
 #' @param average_replicates Logical; if `TRUE`, average replicate trajectories
 #'   before plotting when a `replicate` column is available.
 #' @param colour_col Name of the column mapped to colour.

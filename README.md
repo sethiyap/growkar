@@ -10,23 +10,26 @@ MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.or
 
 `growkar` is a Bioconductor-oriented R package for the analysis of
 high-throughput microbial growth experiments, such as plate-based
-optical density assays. It provides a unified framework for extracting
-quantitative growth phenotypes, including lag time, growth rate, and
-carrying capacity, from time-series measurements, and enables
-integration of these phenotypes with genomic and transcriptomic data
-using standard Bioconductor containers such as `SummarizedExperiment`.
-This allows growth-based phenotyping to be incorporated into broader
-multi-omics workflows for functional genomics and microbial systems
-biology.
+optical density assays. It provides infrastructure for extracting
+quantitative growth phenotypes, including lag time, growth rate,
+doubling time, and carrying capacity, from time-series measurements, and
+for representing assay data and derived phenotypes in Bioconductor
+containers such as `SummarizedExperiment`. This makes it possible to
+integrate growth-based phenotyping with genomic, transcriptomic, and
+other omics data in broader functional genomics and microbial systems
+biology workflows.
 
 Data generated from Agilent microplate readers, BioTek Cytation
 instruments, and other OD600-based microbial growth measurement
 platforms can be directly analysed using `growkar`.
 
-The package is designed for tidy analysis of microbial growth data using
-the canonical columns `sample`, `time`, and `od`. It is especially
-useful for plotting growth curves from tidy input and returning
-`ggplot2` objects that can be customized into publication-ready figures.
+`growkar` supports both tidy analysis workflows based on the canonical
+columns `sample`, `time`, and `od`, and Bioconductor-oriented container
+workflows based on `SummarizedExperiment`. Plotting functions return
+`ggplot2` objects that can be customized into publication-ready figures,
+while SE-aware helpers can store derived results in `metadata()` for
+downstream analysis. Core analysis functions accept tidy tables, wide
+plate-reader exports, and `SummarizedExperiment` input.
 
 ## Input formats
 
@@ -64,6 +67,32 @@ head(yeast_growth_data)
 #> 6   2.5 0.136 0.139 0.136    0.165    0.168    0.166  0.104  0.104  0.104
 ```
 
+## SummarizedExperiment workflow
+
+**What it does:** `as_growkar()` creates a lightweight processed
+`growkar` object that can be coerced to `SummarizedExperiment`, and
+`growth_metrics()` stores derived phenotype summaries in `metadata()`.
+
+**Why use it:** This is the preferred path when growth phenotypes need
+to be kept alongside sample metadata and reused in larger Bioconductor
+workflows.
+
+**Minimal example:**
+
+``` r
+growkar_obj <- as_growkar(yeast_growth_data)
+se <- methods::as(growkar_obj, "SummarizedExperiment")
+se <- growth_metrics(se, method = "rolling_window", average_replicates = TRUE)
+S4Vectors::metadata(se)$growth_metrics
+#> # A tibble: 3 × 10
+#>   sample      mu start_time end_time r_squared method    n_points degraded note 
+#>   <chr>    <dbl>      <dbl>    <dbl>     <dbl> <chr>        <int> <lgl>    <chr>
+#> 1 Cg     0.569          4.5      6.5     1.000 rolling_…        5 FALSE    roll…
+#> 2 CgFlu  0.404          4.5      6.5     1.000 rolling_…        5 FALSE    roll…
+#> 3 YPD    0.00128       12.5     14.5     0.500 rolling_…        5 FALSE    roll…
+#> # ℹ 1 more variable: doubling_time <dbl>
+```
+
 ## Convert data to tidy format
 
 **What it does:** `as_tidy_growth_data()` converts growth data into the
@@ -90,27 +119,23 @@ head(tidy_data)
 #> 6     0 CgFlu_R3 0.132 CgFlu     R3
 ```
 
-## SummarizedExperiment interop
+## Build a SummarizedExperiment directly
 
-**What it does:** `as_summarized_experiment()` converts growth data into
-a `SummarizedExperiment` with an `od` assay, time in `rowData()`, and
-sample metadata in `colData()`. For workflows that keep a processed
-`growkar` object, `as_growkar()` creates a lightweight container that
-can be coerced with `methods::as(growkar_obj, "SummarizedExperiment")`.
+**What it does:** `as_summarized_experiment()` converts growth data
+directly into a `SummarizedExperiment` with an `od` assay, time in
+`rowData()`, and sample metadata in `colData()`.
 
-**Why use it:** It provides a lightweight Bioconductor-compatible
-container without replacing the tidy tibble workflow used throughout
-`growkar`.
+**Why use it:** It is useful when you want a compact Bioconductor
+container immediately, without first creating a `growkar_data` object.
 
 **Minimal example:**
 
 ``` r
-growkar_obj <- as_growkar(yeast_growth_data)
-se <- methods::as(growkar_obj, "SummarizedExperiment")
-se
+se_direct <- as_summarized_experiment(yeast_growth_data)
+se_direct
 #> class: SummarizedExperiment 
 #> dim: 49 9 
-#> metadata(1): growth_metrics
+#> metadata(0):
 #> assays(1): od
 #> rownames(49): 0 0.5 ... 23.5 24
 #> rowData names(1): time
@@ -167,7 +192,7 @@ p <- plot_growth_curve(
 p
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" alt="" width="100%" />
 
 To view individual replicates as separate panels, use
 `facet_col = "replicate"` with `average_replicates = FALSE`.
@@ -184,7 +209,7 @@ p_rep <- plot_growth_curve(
 p_rep
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-8-1.png" alt="" width="100%" />
 
 ## Detect exponential phase
 
@@ -238,7 +263,7 @@ ggplot2::ggplot(method_plot_data, ggplot2::aes(time, od)) +
   ggplot2::theme_minimal(base_size = 11)
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-9-1.png" alt="" width="100%" />
 
 **Minimal example:**
 
@@ -478,7 +503,7 @@ plot_doubling_time(
 #> growth slope (rolling_window_ranked).
 ```
 
-<img src="man/figures/README-unnamed-chunk-16-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-17-1.png" alt="" width="100%" />
 
 ## Fit a growth model
 
@@ -538,7 +563,7 @@ pf <- plot_fitted_curve(fit)
 pf
 ```
 
-<img src="man/figures/README-unnamed-chunk-19-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-20-1.png" alt="" width="100%" />
 
 To fit and view individual replicates as separate panels from raw data,
 use `facet_col = "replicate"` with `average_replicates = FALSE`.
@@ -556,7 +581,7 @@ pf_rep <- plot_fitted_curve(
 pf_rep
 ```
 
-<img src="man/figures/README-unnamed-chunk-20-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-21-1.png" alt="" width="100%" />
 
 ## Supported API
 

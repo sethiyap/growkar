@@ -7,7 +7,8 @@
 fit_growth_plate(data, model = c("logistic", "gompertz"))
 }
 \arguments{
-\item{data}{Growth curve data in tidy or wide format.}
+\item{data}{Growth curve data in tidy, wide, or \code{SummarizedExperiment}
+format.}
 
 \item{model}{Model type: \code{"logistic"} or \code{"gompertz"}.}
 }

@@ -14,7 +14,8 @@ plot_growth_curve(
 )
 }
 \arguments{
-\item{data}{Growth curve data in tidy or wide format.}
+\item{data}{Growth curve data in tidy, wide, or \code{SummarizedExperiment}
+format.}
 
 \item{average_replicates}{Logical; if \code{TRUE}, average replicate trajectories
 before plotting when a \code{replicate} column is available.}

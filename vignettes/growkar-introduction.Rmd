@@ -42,11 +42,10 @@ for analyzing growth-based phenotypic data and integrating it with omics
 datasets.
 
 The `growkar` package addresses this gap by providing a scalable and
-reproducible framework for growth curve analysis that interoperates with
-Bioconductor data structures, enabling downstream integrative analyses.
-
-`growkar` uses a canonical input format with columns `sample`, `time`, and
-`od`, while still supporting common wide plate-reader style inputs.
+reproducible framework for high-throughput microbial phenotyping from growth
+assays. It uses Bioconductor data structures to represent assay measurements
+and derived phenotypes, while still supporting canonical tidy workflows for
+exploratory analysis and visualization.
 
 The core workflow is:
 
@@ -55,6 +54,24 @@ The core workflow is:
 3. Explore growth curves visually.
 4. Compute empirical summaries and detect the exponential phase.
 5. Fit logistic or Gompertz models where a full-curve summary is useful.
+
+## Bioconductor container workflow
+
+For Bioconductor-oriented workflows, growth measurements can be represented as a
+`SummarizedExperiment`, with OD values stored in the assay, time values in
+`rowData()`, sample annotations in `colData()`, and derived summaries in
+`metadata()`.
+
+```{r summarized-experiment}
+growkar_obj <- as_growkar(yeast_growth_data)
+se <- methods::as(growkar_obj, "SummarizedExperiment")
+se <- growth_metrics(se, method = "rolling_window", average_replicates = TRUE)
+
+S4Vectors::metadata(se)$growth_metrics
+```
+
+This workflow is useful when growth phenotypes need to be carried forward into
+other Bioconductor analyses or linked to omics-derived sample annotations.
 
 ## Input formats and tidy conversion
 
@@ -71,14 +88,11 @@ as `condition` and `replicate` can be carried alongside them.
 validate_growth_data(tidy_growth)
 ```
 
-For Bioconductor-oriented workflows, the same data can be represented as a
-`SummarizedExperiment` while preserving the tidy API as the main user-facing
-entry point.
+The same tidy data can also be converted back into a `SummarizedExperiment`
+whenever a container-based workflow is needed.
 
-```{r summarized-experiment}
-growkar_obj <- as_growkar(yeast_growth_data)
-se <- methods::as(growkar_obj, "SummarizedExperiment")
-se
+```{r summarized-experiment-direct}
+as_summarized_experiment(yeast_growth_data)
 ```
 
 ## Exploratory plotting and quality control

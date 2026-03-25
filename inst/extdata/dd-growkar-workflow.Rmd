@@ -71,6 +71,25 @@ se <- methods::as(growkar_obj, "SummarizedExperiment")
 se
 ```
 
+## Store growth metrics in SummarizedExperiment metadata
+
+The same rule-based doubling-time summary can be computed directly on the
+`SummarizedExperiment` object and stored in `metadata(se)$growth_metrics`.
+
+```{r summarized-experiment-metrics}
+se <- growth_metrics(
+  se,
+  method = "rule_based",
+  comparison_col = "condition",
+  compare_to = "H2O2(0mM)"
+)
+
+se_metrics <- S4Vectors::metadata(se)$growth_metrics |>
+  dplyr::arrange(.data$condition)
+
+knitr::kable(se_metrics, digits = 3)
+```
+
 ## Plot growth curves with averaged replicates
 
 This plot uses the averaged replicate trajectories for each condition and

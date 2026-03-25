@@ -2,7 +2,8 @@
 #'
 #' Fit a logistic or Gompertz growth model to a single sample.
 #'
-#' @param data Tidy growth data for one sample.
+#' @param data Growth curve data for one sample in tidy, wide, or
+#'   `SummarizedExperiment` format.
 #' @param model Model type: `"logistic"` or `"gompertz"`.
 #'
 #' @return An object of class `growkar_fit`. Failed fits return the same class

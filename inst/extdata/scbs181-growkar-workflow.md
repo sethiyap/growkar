@@ -108,6 +108,34 @@ se
 #> colData names(3): sample condition replicate
 ```
 
+## Store growth metrics in SummarizedExperiment metadata
+
+The rolling-window doubling-time summary can also be computed directly
+on the `SummarizedExperiment` object and retrieved from
+`metadata(se)$growth_metrics`.
+
+``` r
+se <- growth_metrics(
+  se,
+  method = "rolling_window",
+  comparison_col = "condition",
+  compare_to = "Sc(0)"
+)
+
+se_metrics <- S4Vectors::metadata(se)$growth_metrics |>
+  dplyr::mutate(condition = factor(.data$condition, levels = selected_conditions)) |>
+  dplyr::arrange(.data$condition)
+
+knitr::kable(se_metrics, digits = 3)
+```
+
+| condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
+|:---|---:|---:|---:|---:|---:|---:|:---|
+| Sc(100) | 0.482 | 1.440 | 0.028 | 3 | 0.016 | 0.000 | \*\*\*\* |
+| Sc(50) | 0.314 | 2.211 | 0.077 | 3 | 0.044 | 0.132 | ns |
+| Sc(25) | 0.330 | 2.101 | 0.068 | 3 | 0.039 | 0.959 | ns |
+| Sc(0) | 0.330 | 2.103 | 0.015 | 3 | 0.009 | 1.000 | ref |
+
 ## Plot growth curves with averaged replicates
 
 ``` r

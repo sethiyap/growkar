@@ -1,5 +1,5 @@
 Package: growkar
-Title: High-Throughput Microbial Growth Curve Analysis and Phenotyping
+Title: Infrastructure for High-Throughput Microbial Phenotyping from Growth Assays
 Version: 0.99.0
 Authors@R: 
     person("Pooja", "Sethiya", 
@@ -7,16 +7,17 @@ Authors@R:
            role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-6584-3912"))
 Description: growkar provides infrastructure and statistical tools for the
-    analysis of high-throughput microbial growth curve experiments, such as
-    plate-based optical density (OD) assays. The package supports data
-    import, quality control, normalization, and modeling of growth dynamics,
-    enabling extraction of biologically meaningful phenotypes including lag
-    time, growth rate, doubling time, and carrying capacity. growkar
-    integrates with Bioconductor data structures, including
-    SummarizedExperiment, allowing seamless incorporation of growth
-    phenotypes with transcriptomic, genomic, and other omics datasets. This
-    enables downstream multi-omics analysis and functional interpretation in
-    microbial systems.
+    analysis of high-throughput microbial phenotyping experiments based on
+    plate-based growth assays, such as optical density (OD) measurements.
+    The package supports data import, quality control, normalization,
+    empirical growth-rate estimation, exponential-phase detection, and
+    parametric modeling of growth dynamics. These workflows enable extraction
+    of biologically meaningful phenotypes including lag time, growth rate,
+    doubling time, and carrying capacity. growkar uses Bioconductor data
+    structures, including SummarizedExperiment, to represent assay data and
+    derived phenotypes in a form that can be integrated with transcriptomic,
+    genomic, and other omics datasets for downstream multi-omics analysis in
+    microbial systems biology.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -46,5 +47,5 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://github.com/sethiyap/growkar
 BugReports: https://github.com/sethiyap/growkar/issues
-biocViews: Software, DataImport, ExperimentalDesign, Visualization,
-    Infrastructure
+biocViews: Software, SystemsBiology, ExperimentalDesign, Visualization,
+    Infrastructure, DataImport, QualityControl, Normalization

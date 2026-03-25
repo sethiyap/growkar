@@ -5,7 +5,8 @@
 #' When `average_replicates = TRUE`, replicate trajectories are averaged first
 #' and exponential-phase detection is then run on the averaged curves.
 #'
-#' @param data Tidy growth data for one sample or multiple samples.
+#' @param data Growth data for one sample or multiple samples in tidy, wide, or
+#'   `SummarizedExperiment` format.
 #' @param select_replicates Optional character vector of replicate IDs to retain
 #'   before detection. When `NULL`, all replicates are retained.
 #' @param average_replicates Logical; if `TRUE`, average replicate trajectories

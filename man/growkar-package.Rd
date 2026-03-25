@@ -4,7 +4,7 @@
 \name{growkar-package}
 \alias{growkar}
 \alias{growkar-package}
-\title{growkar: Tidy Analysis of Microbial Growth Curves}
+\title{growkar: High-Throughput Microbial Phenotyping from Growth Assays}
 \description{
 Internal package-level declarations for shared imports used throughout the
 current tidy and Bioconductor-interoperable implementation.

@@ -38,6 +38,44 @@ test_that("growkar_data coerces to SummarizedExperiment with attached metrics", 
   expect_equal(as_tidy_growth_data(growkar_obj), as_tidy_growth_data(yeast_growth_data))
 })
 
+test_that("growth_metrics stores derived summaries in SummarizedExperiment metadata", {
+  se <- as_summarized_experiment(yeast_growth_data)
+  se <- growth_metrics(se, method = "rolling_window", average_replicates = TRUE)
+
+  expect_s4_class(se, "SummarizedExperiment")
+  expect_true("growth_metrics" %in% names(S4Vectors::metadata(se)))
+  expect_true("growth_metrics_parameters" %in% names(S4Vectors::metadata(se)))
+  expect_s3_class(S4Vectors::metadata(se)$growth_metrics, "tbl_df")
+})
+
+test_that("phase_windows stores exponential-phase windows in SummarizedExperiment metadata", {
+  se <- as_summarized_experiment(yeast_growth_data)
+  se <- suppressWarnings(phase_windows(se, average_replicates = TRUE))
+
+  expect_s4_class(se, "SummarizedExperiment")
+  expect_true("exponential_phase_windows" %in% names(S4Vectors::metadata(se)))
+  expect_true("exponential_phase_parameters" %in% names(S4Vectors::metadata(se)))
+  expect_s3_class(S4Vectors::metadata(se)$exponential_phase_windows, "tbl_df")
+})
+
+test_that("fit_growth_models stores fitted models and parameters in SummarizedExperiment metadata", {
+  se <- as_summarized_experiment(yeast_growth_data)
+  se <- fit_growth_models(se, model = "logistic")
+
+  expect_s4_class(se, "SummarizedExperiment")
+  expect_true("growth_model_fits" %in% names(S4Vectors::metadata(se)))
+  expect_true("growth_model_parameters" %in% names(S4Vectors::metadata(se)))
+  expect_s3_class(S4Vectors::metadata(se)$growth_model_fits, "tbl_df")
+  expect_s3_class(S4Vectors::metadata(se)$growth_model_parameters, "tbl_df")
+})
+
+test_that("plot_growth_curve accepts SummarizedExperiment input", {
+  se <- as_summarized_experiment(yeast_growth_data)
+  p <- plot_growth_curve(se, average_replicates = TRUE, colour_col = "condition")
+
+  expect_s3_class(p, "ggplot")
+})
+
 test_that("as_summarized_experiment rejects conflicting sample metadata", {
   bad_data <- tibble::tibble(
     sample = c("A", "A", "B", "B"),

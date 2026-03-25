@@ -79,6 +79,26 @@ se <- methods::as(growkar_obj, "SummarizedExperiment")
 se
 ```
 
+## Store growth metrics in SummarizedExperiment metadata
+
+The rolling-window doubling-time summary can also be computed directly on the
+`SummarizedExperiment` object and retrieved from `metadata(se)$growth_metrics`.
+
+```{r summarized-experiment-metrics}
+se <- growth_metrics(
+  se,
+  method = "rolling_window",
+  comparison_col = "condition",
+  compare_to = "Sc(0)"
+)
+
+se_metrics <- S4Vectors::metadata(se)$growth_metrics |>
+  dplyr::mutate(condition = factor(.data$condition, levels = selected_conditions)) |>
+  dplyr::arrange(.data$condition)
+
+knitr::kable(se_metrics, digits = 3)
+```
+
 ## Plot growth curves with averaged replicates
 
 ```{r average-growth-curve, fig.width=8, fig.height=5}

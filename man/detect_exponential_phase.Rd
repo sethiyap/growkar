@@ -13,7 +13,8 @@ detect_exponential_phase(
 )
 }
 \arguments{
-\item{data}{Tidy growth data for one sample or multiple samples.}
+\item{data}{Growth data for one sample or multiple samples in tidy, wide, or
+\code{SummarizedExperiment} format.}
 
 \item{select_replicates}{Optional character vector of replicate IDs to retain
 before detection. When \code{NULL}, all replicates are retained.}

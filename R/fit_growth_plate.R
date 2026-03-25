@@ -2,7 +2,8 @@
 #'
 #' Split tidy growth data by sample and fit a parametric model to each sample.
 #'
-#' @param data Growth curve data in tidy or wide format.
+#' @param data Growth curve data in tidy, wide, or `SummarizedExperiment`
+#'   format.
 #' @param model Model type: `"logistic"` or `"gompertz"`.
 #'
 #' @return A tibble with `sample` and a list-column of `growkar_fit` objects.
