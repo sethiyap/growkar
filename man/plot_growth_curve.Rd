@@ -7,8 +7,10 @@
 plot_growth_curve(
   data,
   average_replicates = FALSE,
+  select_samples = NULL,
   colour_col = "sample",
   facet_col = NULL,
+  facet_by_sample = FALSE,
   palette_name = "all_colors",
   custom_colors = NULL
 )
@@ -20,9 +22,16 @@ format.}
 \item{average_replicates}{Logical; if \code{TRUE}, average replicate trajectories
 before plotting when a \code{replicate} column is available.}
 
+\item{select_samples}{Optional character vector of sample IDs to retain
+before plotting. Use a length-one vector to plot a single sample.}
+
 \item{colour_col}{Name of the column mapped to colour.}
 
 \item{facet_col}{Optional name of a column used for faceting.}
+
+\item{facet_by_sample}{Logical; if \code{TRUE}, facet by \code{sample}. When enabled,
+sample faceting takes precedence over \code{facet_col}, and replicate faceting
+is disabled.}
 
 \item{palette_name}{Name of the qualitative palette used by
 \code{select_palette()}. Supported values include \code{"all_colors"} (combined
