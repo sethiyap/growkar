@@ -114,14 +114,14 @@ knitr::kable(se_metrics, digits = 3)
 
 | condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
 |:---|---:|---:|---:|---:|---:|---:|:---|
-| KN99(100) | 0.010 | 72.780 | 0.770 | 3 | 0.445 | 0.000 | \*\*\*\* |
-| KN99(50) | 0.037 | 42.852 | 33.020 | 3 | 19.064 | 0.169 | ns |
-| KN99(25) | 0.266 | 2.621 | 0.201 | 3 | 0.116 | 0.850 | ns |
-| KN99(12.5) | 0.271 | 2.584 | 0.330 | 3 | 0.190 | 0.778 | ns |
-| KN99(6.25) | 0.308 | 2.263 | 0.206 | 3 | 0.119 | 0.080 | ns |
-| KN99(3.125) | 0.273 | 2.569 | 0.318 | 3 | 0.183 | 0.719 | ns |
+| KN99(0) | 0.262 | 2.646 | 0.037 | 3 | 0.021 | NA | ref |
 | KN99(1.56) | 0.290 | 2.431 | 0.378 | 3 | 0.218 | 0.430 | ns |
-| KN99(0) | 0.262 | 2.646 | 0.037 | 3 | 0.021 | 1.000 | ref |
+| KN99(100) | 0.010 | 72.780 | 0.770 | 3 | 0.445 | 0.000 | \*\*\*\* |
+| KN99(12.5) | 0.271 | 2.584 | 0.330 | 3 | 0.190 | 0.778 | ns |
+| KN99(25) | 0.266 | 2.621 | 0.201 | 3 | 0.116 | 0.850 | ns |
+| KN99(3.125) | 0.273 | 2.569 | 0.318 | 3 | 0.183 | 0.719 | ns |
+| KN99(50) | 0.037 | 42.852 | 33.020 | 3 | 19.064 | 0.169 | ns |
+| KN99(6.25) | 0.308 | 2.263 | 0.206 | 3 | 0.119 | 0.080 | ns |
 
 ## Plot growth curves with averaged replicates
 
@@ -138,6 +138,44 @@ plot_growth_curve(
 ```
 
 ![](dd-growkar-workflow-files/figure-gfm/average-growth-curve-1.png)<!-- -->
+
+## Plot multiple samples as sample facets
+
+For complex datasets with multiple samples, you can facet by sample to
+inspect each sample in its own panel. When `facet_by_sample = TRUE`,
+sample faceting overrides replicate faceting.
+
+``` r
+sample_choices <- unique(as_tidy_growth_data(se)$sample)
+
+plot_growth_curve(
+  se,
+  select_samples = sample_choices[1:min(4, length(sample_choices))],
+  colour_col = "replicate",
+  facet_col = "replicate",
+  facet_by_sample = TRUE,
+  palette_name = "Dark2"
+)
+#> Warning: `facet_col = "replicate"` is ignored when `facet_by_sample = TRUE`.
+```
+
+![](dd-growkar-workflow-files/figure-gfm/sample-facet-growth-curve-1.png)<!-- -->
+
+## Plot one selected sample
+
+If you only want to inspect one sample, pass a length-one value to
+`select_samples`.
+
+``` r
+plot_growth_curve(
+  se,
+  select_samples = sample_choices[1],
+  colour_col = "replicate",
+  palette_name = "Dark2"
+)
+```
+
+![](dd-growkar-workflow-files/figure-gfm/single-sample-growth-curve-1.png)<!-- -->
 
 ## Summarize doubling time with KN99(0) as the reference
 
@@ -157,14 +195,14 @@ knitr::kable(dt_stats, digits = 3)
 
 | condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
 |:---|---:|---:|---:|---:|---:|---:|:---|
-| KN99(100) | 0.010 | 72.780 | 0.770 | 3 | 0.445 | 0.000 | \*\*\*\* |
-| KN99(50) | 0.037 | 42.852 | 33.020 | 3 | 19.064 | 0.169 | ns |
-| KN99(25) | 0.266 | 2.621 | 0.201 | 3 | 0.116 | 0.850 | ns |
-| KN99(12.5) | 0.271 | 2.584 | 0.330 | 3 | 0.190 | 0.778 | ns |
-| KN99(6.25) | 0.308 | 2.263 | 0.206 | 3 | 0.119 | 0.080 | ns |
-| KN99(3.125) | 0.273 | 2.569 | 0.318 | 3 | 0.183 | 0.719 | ns |
+| KN99(0) | 0.262 | 2.646 | 0.037 | 3 | 0.021 | NA | ref |
 | KN99(1.56) | 0.290 | 2.431 | 0.378 | 3 | 0.218 | 0.430 | ns |
-| KN99(0) | 0.262 | 2.646 | 0.037 | 3 | 0.021 | 1.000 | ref |
+| KN99(100) | 0.010 | 72.780 | 0.770 | 3 | 0.445 | 0.000 | \*\*\*\* |
+| KN99(12.5) | 0.271 | 2.584 | 0.330 | 3 | 0.190 | 0.778 | ns |
+| KN99(25) | 0.266 | 2.621 | 0.201 | 3 | 0.116 | 0.850 | ns |
+| KN99(3.125) | 0.273 | 2.569 | 0.318 | 3 | 0.183 | 0.719 | ns |
+| KN99(50) | 0.037 | 42.852 | 33.020 | 3 | 19.064 | 0.169 | ns |
+| KN99(6.25) | 0.308 | 2.263 | 0.206 | 3 | 0.119 | 0.080 | ns |
 
 ## Plot doubling time comparisons
 
