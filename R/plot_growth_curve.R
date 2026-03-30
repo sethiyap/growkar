@@ -100,12 +100,15 @@ plot_growth_curve <- function(data,
 #' Plot observed growth curves with replicates averaged and grouped into
 #' separate sample-family facets. For condition labels such as `KN99(100)` and
 #' `CM2448(50)`, this produces one facet for `KN99`, one for `CM2448`, and so
-#' on, with the different conditions shown within each facet.
+#' on, with the different conditions shown within each facet. By default, when
+#' labels include parenthesized dose values such as `(0)` or `(100)`, those
+#' shared values are used for colour mapping across facets.
 #'
 #' @param data Growth curve data in tidy, wide, or `SummarizedExperiment`
 #'   format.
 #' @param colour_col Name of the column mapped to colour. When `NULL`, the plot
-#'   uses `condition` when available and otherwise falls back to `sample`.
+#'   uses a derived dose label from `condition`/`sample` when available and
+#'   otherwise falls back to `condition` or `sample`.
 #' @param palette_name Name of the qualitative palette used by
 #'   `select_palette()`. Supported values include `"all_colors"` (combined
 #'   palette), `"Accent"` (8), `"Dark2"` (8), `"Paired"` (12), `"Pastel1"` (9),
@@ -119,7 +122,6 @@ plot_growth_curve <- function(data,
 #' data(yeast_growth_data)
 #' plot_growth_curve_facets(
 #'   yeast_growth_data,
-#'   colour_col = "replicate",
 #'   palette_name = "Dark2"
 #' )
 #' @export
@@ -131,9 +133,15 @@ plot_growth_curve_facets <- function(data,
   tidy_data <- as_tidy_growth_data(se)
   tidy_data <- validate_growth_data(tidy_data)
   tidy_data$facet_sample <- growkar_facet_sample_labels(tidy_data)
+  facet_colour <- growkar_facet_colour_labels(tidy_data)
+  if (!is.null(facet_colour)) {
+    tidy_data$facet_colour <- facet_colour
+  }
 
   if (is.null(colour_col)) {
-    colour_col <- if ("condition" %in% names(tidy_data)) {
+    colour_col <- if (!is.null(facet_colour)) {
+      "facet_colour"
+    } else if ("condition" %in% names(tidy_data)) {
       "condition"
     } else {
       "sample"
@@ -156,6 +164,23 @@ growkar_facet_sample_labels <- function(data) {
   labels <- sub("\\(.*$", "", labels)
   labels <- sub("_[^_]+$", "", labels)
   trimws(labels)
+}
+
+growkar_facet_colour_labels <- function(data) {
+  source_col <- if ("condition" %in% names(data)) data$condition else data$sample
+  labels <- as.character(source_col)
+  dose_labels <- sub(".*\\(([^()]*)\\).*", "\\1", labels)
+  has_dose <- grepl("\\([^()]*\\)", labels)
+
+  if (any(has_dose)) {
+    out <- rep(NA_character_, length(labels))
+    out[has_dose] <- dose_labels[has_dose]
+    if (all(!is.na(out) & nzchar(out))) {
+      return(out)
+    }
+  }
+
+  NULL
 }
 
 growkar_average_replicates <- function(data) {

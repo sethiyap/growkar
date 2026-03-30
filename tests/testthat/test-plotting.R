@@ -24,6 +24,8 @@ test_that("plot_growth_curve_facets facets by sample family when condition is av
   expect_true(all(c("KN99", "CM2444", "CM2446", "CM2448") %in% unique(p$data$facet_sample)))
   expect_false("replicate" %in% names(p$data))
   expect_true(all(c("od_mean", "od_sd") %in% names(p$data)))
+  expect_true("facet_colour" %in% names(p$data))
+  expect_equal(sort(unique(p$data$facet_colour)), c("0", "1.56", "100", "12.5", "25", "3.125", "50", "6.25"))
 })
 
 test_that("plot_growth_curve_facets uses sample facets when condition is absent", {

@@ -16,7 +16,8 @@ plot_growth_curve_facets(
 format.}
 
 \item{colour_col}{Name of the column mapped to colour. When \code{NULL}, the plot
-uses \code{condition} when available and otherwise falls back to \code{sample}.}
+uses a derived dose label from \code{condition}/\code{sample} when available and
+otherwise falls back to \code{condition} or \code{sample}.}
 
 \item{palette_name}{Name of the qualitative palette used by
 \code{select_palette()}. Supported values include \code{"all_colors"} (combined
@@ -33,7 +34,9 @@ A \code{ggplot2} object.
 Plot observed growth curves with replicates averaged and grouped into
 separate sample-family facets. For condition labels such as \code{KN99(100)} and
 \code{CM2448(50)}, this produces one facet for \code{KN99}, one for \code{CM2448}, and so
-on, with the different conditions shown within each facet.
+on, with the different conditions shown within each facet. By default, when
+labels include parenthesized dose values such as \code{(0)} or \code{(100)}, those
+shared values are used for colour mapping across facets.
 }
 \examples{
 data(yeast_growth_data)
