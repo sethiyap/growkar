@@ -194,9 +194,14 @@ growkar_bracket_annotations <- function(summary_tbl, comparison_col, compare_to,
     return(tibble::tibble())
   }
 
+  comparison_levels <- levels(summary_tbl[[comparison_col]])
+  if (is.null(comparison_levels)) {
+    comparison_levels <- unique(as.character(summary_tbl[[comparison_col]]))
+  }
+
   comparison_tbl <- summary_tbl |>
     dplyr::mutate(
-      x = seq_len(dplyr::n()),
+      x = match(as.character(.data[[comparison_col]]), comparison_levels),
       y_top = .data$mean_doubling_time + dplyr::coalesce(.data$error_bar, 0)
     ) |>
     dplyr::filter(.data[[comparison_col]] != compare_to, !is.na(.data$p_value_label), .data$p_value_label != "ns")
@@ -205,11 +210,12 @@ growkar_bracket_annotations <- function(summary_tbl, comparison_col, compare_to,
     return(tibble::tibble())
   }
 
+  ref_x <- match(compare_to, comparison_levels)
   ref_top <- summary_tbl$mean_doubling_time[[ref_index]] + dplyr::coalesce(summary_tbl$error_bar[[ref_index]], 0)
 
   comparison_tbl |>
     dplyr::mutate(
-      x_ref = ref_index,
+      x_ref = ref_x,
       x_group = .data$x,
       x_mid = (.data$x_ref + .data$x_group) / 2,
       y_low = pmax(ref_top, .data$y_top) + offset * 0.2,

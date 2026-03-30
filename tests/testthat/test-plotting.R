@@ -74,3 +74,25 @@ test_that("plot_doubling_time supports averaged replicate summaries", {
 
   expect_s3_class(p, "ggplot")
 })
+
+test_that("plot_doubling_time bracket annotations follow plotted factor order", {
+  summary_tbl <- tibble::tibble(
+    condition = factor(
+      c("KN99(0)", "KN99(1.56)", "KN99(100)"),
+      levels = c("KN99(100)", "KN99(1.56)", "KN99(0)")
+    ),
+    mean_doubling_time = c(2.6, 2.4, 72.8),
+    error_bar = c(0.02, 0.2, 0.4),
+    p_value_label = c("ref", "ns", "****")
+  )
+
+  ann <- growkar_bracket_annotations(
+    summary_tbl = summary_tbl,
+    comparison_col = "condition",
+    compare_to = "KN99(0)",
+    offset = 1
+  )
+
+  expect_equal(ann$x_ref, 3)
+  expect_equal(ann$x_group, 1)
+})
