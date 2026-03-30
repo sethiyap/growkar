@@ -221,10 +221,6 @@ p_rep
 To average replicates first and facet by sample family automatically,
 use `plot_growth_curve_facets()`.
 
-When condition labels include dose values in parentheses, colors are
-shared by dose across facets. For example, `KN99(0)`, `CM2444(0)`,
-`CM2446(0)`, and `CM2448(0)` use the same color key.
-
 ``` r
 p_facet <- plot_growth_curve_facets(
   yeast_growth_data,
@@ -294,6 +290,14 @@ ggplot2::ggplot(method_plot_data, ggplot2::aes(time, od)) +
 
 ``` r
 library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
 library(knitr)
 
 phase_tbl <- detect_exponential_phase(se)
@@ -620,6 +624,7 @@ The supported SE-native interface includes:
 - `as_tidy_growth_data()`
 - `validate_growth_data()`
 - `plot_growth_curve()`
+- `plot_growth_curve_facets()`
 - `compute_growth_rate()`
 - `summarize_growth_metrics()`
 - `detect_exponential_phase()`

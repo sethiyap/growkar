@@ -187,9 +187,6 @@ plot_doubling_time(
 To visualize the full CDK7 dataset, `plot_growth_curve_facets()` uses
 the full `se` object, averages replicates first, and creates one facet
 per sample family such as `KN99`, `CM2444`, `CM2446`, and `CM2448`.
-Colors are shared by dose across families, so conditions such as
-`KN99(0)`, `CM2444(0)`, `CM2446(0)`, and `CM2448(0)` use the same color
-key.
 
 ``` r
 plot_growth_curve_facets(
