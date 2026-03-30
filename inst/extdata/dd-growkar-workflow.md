@@ -73,21 +73,23 @@ head(tidy_dd)
 `growkar` can also package the processed data into a lightweight
 `growkar_data` object and coerce it into a `SummarizedExperiment` for
 Bioconductor-oriented workflows. This example keeps the full CDK7
-dataset so the facet plot can show `KN99`, `CM2444`, `CM2446`, and
-`CM2448`.
+dataset in `se` for the facet plot and creates a `se_KN99` subset for
+the KN99-specific growth-rate and doubling-time summaries.
 
 ``` r
 growkar_obj <- as_growkar(tidy_dd)
 se <- methods::as(growkar_obj, "SummarizedExperiment")
+keep_kn99 <- grepl("^KN99", SummarizedExperiment::colData(se)$sample)
+se_KN99 <- se[, keep_kn99]
 
-se
+se_KN99
 #> class: SummarizedExperiment 
-#> dim: 84 96 
+#> dim: 84 24 
 #> metadata(2): growkar_schema growth_metrics
 #> assays(1): od
 #> rownames(84): 0 0.333333333333333 ... 27.3336111111111 27.6669444444444
 #> rowData names(1): time
-#> colnames(96): KN99(100)_1 KN99(100)_2 ... CM2448(0)_2 CM2448(0)_3
+#> colnames(24): KN99(100)_1 KN99(100)_2 ... KN99(0)_2 KN99(0)_3
 #> colData names(3): sample condition replicate
 ```
 
@@ -95,51 +97,23 @@ se
 
 The same doubling-time summary can be computed directly on the
 `SummarizedExperiment` object and stored in
-`metadata(se)$growth_metrics`.
+`metadata(se_KN99)$growth_metrics`.
 
 ``` r
-se <- growth_metrics(
-  se,
+se_KN99 <- growth_metrics(
+  se_KN99,
   method = "rolling_window",
   comparison_col = "condition",
   compare_to = "KN99(0)"
 )
-#> Warning: Sample `CM2444(100)_3`: Exponential phase detection did not yield a
-#> positive growth slope (rolling_window_ranked).
-#> Warning: Sample `CM2448(100)_3`: Exponential phase detection did not yield a
-#> positive growth slope (rolling_window_ranked).
 
-se_metrics <- S4Vectors::metadata(se)$growth_metrics
+se_metrics <- S4Vectors::metadata(se_KN99)$growth_metrics
 
 knitr::kable(se_metrics, digits = 3)
 ```
 
 | condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
 |:---|---:|---:|---:|---:|---:|---:|:---|
-| CM2444(0) | 0.262 | 2.651 | 0.179 | 3 | 0.104 | 0.967 | ns |
-| CM2444(1.56) | 0.323 | 2.151 | 0.156 | 3 | 0.090 | 0.026 | \* |
-| CM2444(100) | 0.008 | 89.049 | 25.187 | 2 | 17.810 | 0.129 | ns |
-| CM2444(12.5) | 0.332 | 2.094 | 0.128 | 3 | 0.074 | 0.012 | \* |
-| CM2444(25) | 0.290 | 2.414 | 0.283 | 3 | 0.163 | 0.291 | ns |
-| CM2444(3.125) | 0.260 | 2.670 | 0.188 | 3 | 0.108 | 0.844 | ns |
-| CM2444(50) | 0.013 | 65.393 | 36.912 | 3 | 21.311 | 0.099 | ns |
-| CM2444(6.25) | 0.279 | 2.506 | 0.317 | 3 | 0.183 | 0.525 | ns |
-| CM2446(0) | 0.286 | 2.425 | 0.046 | 3 | 0.027 | 0.004 | \*\* |
-| CM2446(1.56) | 0.399 | 1.741 | 0.080 | 3 | 0.046 | 0.001 | \*\*\* |
-| CM2446(100) | 0.010 | 78.121 | 27.399 | 3 | 15.819 | 0.041 | \* |
-| CM2446(12.5) | 0.294 | 2.363 | 0.167 | 3 | 0.096 | 0.093 | ns |
-| CM2446(25) | 0.272 | 2.551 | 0.079 | 3 | 0.046 | 0.162 | ns |
-| CM2446(3.125) | 0.320 | 2.168 | 0.074 | 3 | 0.043 | 0.002 | \*\* |
-| CM2446(50) | 0.011 | 66.746 | 9.791 | 3 | 5.653 | 0.008 | \*\* |
-| CM2446(6.25) | 0.271 | 2.559 | 0.074 | 3 | 0.043 | 0.170 | ns |
-| CM2448(0) | 0.285 | 2.431 | 0.029 | 3 | 0.017 | 0.002 | \*\* |
-| CM2448(1.56) | 0.276 | 2.521 | 0.184 | 3 | 0.106 | 0.360 | ns |
-| CM2448(100) | 0.031 | 60.278 | 67.560 | 2 | 47.772 | 0.441 | ns |
-| CM2448(12.5) | 0.322 | 2.158 | 0.096 | 3 | 0.055 | 0.006 | \*\* |
-| CM2448(25) | 0.291 | 2.390 | 0.172 | 3 | 0.099 | 0.118 | ns |
-| CM2448(3.125) | 0.276 | 2.513 | 0.145 | 3 | 0.084 | 0.251 | ns |
-| CM2448(50) | 0.021 | 41.309 | 26.646 | 3 | 15.384 | 0.129 | ns |
-| CM2448(6.25) | 0.282 | 2.491 | 0.324 | 3 | 0.187 | 0.495 | ns |
 | KN99(0) | 0.262 | 2.646 | 0.037 | 3 | 0.021 | NA | ref |
 | KN99(1.56) | 0.290 | 2.431 | 0.378 | 3 | 0.218 | 0.430 | ns |
 | KN99(100) | 0.010 | 72.780 | 0.770 | 3 | 0.445 | 0.000 | \*\*\*\* |
@@ -156,28 +130,13 @@ and returns a `ggplot2` object that can be customized further if needed.
 
 ``` r
 plot_growth_curve(
-  se,
+  se_KN99,
   average_replicates = TRUE,
   colour_col = "condition"
 )
 ```
 
 ![](dd-growkar-workflow-files/figure-gfm/average-growth-curve-1.png)<!-- -->
-
-## Plot growth curves as facets
-
-For complex datasets with multiple conditions such as `KN99(...)` and
-`CM2448(...)`, `plot_growth_curve_facets()` averages replicates first
-and then creates one facet per sample family such as `KN99`, `CM2444`,
-`CM2446`, and `CM2448`.
-
-``` r
-plot_growth_curve_facets(
-  se
-)
-```
-
-![](dd-growkar-workflow-files/figure-gfm/sample-facet-growth-curve-1.png)<!-- -->
 
 ## Summarize doubling time with KN99(0) as the reference
 
@@ -186,45 +145,17 @@ against `KN99(0)` using the rolling-window exponential interval.
 
 ``` r
 dt_stats <- summarize_growth_metrics(
-  se,
+  se_KN99,
   method = "rolling_window",
   comparison_col = "condition",
   compare_to = "KN99(0)"
 )
-#> Warning: Sample `CM2444(100)_3`: Exponential phase detection did not yield a
-#> positive growth slope (rolling_window_ranked).
-#> Warning: Sample `CM2448(100)_3`: Exponential phase detection did not yield a
-#> positive growth slope (rolling_window_ranked).
 
 knitr::kable(dt_stats, digits = 3)
 ```
 
 | condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
 |:---|---:|---:|---:|---:|---:|---:|:---|
-| CM2444(0) | 0.262 | 2.651 | 0.179 | 3 | 0.104 | 0.967 | ns |
-| CM2444(1.56) | 0.323 | 2.151 | 0.156 | 3 | 0.090 | 0.026 | \* |
-| CM2444(100) | 0.008 | 89.049 | 25.187 | 2 | 17.810 | 0.129 | ns |
-| CM2444(12.5) | 0.332 | 2.094 | 0.128 | 3 | 0.074 | 0.012 | \* |
-| CM2444(25) | 0.290 | 2.414 | 0.283 | 3 | 0.163 | 0.291 | ns |
-| CM2444(3.125) | 0.260 | 2.670 | 0.188 | 3 | 0.108 | 0.844 | ns |
-| CM2444(50) | 0.013 | 65.393 | 36.912 | 3 | 21.311 | 0.099 | ns |
-| CM2444(6.25) | 0.279 | 2.506 | 0.317 | 3 | 0.183 | 0.525 | ns |
-| CM2446(0) | 0.286 | 2.425 | 0.046 | 3 | 0.027 | 0.004 | \*\* |
-| CM2446(1.56) | 0.399 | 1.741 | 0.080 | 3 | 0.046 | 0.001 | \*\*\* |
-| CM2446(100) | 0.010 | 78.121 | 27.399 | 3 | 15.819 | 0.041 | \* |
-| CM2446(12.5) | 0.294 | 2.363 | 0.167 | 3 | 0.096 | 0.093 | ns |
-| CM2446(25) | 0.272 | 2.551 | 0.079 | 3 | 0.046 | 0.162 | ns |
-| CM2446(3.125) | 0.320 | 2.168 | 0.074 | 3 | 0.043 | 0.002 | \*\* |
-| CM2446(50) | 0.011 | 66.746 | 9.791 | 3 | 5.653 | 0.008 | \*\* |
-| CM2446(6.25) | 0.271 | 2.559 | 0.074 | 3 | 0.043 | 0.170 | ns |
-| CM2448(0) | 0.285 | 2.431 | 0.029 | 3 | 0.017 | 0.002 | \*\* |
-| CM2448(1.56) | 0.276 | 2.521 | 0.184 | 3 | 0.106 | 0.360 | ns |
-| CM2448(100) | 0.031 | 60.278 | 67.560 | 2 | 47.772 | 0.441 | ns |
-| CM2448(12.5) | 0.322 | 2.158 | 0.096 | 3 | 0.055 | 0.006 | \*\* |
-| CM2448(25) | 0.291 | 2.390 | 0.172 | 3 | 0.099 | 0.118 | ns |
-| CM2448(3.125) | 0.276 | 2.513 | 0.145 | 3 | 0.084 | 0.251 | ns |
-| CM2448(50) | 0.021 | 41.309 | 26.646 | 3 | 15.384 | 0.129 | ns |
-| CM2448(6.25) | 0.282 | 2.491 | 0.324 | 3 | 0.187 | 0.495 | ns |
 | KN99(0) | 0.262 | 2.646 | 0.037 | 3 | 0.021 | NA | ref |
 | KN99(1.56) | 0.290 | 2.431 | 0.378 | 3 | 0.218 | 0.430 | ns |
 | KN99(100) | 0.010 | 72.780 | 0.770 | 3 | 0.445 | 0.000 | \*\*\*\* |
@@ -242,15 +173,25 @@ interval.
 
 ``` r
 plot_doubling_time(
-  se,
+  se_KN99,
   comparison_col = "condition",
   compare_to = "KN99(0)",
   method = "rolling_window"
 )
-#> Warning: Sample `CM2444(100)_3`: Exponential phase detection did not yield a
-#> positive growth slope (rolling_window_ranked).
-#> Warning: Sample `CM2448(100)_3`: Exponential phase detection did not yield a
-#> positive growth slope (rolling_window_ranked).
 ```
 
 ![](dd-growkar-workflow-files/figure-gfm/doubling-time-plot-1.png)<!-- -->
+
+## Plot growth curves as facets
+
+To visualize the full CDK7 dataset, `plot_growth_curve_facets()` uses
+the full `se` object, averages replicates first, and creates one facet
+per sample family such as `KN99`, `CM2444`, `CM2446`, and `CM2448`.
+
+``` r
+plot_growth_curve_facets(
+  se
+)
+```
+
+![](dd-growkar-workflow-files/figure-gfm/sample-facet-growth-curve-1.png)<!-- -->

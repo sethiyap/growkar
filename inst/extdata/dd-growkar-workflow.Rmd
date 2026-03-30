@@ -50,30 +50,33 @@ head(tidy_dd)
 
 `growkar` can also package the processed data into a lightweight
 `growkar_data` object and coerce it into a `SummarizedExperiment` for
-Bioconductor-oriented workflows. This example keeps the full CDK7 dataset so
-the facet plot can show `KN99`, `CM2444`, `CM2446`, and `CM2448`.
+Bioconductor-oriented workflows. This example keeps the full CDK7 dataset in
+`se` for the facet plot and creates a `se_KN99` subset for the KN99-specific
+growth-rate and doubling-time summaries.
 
 ```{r summarized-experiment}
 growkar_obj <- as_growkar(tidy_dd)
 se <- methods::as(growkar_obj, "SummarizedExperiment")
+keep_kn99 <- grepl("^KN99", SummarizedExperiment::colData(se)$sample)
+se_KN99 <- se[, keep_kn99]
 
-se
+se_KN99
 ```
 
 ## Analyze using SummarizedExperiment metadata
 
 The same doubling-time summary can be computed directly on the
-`SummarizedExperiment` object and stored in `metadata(se)$growth_metrics`.
+`SummarizedExperiment` object and stored in `metadata(se_KN99)$growth_metrics`.
 
 ```{r summarized-experiment-metrics}
-se <- growth_metrics(
-  se,
+se_KN99 <- growth_metrics(
+  se_KN99,
   method = "rolling_window",
   comparison_col = "condition",
   compare_to = "KN99(0)"
 )
 
-se_metrics <- S4Vectors::metadata(se)$growth_metrics
+se_metrics <- S4Vectors::metadata(se_KN99)$growth_metrics
 
 knitr::kable(se_metrics, digits = 3)
 ```
@@ -85,22 +88,9 @@ returns a `ggplot2` object that can be customized further if needed.
 
 ```{r average-growth-curve, fig.width=8, fig.height=5}
 plot_growth_curve(
-  se,
+  se_KN99,
   average_replicates = TRUE,
   colour_col = "condition"
-)
-```
-
-## Plot growth curves as facets
-
-For complex datasets with multiple conditions such as `KN99(...)` and
-`CM2448(...)`, `plot_growth_curve_facets()` averages replicates first and then
-creates one facet per sample family such as `KN99`, `CM2444`, `CM2446`, and
-`CM2448`.
-
-```{r sample-facet-growth-curve, fig.width=8, fig.height=6}
-plot_growth_curve_facets(
-  se
 )
 ```
 
@@ -111,7 +101,7 @@ This summary compares replicate-level doubling times for each condition against
 
 ```{r doubling-time-summary}
 dt_stats <- summarize_growth_metrics(
-  se,
+  se_KN99,
   method = "rolling_window",
   comparison_col = "condition",
   compare_to = "KN99(0)"
@@ -127,9 +117,21 @@ against `KN99(0)` using the rolling-window exponential interval.
 
 ```{r doubling-time-plot, fig.width=8, fig.height=5}
 plot_doubling_time(
-  se,
+  se_KN99,
   comparison_col = "condition",
   compare_to = "KN99(0)",
   method = "rolling_window"
+)
+```
+
+## Plot growth curves as facets
+
+To visualize the full CDK7 dataset, `plot_growth_curve_facets()` uses the full
+`se` object, averages replicates first, and creates one facet per sample family
+such as `KN99`, `CM2444`, `CM2446`, and `CM2448`.
+
+```{r sample-facet-growth-curve, fig.width=8, fig.height=6}
+plot_growth_curve_facets(
+  se
 )
 ```
