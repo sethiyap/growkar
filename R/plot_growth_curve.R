@@ -7,13 +7,8 @@
 #'   format.
 #' @param average_replicates Logical; if `TRUE`, average replicate trajectories
 #'   before plotting when a `replicate` column is available.
-#' @param select_samples Optional character vector of sample IDs to retain
-#'   before plotting. Use a length-one vector to plot a single sample.
 #' @param colour_col Name of the column mapped to colour.
 #' @param facet_col Optional name of a column used for faceting.
-#' @param facet_by_sample Logical; if `TRUE`, facet by `sample`. When enabled,
-#'   sample faceting takes precedence over `facet_col`, and replicate faceting
-#'   is disabled.
 #' @param palette_name Name of the qualitative palette used by
 #'   `select_palette()`. Supported values include `"all_colors"` (combined
 #'   palette), `"Accent"` (8), `"Dark2"` (8), `"Paired"` (12), `"Pastel1"` (9),
@@ -34,33 +29,13 @@
 #' @export
 plot_growth_curve <- function(data,
                               average_replicates = FALSE,
-                              select_samples = NULL,
                               colour_col = "sample",
                               facet_col = NULL,
-                              facet_by_sample = FALSE,
                               palette_name = "all_colors",
                               custom_colors = NULL) {
   se <- growkar_as_se(data)
   tidy_data <- as_tidy_growth_data(se)
   tidy_data <- validate_growth_data(tidy_data)
-
-  available_samples <- unique(as.character(tidy_data$sample))
-
-  if (!is.null(select_samples)) {
-    select_samples <- as.character(select_samples)
-    missing_samples <- setdiff(select_samples, available_samples)
-    if (length(missing_samples) > 0L) {
-      stop(
-        "`select_samples` contains sample(s) not present in `data`: ",
-        paste(missing_samples, collapse = ", "),
-        ". Available samples: ",
-        paste(available_samples, collapse = ", "),
-        call. = FALSE
-      )
-    }
-
-    tidy_data <- dplyr::filter(tidy_data, .data$sample %in% select_samples)
-  }
 
   if (!colour_col %in% names(tidy_data)) {
     stop("`colour_col` must refer to a column in `data`.", call. = FALSE)
@@ -76,16 +51,6 @@ plot_growth_curve <- function(data,
       call. = FALSE
     )
     facet_col <- NULL
-  }
-
-  if (isTRUE(facet_by_sample)) {
-    if (identical(facet_col, "replicate")) {
-      warning(
-        "`facet_col = \"replicate\"` is ignored when `facet_by_sample = TRUE`.",
-        call. = FALSE
-      )
-    }
-    facet_col <- "sample"
   }
 
   plot_data <- if (isTRUE(average_replicates)) {
@@ -128,6 +93,58 @@ plot_growth_curve <- function(data,
   }
 
   p + ggplot2::scale_colour_manual(values = colour_values, breaks = colour_levels)
+}
+
+#' Plot Growth Curves as Facets
+#'
+#' Plot observed growth curves and automatically facet multi-sample data into
+#' separate panels. When a `condition` column is available, facets are created
+#' from `condition`; otherwise, facets are created from `sample`.
+#'
+#' @inheritParams plot_growth_curve
+#'
+#' @return A `ggplot2` object.
+#'
+#' @examples
+#' data(yeast_growth_data)
+#' plot_growth_curve_facets(
+#'   yeast_growth_data,
+#'   colour_col = "replicate",
+#'   palette_name = "Dark2"
+#' )
+#' @export
+plot_growth_curve_facets <- function(data,
+                                     average_replicates = FALSE,
+                                     colour_col = NULL,
+                                     facet_col = NULL,
+                                     palette_name = "all_colors",
+                                     custom_colors = NULL) {
+  se <- growkar_as_se(data)
+  tidy_data <- as_tidy_growth_data(se)
+  tidy_data <- validate_growth_data(tidy_data)
+
+  if (is.null(facet_col)) {
+    facet_col <- if ("condition" %in% names(tidy_data)) "condition" else "sample"
+  }
+
+  if (is.null(colour_col)) {
+    colour_col <- if (!isTRUE(average_replicates) && "replicate" %in% names(tidy_data)) {
+      "replicate"
+    } else if ("condition" %in% names(tidy_data)) {
+      "condition"
+    } else {
+      "sample"
+    }
+  }
+
+  plot_growth_curve(
+    data = data,
+    average_replicates = average_replicates,
+    colour_col = colour_col,
+    facet_col = facet_col,
+    palette_name = palette_name,
+    custom_colors = custom_colors
+  )
 }
 
 growkar_average_replicates <- function(data) {

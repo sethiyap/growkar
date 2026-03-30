@@ -139,43 +139,21 @@ plot_growth_curve(
 
 ![](dd-growkar-workflow-files/figure-gfm/average-growth-curve-1.png)<!-- -->
 
-## Plot multiple samples as sample facets
+## Plot growth curves as facets
 
-For complex datasets with multiple samples, you can facet by sample to
-inspect each sample in its own panel. When `facet_by_sample = TRUE`,
-sample faceting overrides replicate faceting.
+For complex datasets with multiple conditions such as `KN99(...)` and
+`CM2448(...)`, `plot_growth_curve_facets()` creates one facet per
+condition automatically.
 
 ``` r
-sample_choices <- unique(as_tidy_growth_data(se)$sample)
-
-plot_growth_curve(
+plot_growth_curve_facets(
   se,
-  select_samples = sample_choices[1:min(4, length(sample_choices))],
   colour_col = "replicate",
-  facet_col = "replicate",
-  facet_by_sample = TRUE,
   palette_name = "Dark2"
 )
-#> Warning: `facet_col = "replicate"` is ignored when `facet_by_sample = TRUE`.
 ```
 
 ![](dd-growkar-workflow-files/figure-gfm/sample-facet-growth-curve-1.png)<!-- -->
-
-## Plot one selected sample
-
-If you only want to inspect one sample, pass a length-one value to
-`select_samples`.
-
-``` r
-plot_growth_curve(
-  se,
-  select_samples = sample_choices[1],
-  colour_col = "replicate",
-  palette_name = "Dark2"
-)
-```
-
-![](dd-growkar-workflow-files/figure-gfm/single-sample-growth-curve-1.png)<!-- -->
 
 ## Summarize doubling time with KN99(0) as the reference
 

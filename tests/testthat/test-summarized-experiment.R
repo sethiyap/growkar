@@ -77,6 +77,13 @@ test_that("plot_growth_curve accepts SummarizedExperiment input", {
   expect_s3_class(p, "ggplot")
 })
 
+test_that("plot_growth_curve_facets accepts SummarizedExperiment input", {
+  se <- as_summarized_experiment(yeast_growth_data)
+  p <- plot_growth_curve_facets(se)
+
+  expect_s3_class(p, "ggplot")
+})
+
 test_that("accessor helpers expose canonical SummarizedExperiment components", {
   se <- as_summarized_experiment(yeast_growth_data)
   se <- fit_growth_models(se, model = "logistic")
