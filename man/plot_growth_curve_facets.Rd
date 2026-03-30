@@ -40,6 +40,7 @@ shared values are used for colour mapping across facets.
 }
 \examples{
 data(yeast_growth_data)
+# Colours default to shared dose labels when available.
 plot_growth_curve_facets(
   yeast_growth_data,
   palette_name = "Dark2"
