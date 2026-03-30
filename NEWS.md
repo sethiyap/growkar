@@ -10,6 +10,8 @@
 * Updated core analysis and plotting functions so tidy and wide inputs are
   standardized into the canonical `SummarizedExperiment` representation before
   downstream analysis.
+* Added `plot_growth_curve_facets()` for averaged, sample-family faceted growth
+  curve visualization in multi-sample datasets.
 * Reworked the README, vignette, examples, and package metadata to present
   `growkar` as a Bioconductor-native package for high-throughput microbial
   growth phenotyping.
