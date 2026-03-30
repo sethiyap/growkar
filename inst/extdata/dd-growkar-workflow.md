@@ -142,13 +142,13 @@ plot_growth_curve(
 ## Plot growth curves as facets
 
 For complex datasets with multiple conditions such as `KN99(...)` and
-`CM2448(...)`, `plot_growth_curve_facets()` creates one facet per
-condition automatically.
+`CM2448(...)`, `plot_growth_curve_facets()` averages replicates first
+and then creates one facet per sample family such as `KN99`, `CM2444`,
+`CM2446`, and `CM2448`.
 
 ``` r
 plot_growth_curve_facets(
   se,
-  colour_col = "replicate",
   palette_name = "Dark2"
 )
 ```

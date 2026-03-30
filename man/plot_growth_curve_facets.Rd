@@ -6,9 +6,7 @@
 \usage{
 plot_growth_curve_facets(
   data,
-  average_replicates = FALSE,
   colour_col = NULL,
-  facet_col = NULL,
   palette_name = "all_colors",
   custom_colors = NULL
 )
@@ -17,12 +15,8 @@ plot_growth_curve_facets(
 \item{data}{Growth curve data in tidy, wide, or \code{SummarizedExperiment}
 format.}
 
-\item{average_replicates}{Logical; if \code{TRUE}, average replicate trajectories
-before plotting when a \code{replicate} column is available.}
-
-\item{colour_col}{Name of the column mapped to colour.}
-
-\item{facet_col}{Optional name of a column used for faceting.}
+\item{colour_col}{Name of the column mapped to colour. When \code{NULL}, the plot
+uses \code{condition} when available and otherwise falls back to \code{sample}.}
 
 \item{palette_name}{Name of the qualitative palette used by
 \code{select_palette()}. Supported values include \code{"all_colors"} (combined
@@ -36,9 +30,10 @@ these user-defined colours are used instead of the selected palette.}
 A \code{ggplot2} object.
 }
 \description{
-Plot observed growth curves and automatically facet multi-sample data into
-separate panels. When a \code{condition} column is available, facets are created
-from \code{condition}; otherwise, facets are created from \code{sample}.
+Plot observed growth curves with replicates averaged and grouped into
+separate sample-family facets. For condition labels such as \code{KN99(100)} and
+\code{CM2448(50)}, this produces one facet for \code{KN99}, one for \code{CM2448}, and so
+on, with the different conditions shown within each facet.
 }
 \examples{
 data(yeast_growth_data)

@@ -218,6 +218,20 @@ p_rep
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" alt="" width="100%" />
 
+To average replicates first and facet by sample family automatically,
+use `plot_growth_curve_facets()`.
+
+``` r
+p_facet <- plot_growth_curve_facets(
+  yeast_growth_data,
+  palette_name = "Dark2"
+)
+
+p_facet
+```
+
+<img src="man/figures/README-unnamed-chunk-8-1.png" alt="" width="100%" />
+
 ## Detect exponential phase
 
 **What it does:** `detect_exponential_phase()` identifies likely
@@ -270,7 +284,7 @@ ggplot2::ggplot(method_plot_data, ggplot2::aes(time, od)) +
   ggplot2::theme_minimal(base_size = 11)
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-9-1.png" alt="" width="100%" />
 
 **Minimal example:**
 
@@ -522,7 +536,7 @@ plot_doubling_time(
 #> growth slope (rolling_window_ranked).
 ```
 
-<img src="man/figures/README-unnamed-chunk-16-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-17-1.png" alt="" width="100%" />
 
 ## Fit a growth model
 
@@ -583,7 +597,7 @@ pf <- plot_fitted_curve(fit)
 pf
 ```
 
-<img src="man/figures/README-unnamed-chunk-19-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-20-1.png" alt="" width="100%" />
 
 To fit and view individual replicates as separate panels from raw data,
 use `facet_col = "replicate"` with `average_replicates = FALSE`.
@@ -601,7 +615,7 @@ pf_rep <- plot_fitted_curve(
 pf_rep
 ```
 
-<img src="man/figures/README-unnamed-chunk-20-1.png" alt="" width="100%" />
+<img src="man/figures/README-unnamed-chunk-21-1.png" alt="" width="100%" />
 
 ## Supported API
 

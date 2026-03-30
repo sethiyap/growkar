@@ -175,6 +175,18 @@ p_rep <- plot_growth_curve(
 p_rep
 ```
 
+To average replicates first and facet by sample family automatically, use
+`plot_growth_curve_facets()`.
+
+```{r}
+p_facet <- plot_growth_curve_facets(
+  yeast_growth_data,
+  palette_name = "Dark2"
+)
+
+p_facet
+```
+
 ## Detect exponential phase
 
 **What it does:** `detect_exponential_phase()` identifies likely

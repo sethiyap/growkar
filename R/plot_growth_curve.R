@@ -97,11 +97,21 @@ plot_growth_curve <- function(data,
 
 #' Plot Growth Curves as Facets
 #'
-#' Plot observed growth curves and automatically facet multi-sample data into
-#' separate panels. When a `condition` column is available, facets are created
-#' from `condition`; otherwise, facets are created from `sample`.
+#' Plot observed growth curves with replicates averaged and grouped into
+#' separate sample-family facets. For condition labels such as `KN99(100)` and
+#' `CM2448(50)`, this produces one facet for `KN99`, one for `CM2448`, and so
+#' on, with the different conditions shown within each facet.
 #'
-#' @inheritParams plot_growth_curve
+#' @param data Growth curve data in tidy, wide, or `SummarizedExperiment`
+#'   format.
+#' @param colour_col Name of the column mapped to colour. When `NULL`, the plot
+#'   uses `condition` when available and otherwise falls back to `sample`.
+#' @param palette_name Name of the qualitative palette used by
+#'   `select_palette()`. Supported values include `"all_colors"` (combined
+#'   palette), `"Accent"` (8), `"Dark2"` (8), `"Paired"` (12), `"Pastel1"` (9),
+#'   `"Pastel2"` (8), `"Set1"` (9), `"Set2"` (8), and `"Set3"` (12).
+#' @param custom_colors Optional character vector of colours. When supplied,
+#'   these user-defined colours are used instead of the selected palette.
 #'
 #' @return A `ggplot2` object.
 #'
@@ -114,23 +124,16 @@ plot_growth_curve <- function(data,
 #' )
 #' @export
 plot_growth_curve_facets <- function(data,
-                                     average_replicates = FALSE,
                                      colour_col = NULL,
-                                     facet_col = NULL,
                                      palette_name = "all_colors",
                                      custom_colors = NULL) {
   se <- growkar_as_se(data)
   tidy_data <- as_tidy_growth_data(se)
   tidy_data <- validate_growth_data(tidy_data)
-
-  if (is.null(facet_col)) {
-    facet_col <- if ("condition" %in% names(tidy_data)) "condition" else "sample"
-  }
+  tidy_data$facet_sample <- growkar_facet_sample_labels(tidy_data)
 
   if (is.null(colour_col)) {
-    colour_col <- if (!isTRUE(average_replicates) && "replicate" %in% names(tidy_data)) {
-      "replicate"
-    } else if ("condition" %in% names(tidy_data)) {
+    colour_col <- if ("condition" %in% names(tidy_data)) {
       "condition"
     } else {
       "sample"
@@ -138,13 +141,21 @@ plot_growth_curve_facets <- function(data,
   }
 
   plot_growth_curve(
-    data = data,
-    average_replicates = average_replicates,
+    data = tidy_data,
+    average_replicates = TRUE,
     colour_col = colour_col,
-    facet_col = facet_col,
+    facet_col = "facet_sample",
     palette_name = palette_name,
     custom_colors = custom_colors
   )
+}
+
+growkar_facet_sample_labels <- function(data) {
+  source_col <- if ("condition" %in% names(data)) data$condition else data$sample
+  labels <- as.character(source_col)
+  labels <- sub("\\(.*$", "", labels)
+  labels <- sub("_[^_]+$", "", labels)
+  trimws(labels)
 }
 
 growkar_average_replicates <- function(data) {
