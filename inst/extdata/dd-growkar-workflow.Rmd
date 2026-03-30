@@ -50,15 +50,12 @@ head(tidy_dd)
 
 `growkar` can also package the processed data into a lightweight
 `growkar_data` object and coerce it into a `SummarizedExperiment` for
-Bioconductor-oriented workflows. After creating the canonical
-`SummarizedExperiment`, this example keeps only the `KN99` samples.
+Bioconductor-oriented workflows. This example keeps the full CDK7 dataset so
+the facet plot can show `KN99`, `CM2444`, `CM2446`, and `CM2448`.
 
 ```{r summarized-experiment}
 growkar_obj <- as_growkar(tidy_dd)
 se <- methods::as(growkar_obj, "SummarizedExperiment")
-
-keep_kn99 <- grepl("^KN99", SummarizedExperiment::colData(se)$sample)
-se <- se[, keep_kn99]
 
 se
 ```
@@ -90,8 +87,7 @@ returns a `ggplot2` object that can be customized further if needed.
 plot_growth_curve(
   se,
   average_replicates = TRUE,
-  colour_col = "condition",
-  palette_name = "Dark2"
+  colour_col = "condition"
 )
 ```
 
@@ -104,8 +100,7 @@ creates one facet per sample family such as `KN99`, `CM2444`, `CM2446`, and
 
 ```{r sample-facet-growth-curve, fig.width=8, fig.height=6}
 plot_growth_curve_facets(
-  se,
-  palette_name = "Dark2"
+  se
 )
 ```
 
@@ -135,7 +130,6 @@ plot_doubling_time(
   se,
   comparison_col = "condition",
   compare_to = "KN99(0)",
-  method = "rolling_window",
-  palette_name = "Dark2"
+  method = "rolling_window"
 )
 ```
