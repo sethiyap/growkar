@@ -12,9 +12,29 @@ test_that("plot_growth_curve warns when faceting by replicate after averaging", 
   expect_s3_class(p, "ggplot")
 })
 
+test_that("plot_growth_curve preserves input condition order after averaging", {
+  dd <- read.delim(
+    system.file("extdata", "dose_response_BS181_20Dec24_Cdk7Tag.txt", package = "growkar"),
+    check.names = FALSE
+  )
+  se <- methods::as(as_growkar(as_tidy_growth_data(dd)), "SummarizedExperiment")
+  se_KN99 <- se[, grepl("^KN99", SummarizedExperiment::colData(se)$sample)]
+
+  p <- plot_growth_curve(
+    se_KN99,
+    average_replicates = TRUE,
+    colour_col = "condition"
+  )
+
+  expect_equal(
+    levels(p$data$condition),
+    c("KN99(100)", "KN99(50)", "KN99(25)", "KN99(12.5)", "KN99(6.25)", "KN99(3.125)", "KN99(1.56)", "KN99(0)")
+  )
+})
+
 test_that("plot_growth_curve_facets facets by sample family when condition is available", {
   dd <- read.delim(
-    testthat::test_path("../../inst/extdata/dose_response_BS181_20Dec24_Cdk7Tag.txt"),
+    system.file("extdata", "dose_response_BS181_20Dec24_Cdk7Tag.txt", package = "growkar"),
     check.names = FALSE
   )
   p <- plot_growth_curve_facets(dd)
@@ -25,7 +45,14 @@ test_that("plot_growth_curve_facets facets by sample family when condition is av
   expect_false("replicate" %in% names(p$data))
   expect_true(all(c("od_mean", "od_sd") %in% names(p$data)))
   expect_true("facet_colour" %in% names(p$data))
-  expect_equal(sort(unique(p$data$facet_colour)), c("0", "1.56", "100", "12.5", "25", "3.125", "50", "6.25"))
+  expect_equal(
+    levels(p$data$facet_sample),
+    c("KN99", "CM2444", "CM2446", "CM2448")
+  )
+  expect_equal(
+    levels(p$data$facet_colour),
+    c("100", "50", "25", "12.5", "6.25", "3.125", "1.56", "0")
+  )
 })
 
 test_that("plot_growth_curve_facets uses sample facets when condition is absent", {
@@ -39,7 +66,7 @@ test_that("plot_growth_curve_facets uses sample facets when condition is absent"
 
   expect_s3_class(p, "ggplot")
   expect_match(rlang::expr_text(p$facet$params$facets), "facet_sample")
-  expect_equal(sort(unique(p$data$facet_sample)), c("A", "B"))
+  expect_equal(as.character(sort(unique(p$data$facet_sample))), c("A", "B"))
 })
 
 test_that("plot_doubling_time returns a ggplot for replicate-based summaries", {

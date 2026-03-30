@@ -59,8 +59,15 @@ plot_growth_curve <- function(data,
     tidy_data
   }
 
+  colour_levels <- growkar_plot_levels(tidy_data[[colour_col]])
+  plot_data <- growkar_set_plot_levels(plot_data, colour_col, colour_levels)
+
+  if (!is.null(facet_col)) {
+    facet_levels <- growkar_plot_levels(tidy_data[[facet_col]])
+    plot_data <- growkar_set_plot_levels(plot_data, facet_col, facet_levels)
+  }
+
   y_col <- if ("od_mean" %in% names(plot_data)) "od_mean" else "od"
-  colour_levels <- growkar_plot_levels(plot_data[[colour_col]])
   p <- ggplot2::ggplot(
     plot_data,
     ggplot2::aes(x = .data$time, y = .data[[y_col]], colour = .data[[colour_col]])
@@ -212,6 +219,15 @@ growkar_average_replicates <- function(data) {
   }
 
   averaged
+}
+
+growkar_set_plot_levels <- function(data, column, levels) {
+  if (!column %in% names(data)) {
+    return(data)
+  }
+
+  data[[column]] <- factor(as.character(data[[column]]), levels = levels)
+  data
 }
 
 growkar_plot_levels <- function(x) {
