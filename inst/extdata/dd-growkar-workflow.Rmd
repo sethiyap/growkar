@@ -86,7 +86,7 @@ knitr::kable(se_metrics, digits = 3)
 This plot uses the averaged replicate trajectories for each condition and
 returns a `ggplot2` object that can be customized further if needed.
 
-```{r average-growth-curve, fig.width=8, fig.height=5}
+```{r average-growth-curve-kn99, fig.width=8, fig.height=5}
 plot_growth_curve(
   se_KN99,
   average_replicates = TRUE,
@@ -115,7 +115,7 @@ knitr::kable(dt_stats, digits = 3)
 This plot shows mean doubling time with error bars and comparison brackets
 against `KN99(0)` using the rolling-window exponential interval.
 
-```{r doubling-time-plot, fig.width=8, fig.height=5}
+```{r doubling-time-plot-kn99, fig.width=8, fig.height=5}
 plot_doubling_time(
   se_KN99,
   comparison_col = "condition",

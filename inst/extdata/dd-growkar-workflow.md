@@ -136,7 +136,7 @@ plot_growth_curve(
 )
 ```
 
-![](dd-growkar-workflow-files/figure-gfm/average-growth-curve-1.png)<!-- -->
+![](dd-growkar-workflow-files/figure-gfm/average-growth-curve-kn99-1.png)<!-- -->
 
 ## Summarize doubling time with KN99(0) as the reference
 
@@ -180,7 +180,7 @@ plot_doubling_time(
 )
 ```
 
-![](dd-growkar-workflow-files/figure-gfm/doubling-time-plot-1.png)<!-- -->
+![](dd-growkar-workflow-files/figure-gfm/doubling-time-plot-kn99-1.png)<!-- -->
 
 ## Plot growth curves as facets
 
