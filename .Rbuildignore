@@ -11,3 +11,4 @@
 ^growkar\.BiocCheck$
 ^vignettes/.*\.html$
 ^bioconductor-submission-note\.md$
+^\.Rproj\.user$
