@@ -17,7 +17,9 @@ if (requireNamespace("pkgload", quietly = TRUE) && file.exists("DESCRIPTION")) {
 }
 ```
 
-# growkar <img src="hexasticker2.png" align="right" height="180" alt="growkar hex sticker" />
+# growkar <a href="https://sethiyap.github.io/growkar"><img src="man/figures/logo.svg" align="right" height="220" alt="growkar hex sticker" /></a>
+
+<p><em>A toolkit for high-throughput growth curve analysis</em></p>
 
 [![R-CMD-check](https://github.com/sethiyap/growkar/actions/workflows/R-CMD-check.yaml/badge.svg?branch=master)](https://github.com/sethiyap/growkar/actions/workflows/R-CMD-check.yaml)
 [![BiocCheck](https://github.com/sethiyap/growkar/actions/workflows/bioccheck.yaml/badge.svg?branch=master)](https://github.com/sethiyap/growkar/actions/workflows/bioccheck.yaml)
