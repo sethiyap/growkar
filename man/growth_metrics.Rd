@@ -60,7 +60,7 @@ Compute growth metrics for tidy, wide, or \code{SummarizedExperiment} input. Whe
 }
 \examples{
 data(yeast_growth_data)
-se <- as_summarized_experiment(yeast_growth_data)
+se <- GrowthExperiment(yeast_growth_data)
 se <- growth_metrics(se, method = "rolling_window", average_replicates = TRUE)
 S4Vectors::metadata(se)$growth_metrics
 }

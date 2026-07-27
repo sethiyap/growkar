@@ -14,7 +14,7 @@
 #'
 #' @examples
 #' data(yeast_growth_data)
-#' se <- as_summarized_experiment(yeast_growth_data)
+#' se <- GrowthExperiment(yeast_growth_data)
 #' se <- growth_metrics(se, method = "rolling_window", average_replicates = TRUE)
 #' S4Vectors::metadata(se)$growth_metrics
 #' @export
@@ -89,7 +89,7 @@ growth_metrics <- function(data,
 #'
 #' @examples
 #' data(yeast_growth_data)
-#' se <- as_summarized_experiment(yeast_growth_data)
+#' se <- GrowthExperiment(yeast_growth_data)
 #' se <- phase_windows(se, average_replicates = TRUE)
 #' S4Vectors::metadata(se)$exponential_phase_windows
 #' @export
@@ -150,7 +150,7 @@ phase_windows <- function(data,
 #'
 #' @examples
 #' data(yeast_growth_data)
-#' se <- as_summarized_experiment(yeast_growth_data)
+#' se <- GrowthExperiment(yeast_growth_data)
 #' se <- fit_growth_models(se, model = "logistic")
 #' S4Vectors::metadata(se)$growth_model_parameters
 #' @export

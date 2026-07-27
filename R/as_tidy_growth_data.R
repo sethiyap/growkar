@@ -1,12 +1,18 @@
-#' Coerce Growth Data to Canonical Tidy Format
+#' Import Growth Data into Canonical Tidy Format
 #'
-#' Convert growth data into a tidy adapter representation.
+#' Import adapter that converts vendor plate-reader exports and user tables
+#' into the canonical `sample`/`time`/`od` columns expected by
+#' [GrowthExperiment()].
 #'
-#' Convert growth curve data supplied in either wide or long form into a tidy
-#' representation for inspection, import convenience, and interoperability.
-#' Within `growkar`, the canonical analysis container is
-#' `SummarizedExperiment`; tidy data are supported as a user-facing adapter
-#' layer.
+#' This function is an *import* layer, not an analysis container. Within
+#' `growkar` the canonical container is
+#' [SummarizedExperiment::SummarizedExperiment]. Once data are in a
+#' `SummarizedExperiment`, tidy manipulation and display are better handled by
+#' the tidyomics stack: install `tidySummarizedExperiment` and use
+#' `dplyr`/`tidyr`/`ggplot2` verbs directly on the object rather than round
+#' tripping through this function. See
+#' `vignette("growkar-introduction", package = "growkar")` for worked
+#' interoperability examples.
 #'
 #' Wide input is expected to contain time in the first column and sample names
 #' in the remaining column names. Tidy input is expected to contain at least
@@ -18,8 +24,8 @@
 #' when importing exports from Agilent microplate readers, BioTek Cytation
 #' instruments, LogPhase 600, and similar OD600-based plate-reader workflows.
 #'
-#' @param data A data frame, tibble, `SummarizedExperiment`, `growkar_data`
-#'   object, or object coercible to a tibble.
+#' @param data A data frame, tibble, `SummarizedExperiment`, or object
+#'   coercible to a tibble.
 #' @param sample_col Name of the sample column for long-form input.
 #' @param time_col Name of the time column.
 #' @param od_col Name of the optical density column.
@@ -34,7 +40,7 @@
 #' tidy_growth <- as_tidy_growth_data(yeast_growth_data)
 #' head(tidy_growth)
 #'
-#' se <- as_summarized_experiment(yeast_growth_data)
+#' se <- GrowthExperiment(yeast_growth_data)
 #' head(as_tidy_growth_data(se))
 #' @export
 as_tidy_growth_data <- function(data,
@@ -44,10 +50,6 @@ as_tidy_growth_data <- function(data,
                                 sample_sep = "_") {
   if (inherits(data, "SummarizedExperiment")) {
     return(growkar_tidy_from_summarized_experiment(data))
-  }
-
-  if (inherits(data, "growkar_data")) {
-    return(tibble::as_tibble(data$processed_data))
   }
 
   data <- tibble::as_tibble(data)
@@ -187,7 +189,9 @@ growkar_parse_numeric_values <- function(x) {
   x[x == ""] <- NA_character_
   x <- sub(",", ".", x, fixed = TRUE)
 
-  suppressWarnings(as.numeric(x))
+  # Non-numeric entries are expected in instrument exports; the caller reports
+  # and drops the resulting NAs. See `growkar_numeric_or_na()`.
+  growkar_numeric_or_na(x)
 }
 
 growkar_infer_sample_metadata <- function(sample, sample_sep = "_") {

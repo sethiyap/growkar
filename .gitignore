@@ -5,3 +5,6 @@ inst/doc
 *.Rproj
 .DS_Store
 .Rhistory
+
+# BiocCheck output (local artifact)
+growkar.BiocCheck/

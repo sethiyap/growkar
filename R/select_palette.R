@@ -28,12 +28,13 @@
 #'  }
 #' }
 #' @keywords internal
-#' @importFrom RColorBrewer brewer.pal.info brewer.pal
 #' @importFrom tibble rownames_to_column as_tibble
 #' @importFrom dplyr filter mutate select slice pull
 #' @importFrom purrr map2
 #' @importFrom tidyr unnest
 select_palette <- function(num_of_colors, palette_name = "all_colors") {
+  growkar_require_suggested("RColorBrewer", "select_palette")
+
   color_tibble <- RColorBrewer::brewer.pal.info |>
     tibble::rownames_to_column("rn") |>
     tibble::as_tibble() |>

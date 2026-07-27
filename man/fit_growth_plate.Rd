@@ -13,7 +13,8 @@ format.}
 \item{model}{Model type: \code{"logistic"} or \code{"gompertz"}.}
 }
 \value{
-A tibble with \code{sample} and a list-column of \code{growkar_fit} objects.
+A tibble with \code{sample} and a list-column of \link[=GrowthFit-class]{GrowthFit}
+objects.
 }
 \description{
 Split tidy growth data by sample and fit a parametric model to each sample.

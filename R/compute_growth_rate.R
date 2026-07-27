@@ -368,7 +368,18 @@ growkar_fit_log_linear <- function(data) {
     return(list(success = FALSE, slope = NA_real_, r_squared = NA_real_, note = "log_linear_fit_failed"))
   }
 
-  summary_fit <- suppressWarnings(summary(fit))
+  # An essentially perfect log-linear window (r^2 ~ 1) makes `summary.lm()` warn
+  # that the F-statistic is degenerate. That window is a good result, not a
+  # problem, so the expected warning is muffled while other conditions pass
+  # through.
+  summary_fit <- withCallingHandlers(
+    summary(fit),
+    warning = function(w) {
+      if (grepl("essentially perfect fit", conditionMessage(w), fixed = TRUE)) {
+        invokeRestart("muffleWarning")
+      }
+    }
+  )
   list(
     success = TRUE,
     slope = unname(stats::coef(fit)[["time"]]),

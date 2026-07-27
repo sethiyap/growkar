@@ -25,9 +25,10 @@
 #'   these user-defined colours are used instead of the selected palette.
 #' @param ... Additional arguments passed to `summarize_growth_metrics()`.
 #'
-#' @return A `ggplot2` object.
+#' @return A `ggplot2` object. Requires the suggested packages `ggplot2` and
+#'   `RColorBrewer`.
 #'
-#' @examples
+#' @examplesIf requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("RColorBrewer", quietly = TRUE)
 #' data(yeast_growth_data)
 #' plot_doubling_time(
 #'   yeast_growth_data,
@@ -48,6 +49,8 @@ plot_doubling_time <- function(data,
                                palette_name = "all_colors",
                                custom_colors = NULL,
                                ...) {
+  growkar_require_graphics("plot_doubling_time")
+
   method <- match.arg(method)
   error <- match.arg(error)
   pvalue_method <- match.arg(pvalue_method)

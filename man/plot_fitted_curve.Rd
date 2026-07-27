@@ -16,11 +16,11 @@ plot_fitted_curve(
 )
 }
 \arguments{
-\item{fit}{A \code{growkar_fit} object, or growth curve data in tidy or wide
+\item{fit}{A \link[=GrowthFit-class]{GrowthFit} object, or growth curve data in tidy or wide
 format.}
 
 \item{model}{Model type used when \code{fit} is raw data rather than a
-\code{growkar_fit} object.}
+\link[=GrowthFit-class]{GrowthFit} object.}
 
 \item{select_replicates}{Optional character vector of replicate IDs to retain
 before fitting. When \code{NULL}, all replicates are retained.}
@@ -43,15 +43,18 @@ palette), \code{"Accent"} (8), \code{"Dark2"} (8), \code{"Paired"} (12), \code{"
 these user-defined colours are used instead of the selected palette.}
 }
 \value{
-A \code{ggplot2} object.
+A \code{ggplot2} object. Requires the suggested packages \code{ggplot2} and
+\code{RColorBrewer}.
 }
 \description{
 Overlay observed points and fitted values from a parametric growth model.
 }
 \examples{
+\dontshow{if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("RColorBrewer", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 data(yeast_growth_data)
 tidy_growth <- as_tidy_growth_data(yeast_growth_data)
 sample_id <- unique(tidy_growth$sample)[1]
 fit <- fit_growth_curve(dplyr::filter(tidy_growth, sample == sample_id))
 plot_fitted_curve(fit)
+\dontshow{\}) # examplesIf}
 }

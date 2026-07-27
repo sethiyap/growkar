@@ -33,13 +33,15 @@ palette), \code{"Accent"} (8), \code{"Dark2"} (8), \code{"Paired"} (12), \code{"
 these user-defined colours are used instead of the selected palette.}
 }
 \value{
-A \code{ggplot2} object.
+A \code{ggplot2} object. Requires the suggested packages \code{ggplot2} and
+\code{RColorBrewer}.
 }
 \description{
 Plot observed growth curves from growth data standardized internally to a
 canonical \code{SummarizedExperiment}.
 }
 \examples{
+\dontshow{if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("RColorBrewer", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 data(yeast_growth_data)
 plot_growth_curve(
   yeast_growth_data,
@@ -47,4 +49,5 @@ plot_growth_curve(
   colour_col = "condition",
   palette_name = "Dark2"
 )
+\dontshow{\}) # examplesIf}
 }

@@ -6,8 +6,12 @@
 \alias{growkar-package}
 \title{growkar: High-Throughput Microbial Phenotyping from Growth Assays}
 \description{
-Internal package-level declarations for shared imports used throughout the
-current tidy and Bioconductor-interoperable implementation.
+\code{growkar} uses a single Bioconductor data container, the S4 class
+\link[=GrowthExperiment-class]{GrowthExperiment} (an extension of
+\link[SummarizedExperiment:SummarizedExperiment]{SummarizedExperiment::SummarizedExperiment}), and a single model-result
+class, \link[=GrowthFit-class]{GrowthFit}. Tidy manipulation and display of these objects are
+delegated to \code{tidySummarizedExperiment} rather than reimplemented, and
+graphing is provided by optional \verb{plot_*()} helpers.
 }
 \seealso{
 Useful links:
@@ -19,6 +23,11 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Pooja Sethiya \email{poojasethiya24@gmail.com} (\href{https://orcid.org/0000-0001-6584-3912}{ORCID})
+
+Authors:
+\itemize{
+  \item Pooja Sethiya \email{poojasethiya24@gmail.com} (\href{https://orcid.org/0000-0001-6584-3912}{ORCID})
+}
 
 }
 \keyword{internal}

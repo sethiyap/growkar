@@ -1,4 +1,12 @@
+test_that("plot functions error informatively when graphics packages are absent", {
+  expect_error(
+    growkar_require_suggested("a.package.that.does.not.exist", "plot_growth_curve"),
+    "requires the suggested package"
+  )
+})
+
 test_that("plot_growth_curve warns when faceting by replicate after averaging", {
+  skip_if_no_graphics()
   expect_warning(
     p <- plot_growth_curve(
       yeast_growth_data,
@@ -13,11 +21,12 @@ test_that("plot_growth_curve warns when faceting by replicate after averaging", 
 })
 
 test_that("plot_growth_curve preserves input condition order after averaging", {
+  skip_if_no_graphics()
   dd <- read.delim(
     system.file("extdata", "dose_response_BS181_20Dec24_Cdk7Tag.txt", package = "growkar"),
     check.names = FALSE
   )
-  se <- methods::as(as_growkar(as_tidy_growth_data(dd)), "SummarizedExperiment")
+  se <- GrowthExperiment(dd)
   se_KN99 <- se[, grepl("^KN99", SummarizedExperiment::colData(se)$sample)]
 
   p <- plot_growth_curve(
@@ -33,6 +42,7 @@ test_that("plot_growth_curve preserves input condition order after averaging", {
 })
 
 test_that("plot_growth_curve_facets facets by sample family when condition is available", {
+  skip_if_no_graphics()
   dd <- read.delim(
     system.file("extdata", "dose_response_BS181_20Dec24_Cdk7Tag.txt", package = "growkar"),
     check.names = FALSE
@@ -56,6 +66,7 @@ test_that("plot_growth_curve_facets facets by sample family when condition is av
 })
 
 test_that("plot_growth_curve_facets uses sample facets when condition is absent", {
+  skip_if_no_graphics()
   tidy_no_condition <- tibble::tibble(
     time = rep(c(0, 1, 2), 2),
     sample = rep(c("A", "B"), each = 3),
@@ -70,6 +81,7 @@ test_that("plot_growth_curve_facets uses sample facets when condition is absent"
 })
 
 test_that("plot_doubling_time returns a ggplot for replicate-based summaries", {
+  skip_if_no_graphics()
   p <- suppressWarnings(plot_doubling_time(
     yeast_growth_data,
     comparison_col = "condition",
@@ -82,6 +94,7 @@ test_that("plot_doubling_time returns a ggplot for replicate-based summaries", {
 })
 
 test_that("plot_doubling_time can exclude selected groups from the plot", {
+  skip_if_no_graphics()
   p <- suppressWarnings(plot_doubling_time(
     yeast_growth_data,
     comparison_col = "condition",
@@ -95,6 +108,7 @@ test_that("plot_doubling_time can exclude selected groups from the plot", {
 })
 
 test_that("plot_doubling_time supports averaged replicate summaries", {
+  skip_if_no_graphics()
   p <- suppressWarnings(plot_doubling_time(
     yeast_growth_data,
     average_replicates = TRUE,

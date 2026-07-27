@@ -43,7 +43,7 @@ is returned.
 }
 \examples{
 data(yeast_growth_data)
-se <- as_summarized_experiment(yeast_growth_data)
+se <- GrowthExperiment(yeast_growth_data)
 se <- phase_windows(se, average_replicates = TRUE)
 S4Vectors::metadata(se)$exponential_phase_windows
 }

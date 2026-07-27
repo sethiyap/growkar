@@ -8,7 +8,7 @@
 #'
 #' @examples
 #' data(yeast_growth_data)
-#' se <- as_summarized_experiment(yeast_growth_data)
+#' se <- GrowthExperiment(yeast_growth_data)
 #' growth_assay(se)
 #' @export
 growth_assay <- function(x) {
@@ -26,7 +26,7 @@ growth_assay <- function(x) {
 #'
 #' @examples
 #' data(yeast_growth_data)
-#' se <- as_summarized_experiment(yeast_growth_data)
+#' se <- GrowthExperiment(yeast_growth_data)
 #' timepoints(se)
 #' @export
 timepoints <- function(x) {
@@ -44,7 +44,7 @@ timepoints <- function(x) {
 #'
 #' @examples
 #' data(yeast_growth_data)
-#' se <- as_summarized_experiment(yeast_growth_data)
+#' se <- GrowthExperiment(yeast_growth_data)
 #' sample_data(se)
 #' @export
 sample_data <- function(x) {
@@ -62,7 +62,7 @@ sample_data <- function(x) {
 #'
 #' @examples
 #' data(yeast_growth_data)
-#' se <- as_summarized_experiment(yeast_growth_data)
+#' se <- GrowthExperiment(yeast_growth_data)
 #' se <- fit_growth_models(se, model = "logistic")
 #' growth_model_fits(se)
 #' @export
@@ -76,12 +76,17 @@ growth_model_fits <- function(x) {
   }
 }
 
+# Internal: normalize any accepted input to a validated GrowthExperiment.
 growkar_as_se <- function(data) {
-  if (inherits(data, "SummarizedExperiment")) {
-    return(validate_growth_experiment(growkar_normalize_se(data)))
+  if (methods::is(data, "GrowthExperiment")) {
+    return(validate_growth_experiment(data))
   }
 
-  validate_growth_experiment(as_summarized_experiment(data))
+  if (inherits(data, "SummarizedExperiment")) {
+    return(validate_growth_experiment(methods::as(data, "GrowthExperiment")))
+  }
+
+  validate_growth_experiment(GrowthExperiment(data))
 }
 
 growkar_normalize_se <- function(se) {
@@ -102,7 +107,9 @@ growkar_normalize_se <- function(se) {
 
   time_df <- as.data.frame(SummarizedExperiment::rowData(se))
   if (!"time" %in% names(time_df)) {
-    time_values <- suppressWarnings(as.numeric(rownames(SummarizedExperiment::assay(se, "od"))))
+    # Row names are the documented fallback for time; uncoercible names are
+    # reported as a specific error below rather than a coercion warning.
+    time_values <- growkar_numeric_or_na(rownames(SummarizedExperiment::assay(se, "od")))
     if (anyNA(time_values)) {
       stop(
         "`SummarizedExperiment` input must provide numeric time values in `rowData(se)$time` or assay row names.",
@@ -136,7 +143,7 @@ growkar_normalize_se <- function(se) {
 #'
 #' @examples
 #' data(yeast_growth_data)
-#' se <- as_summarized_experiment(yeast_growth_data)
+#' se <- GrowthExperiment(yeast_growth_data)
 #' validate_growth_experiment(se)
 #' @export
 validate_growth_experiment <- function(x, require_finite = TRUE) {

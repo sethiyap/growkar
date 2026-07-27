@@ -20,6 +20,6 @@ Check that a \code{SummarizedExperiment} follows the canonical \code{growkar} la
 }
 \examples{
 data(yeast_growth_data)
-se <- as_summarized_experiment(yeast_growth_data)
+se <- GrowthExperiment(yeast_growth_data)
 validate_growth_experiment(se)
 }

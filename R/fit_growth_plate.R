@@ -6,7 +6,8 @@
 #'   format.
 #' @param model Model type: `"logistic"` or `"gompertz"`.
 #'
-#' @return A tibble with `sample` and a list-column of `growkar_fit` objects.
+#' @return A tibble with `sample` and a list-column of [GrowthFit-class]
+#'   objects.
 #'
 #' @examples
 #' data(yeast_growth_data)

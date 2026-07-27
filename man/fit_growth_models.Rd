@@ -32,7 +32,7 @@ and the updated object is returned.
 }
 \examples{
 data(yeast_growth_data)
-se <- as_summarized_experiment(yeast_growth_data)
+se <- GrowthExperiment(yeast_growth_data)
 se <- fit_growth_models(se, model = "logistic")
 S4Vectors::metadata(se)$growth_model_parameters
 }

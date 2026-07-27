@@ -17,6 +17,6 @@ Access sample-level metadata from a \code{SummarizedExperiment}.
 }
 \examples{
 data(yeast_growth_data)
-se <- as_summarized_experiment(yeast_growth_data)
+se <- GrowthExperiment(yeast_growth_data)
 sample_data(se)
 }

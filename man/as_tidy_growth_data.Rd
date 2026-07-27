@@ -2,7 +2,7 @@
 % Please edit documentation in R/as_tidy_growth_data.R
 \name{as_tidy_growth_data}
 \alias{as_tidy_growth_data}
-\title{Coerce Growth Data to Canonical Tidy Format}
+\title{Import Growth Data into Canonical Tidy Format}
 \usage{
 as_tidy_growth_data(
   data,
@@ -13,8 +13,8 @@ as_tidy_growth_data(
 )
 }
 \arguments{
-\item{data}{A data frame, tibble, \code{SummarizedExperiment}, \code{growkar_data}
-object, or object coercible to a tibble.}
+\item{data}{A data frame, tibble, \code{SummarizedExperiment}, or object
+coercible to a tibble.}
 
 \item{sample_col}{Name of the sample column for long-form input.}
 
@@ -30,14 +30,20 @@ A tibble containing at least \code{sample}, \code{time}, and \code{od}. Addition
 metadata columns are preserved where available.
 }
 \description{
-Convert growth data into a tidy adapter representation.
+Import adapter that converts vendor plate-reader exports and user tables
+into the canonical \code{sample}/\code{time}/\code{od} columns expected by
+\code{\link[=GrowthExperiment]{GrowthExperiment()}}.
 }
 \details{
-Convert growth curve data supplied in either wide or long form into a tidy
-representation for inspection, import convenience, and interoperability.
-Within \code{growkar}, the canonical analysis container is
-\code{SummarizedExperiment}; tidy data are supported as a user-facing adapter
-layer.
+This function is an \emph{import} layer, not an analysis container. Within
+\code{growkar} the canonical container is
+\link[SummarizedExperiment:SummarizedExperiment]{SummarizedExperiment::SummarizedExperiment}. Once data are in a
+\code{SummarizedExperiment}, tidy manipulation and display are better handled by
+the tidyomics stack: install \code{tidySummarizedExperiment} and use
+\code{dplyr}/\code{tidyr}/\code{ggplot2} verbs directly on the object rather than round
+tripping through this function. See
+\code{vignette("growkar-introduction", package = "growkar")} for worked
+interoperability examples.
 
 Wide input is expected to contain time in the first column and sample names
 in the remaining column names. Tidy input is expected to contain at least
@@ -54,6 +60,6 @@ data(yeast_growth_data)
 tidy_growth <- as_tidy_growth_data(yeast_growth_data)
 head(tidy_growth)
 
-se <- as_summarized_experiment(yeast_growth_data)
+se <- GrowthExperiment(yeast_growth_data)
 head(as_tidy_growth_data(se))
 }

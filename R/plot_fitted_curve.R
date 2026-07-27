@@ -2,10 +2,10 @@
 #'
 #' Overlay observed points and fitted values from a parametric growth model.
 #'
-#' @param fit A `growkar_fit` object, or growth curve data in tidy or wide
+#' @param fit A [GrowthFit-class] object, or growth curve data in tidy or wide
 #'   format.
 #' @param model Model type used when `fit` is raw data rather than a
-#'   `growkar_fit` object.
+#'   [GrowthFit-class] object.
 #' @param select_replicates Optional character vector of replicate IDs to retain
 #'   before fitting. When `NULL`, all replicates are retained.
 #' @param average_replicates Logical; if `TRUE`, average replicate trajectories
@@ -21,9 +21,10 @@
 #' @param custom_colors Optional character vector of colours. When supplied,
 #'   these user-defined colours are used instead of the selected palette.
 #'
-#' @return A `ggplot2` object.
+#' @return A `ggplot2` object. Requires the suggested packages `ggplot2` and
+#'   `RColorBrewer`.
 #'
-#' @examples
+#' @examplesIf requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("RColorBrewer", quietly = TRUE)
 #' data(yeast_growth_data)
 #' tidy_growth <- as_tidy_growth_data(yeast_growth_data)
 #' sample_id <- unique(tidy_growth$sample)[1]
@@ -38,7 +39,9 @@ plot_fitted_curve <- function(fit,
                               facet_col = NULL,
                               palette_name = "all_colors",
                               custom_colors = NULL) {
-  if (inherits(fit, "growkar_fit")) {
+  growkar_require_graphics("plot_fitted_curve")
+
+  if (methods::is(fit, "GrowthFit")) {
     augmented <- augment_growth_fit(fit)
     fit_colour <- if (!is.null(custom_colors)) {
       custom_colors[[1]]

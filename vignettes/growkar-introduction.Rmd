@@ -12,16 +12,13 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+has_graphics <- requireNamespace("ggplot2", quietly = TRUE) &&
+  requireNamespace("RColorBrewer", quietly = TRUE)
+has_tidy_se <- requireNamespace("tidySummarizedExperiment", quietly = TRUE)
 ```
 
 ```{r setup}
-pkg_root <- if (file.exists("DESCRIPTION")) "." else ".."
-
-if (requireNamespace("pkgload", quietly = TRUE) &&
-    file.exists(file.path(pkg_root, "DESCRIPTION"))) {
-  pkgload::load_all(pkg_root, export_all = FALSE, helpers = FALSE, quiet = TRUE)
-}
-
 library(growkar)
 library(dplyr)
 library(knitr)
@@ -44,8 +41,8 @@ datasets.
 The `growkar` package addresses this gap by providing a scalable and
 reproducible framework for high-throughput microbial phenotyping from growth
 assays. It uses Bioconductor data structures to represent assay measurements
-and derived phenotypes, while still accepting tidy and wide inputs as import
-adapters for exploratory analysis and visualization.
+and derived phenotypes, while accepting tidy and wide plate-reader exports as
+import adapters.
 
 The primary workflow is:
 
@@ -55,40 +52,86 @@ The primary workflow is:
 4. Compute empirical summaries and detect the exponential phase.
 5. Fit logistic or Gompertz models where a full-curve summary is useful.
 
+## Class design
+
+`growkar` uses two S4 classes and no S3 classes:
+
+- **`GrowthExperiment`** is the data container. It is an S4 class that extends
+  `SummarizedExperiment`, adding a validity method that enforces the canonical
+  growth-assay layout (an `od` assay, numeric `time` in `rowData()`). Because
+  it *is* a `SummarizedExperiment`, every Bioconductor method works on it
+  unchanged, and `as(x, "SummarizedExperiment")` is always available for
+  handing objects to other packages.
+- **`GrowthFit`** represents a *model result* — a logistic or Gompertz fit for
+  one sample. It is not a data container; instances are stored in
+  `metadata(ge)` beside the experiment they were derived from.
+
+The package defines no S3 classes and registers no S3 methods.
+
+Build a `GrowthExperiment` with the constructor or with standard S4 coercion:
+
+```{r growth-experiment-construct}
+# Constructor (control over column-name resolution):
+ge <- GrowthExperiment(yeast_growth_data)
+ge
+
+# Equivalent standard coercion:
+ge2 <- as(yeast_growth_data, "GrowthExperiment")
+identical(ge, ge2)
+
+# It is a SummarizedExperiment, so it hands off cleanly to other packages:
+se <- as(ge, "SummarizedExperiment")
+is(ge, "SummarizedExperiment")
+```
+
+Tidy tables and wide plate-reader exports are handled purely as *import
+adapters* by `as_tidy_growth_data()`, which resolves vendor column labels and
+normalizes them to `sample`, `time`, and `od` before the container is built.
+Once data are in the container, tidy manipulation is delegated to the tidyomics
+stack rather than reimplemented — see
+[Interoperability with tidyomics](#interoperability-with-tidyomics) below.
+
 ## Bioconductor container workflow
 
-For Bioconductor-oriented workflows, growth measurements can be represented as a
-`SummarizedExperiment`, with OD values stored in the assay, time values in
-`rowData()`, sample annotations in `colData()`, and derived summaries in
-`metadata()`.
+Derived summaries are stored in `metadata()` of the same object, so growth
+phenotypes travel with the container:
 
 ```{r summarized-experiment}
-growkar_obj <- as_growkar(yeast_growth_data)
-se <- methods::as(growkar_obj, "SummarizedExperiment")
-se <- growth_metrics(se, method = "rolling_window", average_replicates = TRUE)
+ge <- growth_metrics(ge, method = "rolling_window", average_replicates = TRUE)
 
-S4Vectors::metadata(se)$growth_metrics
+S4Vectors::metadata(ge)$growth_metrics
 ```
 
 This workflow is useful when growth phenotypes need to be carried forward into
 other Bioconductor analyses or linked to omics-derived sample annotations.
 
-The canonical SE layout in `growkar` is:
+The canonical layout in `growkar` is:
 
-- `assay(se, "od")`: OD matrix with timepoints in rows and samples in columns
-- `rowData(se)`: timepoint metadata
-- `colData(se)`: sample metadata
-- `metadata(se)`: derived results such as growth metrics, phase windows, and fits
+- `assay(ge, "od")`: OD matrix with timepoints in rows and samples in columns
+- `rowData(ge)`: timepoint metadata
+- `colData(ge)`: sample metadata
+- `metadata(ge)`: derived results such as growth metrics, phase windows, and fits
+
+`validate_growth_experiment()` checks that an object follows this layout:
+
+```{r validate-se}
+validate_growth_experiment(ge)
+```
 
 Helper accessors make these components easier to inspect:
 
 ```{r se-accessors}
-growth_assay(se)[1:3, 1:3]
-timepoints(se)
-sample_data(se)
+growth_assay(ge)[1:3, 1:3]
+timepoints(ge)
+sample_data(ge)
 ```
 
-## Input formats and tidy conversion
+## Importing plate-reader exports
+
+`as_tidy_growth_data()` is the import adapter. It accepts wide plate-reader
+exports (time in the first column, samples in the remaining columns) as well as
+long tables, resolves common instrument column labels such as `Time [h]` and
+`OD600`, and infers `condition`/`replicate` from suffixed sample names.
 
 ```{r tidy-conversion}
 tidy_growth <- as_tidy_growth_data(yeast_growth_data)
@@ -97,25 +140,54 @@ head(tidy_growth)
 ```
 
 The canonical columns are `sample`, `time`, and `od`. Additional metadata such
-as `condition` and `replicate` can be carried alongside them.
+as `condition` and `replicate` are carried alongside them.
 
 ```{r validate-input}
 validate_growth_data(tidy_growth)
 ```
 
-The same tidy data can also be converted back into a `SummarizedExperiment`
-whenever a container-based workflow is needed.
+Imported data are then converted into the canonical container:
 
 ```{r summarized-experiment-direct}
-as_summarized_experiment(yeast_growth_data)
+GrowthExperiment(yeast_growth_data)
 ```
+
+## Interoperability with tidyomics
+
+`growkar` does not reimplement tidy verbs or a tidy display layer for
+`SummarizedExperiment`. Install the optional
+[tidySummarizedExperiment](https://bioconductor.org/packages/tidySummarizedExperiment)
+package to filter, mutate, summarize, and plot `growkar` objects with the
+standard tidyverse grammar, while the underlying object remains a
+`SummarizedExperiment` usable by any other Bioconductor package.
+
+```{r tidyomics, eval = has_tidy_se}
+library(tidySummarizedExperiment)
+
+# The SE prints and behaves as a tibble abstraction, without being converted.
+se
+
+se |>
+  filter(condition == "Cg") |>
+  filter(time <= 6) |>
+  select(.feature, .sample, od, condition, replicate)
+
+se |>
+  group_by(condition) |>
+  summarise(max_od = max(od), .groups = "drop")
+```
+
+`growkar` results stored in `metadata(se)` are ordinary tibbles, so they slot
+directly into the same downstream workflow.
 
 ## Exploratory plotting and quality control
 
-Observed growth curves can be plotted directly from the canonical
-`SummarizedExperiment`:
+Graphing is optional in `growkar`: `ggplot2` and `RColorBrewer` are declared in
+`Suggests`, so the data-structure and analysis layers install without a
+graphics stack. The `plot_*()` functions check for these packages at call time
+and return standard `ggplot` objects that can be customized further.
 
-```{r plot-averaged-curves}
+```{r plot-averaged-curves, eval = has_graphics}
 plot_growth_curve(
   se,
   average_replicates = TRUE,
@@ -126,7 +198,7 @@ plot_growth_curve(
 
 Replicate-level faceting remains available when averaging is disabled:
 
-```{r plot-replicate-facets}
+```{r plot-replicate-facets, eval = has_graphics}
 plot_growth_curve(
   se,
   average_replicates = FALSE,
@@ -184,7 +256,7 @@ knitr::kable(head(phase_tbl), digits = 3)
 ## Model fitting and diagnostics
 
 For a full-curve model-based summary, fit one of the supported parametric
-models:
+models. `fit_growth_curve()` returns a `GrowthFit` S4 object.
 
 ```{r fit-logistic-model}
 sample_id <- unique(gr$sample)[1]
@@ -193,8 +265,23 @@ fit_input <- as_tidy_growth_data(se) |>
 
 cg_fit <- fit_growth_curve(fit_input, model = "logistic")
 
+cg_fit
+isVirtualClass("GrowthFit")
 extract_params(cg_fit)
 summary(cg_fit)
+```
+
+`GrowthFit` supports the standard modelling generics and a small set of
+accessors, so slots never need to be touched directly:
+
+```{r growth-fit-accessors}
+fit_sample(cg_fit)
+fit_model(cg_fit)
+fit_status(cg_fit)
+fit_converged(cg_fit)
+coef(cg_fit)
+head(fitted(cg_fit))
+nobs(cg_fit)
 ```
 
 Failed fits remain machine-readable and do not crash downstream helpers:
@@ -212,9 +299,18 @@ flat_fit <- fit_growth_curve(
 summary(flat_fit)
 ```
 
+Across a plate, fits are stored in `metadata()` of the same
+`SummarizedExperiment`:
+
+```{r fit-plate}
+se <- fit_growth_models(se, model = "logistic")
+
+S4Vectors::metadata(se)$growth_model_parameters
+```
+
 Observed and fitted values can be visualized together:
 
-```{r plot-fitted-curve}
+```{r plot-fitted-curve, eval = has_graphics}
 plot_fitted_curve(cg_fit)
 ```
 
@@ -223,7 +319,8 @@ plot_fitted_curve(cg_fit)
 The supported SE-native interface includes:
 
 - `as_tidy_growth_data()`
-- `validate_growth_data()`
+- `GrowthExperiment()`
+- `validate_growth_experiment()`
 - `compute_growth_rate()`
 - `summarize_growth_metrics()`
 - `detect_exponential_phase()`
@@ -235,7 +332,7 @@ The supported SE-native interface includes:
   very sparse or flat curves.
 - Zero OD values are allowed in the data, but log-based methods may warn and
   ignore them.
-- A failed model fit still returns a `growkar_fit` object with status and
+- A failed model fit still returns a `GrowthFit` object with status and
   diagnostics rather than throwing a cryptic `nls` error.
 
 ## Session information

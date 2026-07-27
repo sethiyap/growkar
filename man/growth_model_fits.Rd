@@ -17,7 +17,7 @@ Retrieve fitted growth model objects stored in \code{metadata()}.
 }
 \examples{
 data(yeast_growth_data)
-se <- as_summarized_experiment(yeast_growth_data)
+se <- GrowthExperiment(yeast_growth_data)
 se <- fit_growth_models(se, model = "logistic")
 growth_model_fits(se)
 }

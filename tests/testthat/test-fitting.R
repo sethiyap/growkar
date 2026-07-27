@@ -1,4 +1,4 @@
-test_that("fit_growth_curve returns a growkar_fit object", {
+test_that("fit_growth_curve returns a GrowthFit S4 object", {
   logistic_data <- tibble::tibble(
     sample = "fit1",
     time = seq(0, 8, by = 0.5)
@@ -7,11 +7,42 @@ test_that("fit_growth_curve returns a growkar_fit object", {
 
   fit <- fit_growth_curve(logistic_data, model = "logistic")
 
-  expect_s3_class(fit, "growkar_fit")
-  expect_true(is.logical(fit$converged))
-  expect_equal(fit$sample, "fit1")
-  expect_equal(fit$status, "converged")
-  expect_equal(fit$n_points, nrow(logistic_data))
+  expect_s4_class(fit, "GrowthFit")
+  expect_true(methods::validObject(fit))
+  expect_true(is.logical(fit_converged(fit)))
+  expect_equal(fit_sample(fit), "fit1")
+  expect_equal(fit_status(fit), "converged")
+  expect_equal(fit_model(fit), "logistic")
+  expect_equal(nobs(fit), nrow(logistic_data))
+})
+
+test_that("GrowthFit supports the standard modelling generics", {
+  logistic_data <- tibble::tibble(
+    sample = "fit_generics",
+    time = seq(0, 8, by = 0.5)
+  )
+  logistic_data$od <- 1.2 / (1 + exp(-0.8 * (logistic_data$time - 4)))
+
+  fit <- fit_growth_curve(logistic_data, model = "logistic")
+
+  expect_named(coef(fit), c("K", "r", "t0"))
+  expect_length(fitted(fit), nrow(logistic_data))
+  expect_length(residuals(fit), nrow(logistic_data))
+  expect_s3_class(fit_data(fit), "tbl_df")
+})
+
+test_that("growkar exposes no S3 class for growth data or model fits", {
+  logistic_data <- tibble::tibble(
+    sample = "fit_s3",
+    time = seq(0, 8, by = 0.5)
+  )
+  logistic_data$od <- 1.2 / (1 + exp(-0.8 * (logistic_data$time - 4)))
+
+  fit <- fit_growth_curve(logistic_data, model = "logistic")
+
+  expect_true(isVirtualClass("GrowthFit") || methods::is(fit, "GrowthFit"))
+  expect_false(is.list(fit))
+  expect_false(exists("as_growkar", where = asNamespace("growkar"), inherits = FALSE))
 })
 
 test_that("extract_params and augment_growth_fit return tidy tibbles", {
@@ -40,8 +71,8 @@ test_that("fit_growth_curve supports Gompertz fits", {
 
   fit <- fit_growth_curve(gompertz_data, model = "gompertz")
 
-  expect_s3_class(fit, "growkar_fit")
-  expect_equal(fit$model_name, "gompertz")
+  expect_s4_class(fit, "GrowthFit")
+  expect_equal(fit_model(fit), "gompertz")
 })
 
 test_that("fit_growth_curve returns failed fit objects for insufficient data", {
@@ -53,10 +84,11 @@ test_that("fit_growth_curve returns failed fit objects for insufficient data", {
 
   fit <- fit_growth_curve(sparse_data, model = "logistic")
 
-  expect_s3_class(fit, "growkar_fit")
-  expect_false(fit$converged)
-  expect_equal(fit$status, "insufficient_points")
-  expect_true(all(is.na(fit$fitted$.fitted)))
+  expect_s4_class(fit, "GrowthFit")
+  expect_true(methods::validObject(fit))
+  expect_false(fit_converged(fit))
+  expect_equal(fit_status(fit), "insufficient_points")
+  expect_true(all(is.na(fitted(fit))))
 })
 
 test_that("fit_growth_curve handles flat data cleanly", {
@@ -68,11 +100,11 @@ test_that("fit_growth_curve handles flat data cleanly", {
 
   fit <- fit_growth_curve(flat_data, model = "logistic")
 
-  expect_false(fit$converged)
-  expect_equal(fit$status, "flat_curve")
+  expect_false(fit_converged(fit))
+  expect_equal(fit_status(fit), "flat_curve")
 })
 
-test_that("summary and print methods handle failed fits", {
+test_that("summary and show methods handle failed fits", {
   sparse_data <- tibble::tibble(
     sample = "summary_fail",
     time = c(0, 1, 2),
@@ -81,43 +113,13 @@ test_that("summary and print methods handle failed fits", {
 
   fit <- fit_growth_curve(sparse_data, model = "logistic")
 
-  expect_no_error(print(fit))
+  expect_output(show(fit), "<GrowthFit>")
   expect_s3_class(summary(fit), "tbl_df")
 })
 
-test_that("plot_fitted_curve supports data input with selected replicates", {
-  p <- plot_fitted_curve(
-    yeast_growth_data,
-    model = "logistic",
-    select_replicates = c("R1", "R2")
-  )
+test_that("fit_growth_plate returns a list-column of GrowthFit objects", {
+  fits <- fit_growth_plate(yeast_growth_data, model = "logistic")
 
-  expect_s3_class(p, "ggplot")
-})
-
-test_that("plot_fitted_curve supports averaging selected replicates", {
-  p <- plot_fitted_curve(
-    yeast_growth_data,
-    model = "logistic",
-    select_replicates = c("R1", "R2"),
-    average_replicates = TRUE,
-    colour_col = "condition"
-  )
-
-  expect_s3_class(p, "ggplot")
-})
-
-test_that("plot_fitted_curve warns when faceting by replicate after averaging", {
-  expect_warning(
-    p <- plot_fitted_curve(
-      yeast_growth_data,
-      model = "logistic",
-      average_replicates = TRUE,
-      colour_col = "condition",
-      facet_col = "replicate"
-    ),
-    "ignored"
-  )
-
-  expect_s3_class(p, "ggplot")
+  expect_s3_class(fits, "tbl_df")
+  expect_true(all(vapply(fits$fit, methods::is, logical(1), "GrowthFit")))
 })
