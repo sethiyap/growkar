@@ -71,13 +71,12 @@ head(tidy_sc)
 
 ## Create the canonical SummarizedExperiment
 
-`growkar` can also package the processed data into a lightweight
-`growkar_data` object and coerce it into a `SummarizedExperiment` for
-Bioconductor-oriented workflows.
+`growkar` converts the processed data directly into a `GrowthExperiment`
+(an S4 extension of `SummarizedExperiment`), the canonical container
+used throughout the package.
 
 ``` r
-growkar_obj <- as_growkar(tidy_sc)
-se <- methods::as(growkar_obj, "SummarizedExperiment")
+se <- GrowthExperiment(tidy_sc)
 
 selected_conditions <- c("Sc(100)", "Sc(50)", "Sc(25)", "Sc(0)")
 
@@ -85,9 +84,9 @@ keep <- SummarizedExperiment::colData(se)$condition %in% selected_conditions
 se <- se[, keep]
 
 se
-#> class: SummarizedExperiment 
+#> class: GrowthExperiment 
 #> dim: 86 12 
-#> metadata(2): growkar_schema growth_metrics
+#> metadata(1): growkar_schema
 #> assays(1): od
 #> rownames(86): 0 0.333333333333333 ... 28.0005555555556 28.3338888888889
 #> rowData names(1): time
@@ -121,7 +120,7 @@ knitr::kable(se_metrics, digits = 3)
 | Sc(100) | 0.482 | 1.440 | 0.028 | 3 | 0.016 | 0.000 | \*\*\*\* |
 | Sc(50) | 0.314 | 2.211 | 0.077 | 3 | 0.044 | 0.132 | ns |
 | Sc(25) | 0.330 | 2.101 | 0.068 | 3 | 0.039 | 0.959 | ns |
-| Sc(0) | 0.330 | 2.103 | 0.015 | 3 | 0.009 | 1.000 | ref |
+| Sc(0) | 0.330 | 2.103 | 0.015 | 3 | 0.009 | NA | ref |
 
 ## Plot growth curves with averaged replicates
 
@@ -161,7 +160,7 @@ knitr::kable(dt_stats, digits = 3)
 | Sc(100) | 0.482 | 1.440 | 0.028 | 3 | 0.016 | 0.000 | \*\*\*\* |
 | Sc(50) | 0.314 | 2.211 | 0.077 | 3 | 0.044 | 0.132 | ns |
 | Sc(25) | 0.330 | 2.101 | 0.068 | 3 | 0.039 | 0.959 | ns |
-| Sc(0) | 0.330 | 2.103 | 0.015 | 3 | 0.009 | 1.000 | ref |
+| Sc(0) | 0.330 | 2.103 | 0.015 | 3 | 0.009 | NA | ref |
 
 ## Plot doubling time with error bars and p-value annotations
 

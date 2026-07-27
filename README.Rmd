@@ -1,5 +1,7 @@
 ---
-output: github_document
+output:
+  github_document:
+    pandoc_args: ["--wrap=none"]
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -39,14 +41,17 @@ Data generated from Agilent microplate readers, BioTek Cytation instruments,
 and other OD600-based microbial growth measurement platforms can be directly
 analysed using `growkar`.
 
-`growkar` is built around `SummarizedExperiment` as its canonical data model.
-Tidy tables using the canonical columns `sample`, `time`, and `od`, and wide
+`growkar` is built around `SummarizedExperiment` as its only data model. Tidy
+tables using the canonical columns `sample`, `time`, and `od`, and wide
 plate-reader exports, are accepted as import adapters and converted into the SE
-representation early in the workflow. Plotting functions return `ggplot2`
-objects that can be customized into publication-ready figures, while SE-aware
-helpers store derived results in `metadata()` for downstream analysis. Core
-analysis functions accept tidy tables, wide plate-reader exports, and
-`SummarizedExperiment` input.
+representation early in the workflow. SE-aware helpers store derived results in
+`metadata()` for downstream analysis. Core analysis functions accept tidy
+tables, wide plate-reader exports, and `SummarizedExperiment` input.
+
+Graphing is optional: `ggplot2` and `RColorBrewer` are declared in `Suggests`,
+so the data-structure and analysis layers install without a graphics stack. The
+`plot_*()` functions check for them at call time and return standard `ggplot`
+objects that can be customized into publication-ready figures.
 
 ## Input formats
 
@@ -61,12 +66,34 @@ such as `_R1` or `_1` so `growkar` can infer replicate metadata reliably.
 
 ## Data model
 
-- primary object: `SummarizedExperiment`
+- primary object: `GrowthExperiment`, an S4 extension of `SummarizedExperiment`
+  and the only data container in the package
 - assay layout: rows are timepoints and columns are samples in `assay(se, "od")`
 - sample annotations live in `colData(se)`
 - timepoint annotations live in `rowData(se)`
 - derived summaries and fit results live in `metadata(se)`
 - tidy and wide inputs are accepted and converted into this SE representation
+
+## Class design
+
+`growkar` defines two S4 classes and no S3 classes:
+
+- **`GrowthExperiment`** is the data container: an S4 class that extends
+  `SummarizedExperiment` with a validity method enforcing the canonical
+  growth-assay layout. Build it with the `GrowthExperiment()` constructor or
+  with standard coercion, `as(x, "GrowthExperiment")`. Because it *is* a
+  `SummarizedExperiment`, `as(x, "SummarizedExperiment")` and every
+  Bioconductor method are always available.
+- **`GrowthFit`** is a parametric model *result* for a single sample, stored in
+  `metadata()` alongside the experiment it was derived from. It supports
+  `show()`, `summary()`, `coef()`, `fitted()`, `residuals()`, `nobs()`,
+  `extract_params()`, and `augment_growth_fit()`.
+
+Tidy manipulation and display of these objects are not reimplemented here.
+`growkar` uses
+[tidySummarizedExperiment](https://bioconductor.org/packages/tidySummarizedExperiment)
+for tidy verbs, so `dplyr`, `tidyr`, and `ggplot2` grammar works directly on
+`growkar` objects.
 
 ## Installation
 
@@ -100,20 +127,25 @@ validate_growth_data(tidy_data)
 head(tidy_data)
 ```
 
-## Create the canonical SummarizedExperiment
+## Create the canonical GrowthExperiment
 
-**What it does:** `as_summarized_experiment()` converts growth data directly
-into a `SummarizedExperiment` with an `od` assay, time in `rowData()`, and
-sample metadata in `colData()`.
+**What it does:** `GrowthExperiment()` converts growth data directly into a
+`GrowthExperiment` — an S4 extension of `SummarizedExperiment` with an `od`
+assay, time in `rowData()`, and sample metadata in `colData()`. Standard
+coercion, `as(data, "GrowthExperiment")`, is equivalent.
 
 **Why use it:** This is the primary data object for analysis, plotting, and
-Bioconductor integration.
+Bioconductor integration. `as(ge, "SummarizedExperiment")` hands it off to any
+other Bioconductor package.
 
 **Minimal example:**
 
 ```{r}
-se <- as_summarized_experiment(tidy_data)
+se <- GrowthExperiment(tidy_data)
 se
+
+# Equivalent standard coercion:
+identical(se, as(tidy_data, "GrowthExperiment"))
 ```
 
 Useful accessors for SE-based workflows include `growth_assay()`,
@@ -121,24 +153,23 @@ Useful accessors for SE-based workflows include `growth_assay()`,
 
 ## SE-native workflow
 
-**What it does:** `as_growkar()` creates a lightweight processed `growkar`
-object that can be coerced to `SummarizedExperiment`, and `growth_metrics()`
-stores derived phenotype summaries in `metadata()`.
+**What it does:** `growth_metrics()` computes derived phenotype summaries and
+stores them in `metadata()` of the same `SummarizedExperiment`.
 
 **Why use it:** This is the preferred path when growth phenotypes need to be
 kept alongside sample metadata and reused in larger Bioconductor workflows.
+`phase_windows()` and `fit_growth_models()` behave the same way for
+exponential-phase windows and model fits.
 
 **Minimal example:**
 
 ```{r}
-growkar_obj <- as_growkar(tidy_data)
-se_from_obj <- methods::as(growkar_obj, "SummarizedExperiment")
-se_from_obj <- growth_metrics(
-  se_from_obj,
+se <- growth_metrics(
+  se,
   method = "rolling_window",
   average_replicates = TRUE
 )
-S4Vectors::metadata(se_from_obj)$growth_metrics
+S4Vectors::metadata(se)$growth_metrics
 ```
 
 ## Plot growth curves
@@ -402,7 +433,9 @@ plot_doubling_time(
 to one sample.
 
 **Why use it:** It is useful when a smooth model-based summary of the full
-growth curve is preferred over a purely empirical estimate.
+growth curve is preferred over a purely empirical estimate. The result is a
+`GrowthFit` S4 object supporting `show()`, `summary()`, `coef()`, `fitted()`,
+`residuals()`, and `nobs()`.
 
 **Minimal example:**
 
@@ -414,6 +447,7 @@ fit_input <- as_tidy_growth_data(se) |>
 fit <- fit_growth_curve(fit_input, model = "logistic")
 
 fit
+coef(fit)
 ```
 
 ## Extract fitted parameters
@@ -468,14 +502,19 @@ pf_rep
 The supported SE-native interface includes:
 
 - `as_tidy_growth_data()`
+- `GrowthExperiment()`
 - `validate_growth_data()`
-- `plot_growth_curve()`
-- `plot_growth_curve_facets()`
+- `validate_growth_experiment()`
 - `compute_growth_rate()`
 - `summarize_growth_metrics()`
 - `detect_exponential_phase()`
-- `plot_doubling_time()`
 - `fit_growth_curve()`
+
+Optional graphing interface (requires `ggplot2` and `RColorBrewer`):
+
+- `plot_growth_curve()`
+- `plot_growth_curve_facets()`
+- `plot_doubling_time()`
 - `plot_fitted_curve()`
 
 ## Example analysis

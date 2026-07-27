@@ -50,13 +50,12 @@ head(tidy_sc)
 
 ## Create the canonical SummarizedExperiment
 
-`growkar` can also package the processed data into a lightweight
-`growkar_data` object and coerce it into a `SummarizedExperiment` for
-Bioconductor-oriented workflows.
+`growkar` converts the processed data directly into a `GrowthExperiment` (an S4
+extension of `SummarizedExperiment`),
+the canonical container used throughout the package.
 
 ```{r summarized-experiment}
-growkar_obj <- as_growkar(tidy_sc)
-se <- methods::as(growkar_obj, "SummarizedExperiment")
+se <- GrowthExperiment(tidy_sc)
 
 selected_conditions <- c("Sc(100)", "Sc(50)", "Sc(25)", "Sc(0)")
 

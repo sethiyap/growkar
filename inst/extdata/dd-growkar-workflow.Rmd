@@ -48,15 +48,14 @@ head(tidy_dd)
 
 ## Create the canonical SummarizedExperiment
 
-`growkar` can also package the processed data into a lightweight
-`growkar_data` object and coerce it into a `SummarizedExperiment` for
-Bioconductor-oriented workflows. This example keeps the full CDK7 dataset in
+`growkar` converts the processed data directly into a `GrowthExperiment` (an S4
+extension of `SummarizedExperiment`),
+the canonical container used throughout the package. This example keeps the full CDK7 dataset in
 `se` for the facet plot and creates a `se_KN99` subset for the KN99-specific
 growth-rate and doubling-time summaries.
 
 ```{r summarized-experiment}
-growkar_obj <- as_growkar(tidy_dd)
-se <- methods::as(growkar_obj, "SummarizedExperiment")
+se <- GrowthExperiment(tidy_dd)
 keep_kn99 <- grepl("^KN99", SummarizedExperiment::colData(se)$sample)
 se_KN99 <- se[, keep_kn99]
 
