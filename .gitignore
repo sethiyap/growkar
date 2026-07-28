@@ -8,3 +8,8 @@ inst/doc
 
 # BiocCheck output (local artifact)
 growkar.BiocCheck/
+
+# R CMD check / build artifacts (local only)
+/*.Rcheck/
+/*.tar.gz
+/README.html
