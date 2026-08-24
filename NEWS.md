@@ -1,3 +1,72 @@
+# growkar 0.99.3
+
+Changes made in response to the second round of Bioconductor package review
+(issue #4227).
+
+## Reuse of existing Bioconductor infrastructure
+
+* Added `BiocBaseUtils` to `Imports` and replaced the package's own helpers
+  with its equivalents.
+* Removed the internal `growkar_require_suggested()`. The `plot_*()` functions
+  and `select_palette()` now check their optional graphics dependencies with
+  `BiocBaseUtils::checkInstalled()`.
+* Removed the internal `growkar_numeric_or_na()`. Scalar arguments are now
+  validated with `BiocBaseUtils::isScalarNumber()`,
+  `BiocBaseUtils::isScalarCharacter()`, and `BiocBaseUtils::isTRUEorFALSE()`
+  in `as_tidy_growth_data()`, `detect_exponential_phase()`,
+  `compute_growth_rate()`, `summarize_growth_metrics()`,
+  `validate_growth_data()`, `validate_growth_experiment()`, and the
+  `store_metadata` arguments of `growth_metrics()`, `phase_windows()`, and
+  `fit_growth_models()`.
+* `validate_growth_data()` no longer coerces `min_points_per_sample` with
+  `as.integer()`; a non-scalar or non-numeric value is now an error.
+
+## Removed code that duplicated available functionality
+
+* `select_palette()` no longer assembles its palettes from `RColorBrewer`. The
+  eight qualitative palettes it offers are shipped by base R and are returned by
+  [grDevices::palette.colors()] with identical colour values, so `RColorBrewer`
+  has been dropped from `Suggests` altogether. The `plot_*()` functions now
+  check only for `ggplot2`, and `palette_name` still accepts the same names
+  (`"Dark2"`, `"Set1"`, and so on).
+* Each analysis result is now written to `metadata()` under exactly one key.
+  `fit_growth_models()` previously stored its fits and parameters twice (as
+  `model_fits`/`growth_model_fits` and `model_parameters`/
+  `growth_model_parameters`), and every analysis duplicated its settings into
+  both `analysis_params` and its own `*_parameters` entry. The `model_fits`,
+  `model_parameters`, and `analysis_params` keys have been removed; the
+  documented `growth_*` and `exponential_phase_*` keys are unchanged.
+* `validate_growth_experiment()` now calls `methods::validObject()` instead of
+  repeating the checks already performed by the `GrowthExperiment` validity
+  method. It checks only the finiteness requirement that the class itself does
+  not impose.
+* Replaced the superseded `purrr::map_dfr()` with `purrr::list_rbind()` at all
+  six call sites.
+
+## No coercion on the user's behalf
+
+* `SummarizedExperiment` input must now carry numeric time values in
+  `rowData(se)$time`. The previous fallback, which silently coerced assay row
+  names (or the tidyomics `.feature` labels) to numeric, has been removed; the
+  error message shows how to set the column explicitly. Coercion of character
+  values is now confined to `as_tidy_growth_data()`, the import adapter for
+  vendor plate-reader exports, where non-numeric entries are expected and
+  dropped rows are reported with a warning.
+
+## tidySummarizedExperiment conventions
+
+* Removed the internal `growkar_tidy_from_summarized_experiment()`. Conversion
+  of a `GrowthExperiment` to long form is now a short adapter over
+  `tidySummarizedExperiment`'s own `as_tibble()` output, reading the `.feature`
+  and `.sample` labels directly.
+* `as_tidy_growth_data()` recognises `.sample` and `.feature` as column
+  aliases, so tibbles obtained from a `SummarizedExperiment` with the tidyomics
+  verbs can be passed back to `growkar` unchanged.
+* Removed the `loadNamespace()` call on `tidySummarizedExperiment`, which is an
+  `Imports` dependency. Its namespace, and therefore its `as_tibble()` method,
+  is now loaded through a regular `importFrom()` directive. The vignette no
+  longer guards the tidyomics section behind an availability check.
+
 # growkar 0.99.2
 
 Changes made in response to the Bioconductor package review (issue #4227).

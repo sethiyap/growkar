@@ -28,8 +28,7 @@ palette), \code{"Accent"} (8), \code{"Dark2"} (8), \code{"Paired"} (12), \code{"
 these user-defined colours are used instead of the selected palette.}
 }
 \value{
-A \code{ggplot2} object. Requires the suggested packages \code{ggplot2} and
-\code{RColorBrewer}.
+A \code{ggplot2} object. Requires the suggested package \code{ggplot2}.
 }
 \description{
 Plot observed growth curves with replicates averaged and grouped into
@@ -40,7 +39,7 @@ labels include parenthesized dose values such as \code{(0)} or \code{(100)}, tho
 shared values are used for colour mapping across facets.
 }
 \examples{
-\dontshow{if (requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("RColorBrewer", quietly = TRUE)) withAutoprint(\{ # examplesIf}
+\dontshow{if (requireNamespace("ggplot2", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 data(yeast_growth_data)
 plot_growth_curve_facets(
   yeast_growth_data,

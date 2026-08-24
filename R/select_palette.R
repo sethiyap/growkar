@@ -1,6 +1,6 @@
 #' @title select_palette
 #' @description allows to select contrasting colors from 8 different palettes
-#'   contributing a total of 75 colors
+#'   contributing a total of 74 colors
 #' @param num_of_colors numeric, number of colors to be obtained from palette
 #' @param palette_name character,name palettes Default: 'all_colors'
 #'   Supported individual palettes are:
@@ -16,7 +16,9 @@
 #'   }
 #' @return a vector of colors from selected palette
 #' @details select_palette is particularly useful as individual palette from
-#'   many color brewer packages contain less than 10 colors
+#'   many color palettes contain less than 10 colors. The palettes themselves
+#'   come from [grDevices::palette.colors()], which ships with R, so no colour
+#'   package is needed.
 #' @examples
 #' \dontrun{
 #' if(interactive()){
@@ -28,32 +30,41 @@
 #'  }
 #' }
 #' @keywords internal
-#' @importFrom tibble rownames_to_column as_tibble
-#' @importFrom dplyr filter mutate select slice pull
-#' @importFrom purrr map2
-#' @importFrom tidyr unnest
 select_palette <- function(num_of_colors, palette_name = "all_colors") {
-  growkar_require_suggested("RColorBrewer", "select_palette")
+  palettes <- growkar_qualitative_palettes()
 
-  color_tibble <- RColorBrewer::brewer.pal.info |>
-    tibble::rownames_to_column("rn") |>
-    tibble::as_tibble() |>
-    dplyr::filter(.data$category == "qual") |>
-    dplyr::mutate(colors = purrr::map2(.data$maxcolors, .data$rn, ~ RColorBrewer::brewer.pal(..1, ..2))) |>
-    tidyr::unnest(cols = "colors")
-
-  if (palette_name == "all_colors") {
-    color_vector <- color_tibble |>
-      dplyr::select("colors") |>
-      dplyr::slice(seq_len(min(num_of_colors, nrow(color_tibble)))) |>
-      dplyr::pull("colors")
+  requested <- if (identical(palette_name, "all_colors")) {
+    names(palettes)
   } else {
-    color_vector <- color_tibble |>
-      dplyr::filter(.data$rn %in% palette_name) |>
-      dplyr::select("colors") |>
-      dplyr::slice(seq_len(min(num_of_colors, dplyr::n()))) |>
-      dplyr::pull("colors")
+    intersect(names(palettes), palette_name)
   }
 
-  color_vector
+  color_vector <- unlist(
+    lapply(requested, function(name) {
+      grDevices::palette.colors(
+        n = palettes[[name]]$n,
+        palette = palettes[[name]]$grDevices_name
+      )
+    }),
+    use.names = FALSE
+  )
+
+  color_vector[seq_len(min(num_of_colors, length(color_vector)))]
+}
+
+# The qualitative palettes are those carried by grDevices, which are identical
+# to the ColorBrewer qualitative sets of the same names. `select_palette()`
+# keeps the compact `Dark2`-style spelling as its public argument; the names
+# under which `grDevices::palette.colors()` knows them are spelled with a space.
+growkar_qualitative_palettes <- function() {
+  list(
+    Accent = list(grDevices_name = "Accent", n = 8L),
+    Dark2 = list(grDevices_name = "Dark 2", n = 8L),
+    Paired = list(grDevices_name = "Paired", n = 12L),
+    Pastel1 = list(grDevices_name = "Pastel 1", n = 9L),
+    Pastel2 = list(grDevices_name = "Pastel 2", n = 8L),
+    Set1 = list(grDevices_name = "Set 1", n = 9L),
+    Set2 = list(grDevices_name = "Set 2", n = 8L),
+    Set3 = list(grDevices_name = "Set 3", n = 12L)
+  )
 }

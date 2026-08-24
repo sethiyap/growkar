@@ -49,6 +49,14 @@ summarize_growth_metrics <- function(data,
                                      error = c("se", "sd"),
                                      pvalue_method = c("t_test", "wilcox"),
                                      ...) {
+  if (!BiocBaseUtils::isTRUEorFALSE(average_replicates)) {
+    stop("`average_replicates` must be `TRUE` or `FALSE`.", call. = FALSE)
+  }
+
+  if (!is.null(comparison_col) && !BiocBaseUtils::isScalarCharacter(comparison_col)) {
+    stop("`comparison_col` must be `NULL` or a single column name.", call. = FALSE)
+  }
+
   se <- growkar_as_se(data)
   tidy_data <- as_tidy_growth_data(se)
   tidy_data <- validate_growth_data(tidy_data)
@@ -168,7 +176,7 @@ growkar_compute_doubling_time_pvalues <- function(replicate_metrics,
     dplyr::pull("doubling_time")
   reference_values <- reference_values[is.finite(reference_values)]
 
-  out <- purrr::map_dfr(groups, function(group_value) {
+  out <- purrr::list_rbind(purrr::map(groups, function(group_value) {
     if (identical(group_value, compare_to)) {
       return(tibble::tibble(
         group = group_value,
@@ -207,7 +215,7 @@ growkar_compute_doubling_time_pvalues <- function(replicate_metrics,
       p_value = p_value,
       p_value_label = growkar_pvalue_label(p_value)
     )
-  })
+  }))
   out$p_value_label[out$group %in% compare_to] <- "ref"
 
   names(out)[names(out) == "group"] <- comparison_col

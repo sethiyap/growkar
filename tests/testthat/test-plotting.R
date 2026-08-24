@@ -1,8 +1,11 @@
-test_that("plot functions error informatively when graphics packages are absent", {
+test_that("graphics dependencies are checked with BiocBaseUtils::checkInstalled()", {
   expect_error(
-    growkar_require_suggested("a.package.that.does.not.exist", "plot_growth_curve"),
-    "requires the suggested package"
+    BiocBaseUtils::checkInstalled(c("ggplot2", "a.package.that.does.not.exist")),
+    "missing package dependencies"
   )
+
+  skip_if_no_graphics()
+  expect_silent(growkar_require_graphics())
 })
 
 test_that("plot_growth_curve warns when faceting by replicate after averaging", {
@@ -138,4 +141,23 @@ test_that("plot_doubling_time bracket annotations follow plotted factor order", 
 
   expect_equal(ann$x_ref, 3)
   expect_equal(ann$x_group, 1)
+})
+
+test_that("select_palette draws its colours from grDevices, not a colour package", {
+  expect_equal(
+    select_palette(8, palette_name = "Dark2"),
+    unname(grDevices::palette.colors(8, palette = "Dark 2"))
+  )
+
+  expect_equal(
+    select_palette(4, palette_name = "Set1"),
+    unname(grDevices::palette.colors(4, palette = "Set 1"))
+  )
+
+  # `all_colors` concatenates the eight qualitative palettes.
+  expect_length(select_palette(1000), 74L)
+  expect_length(select_palette(10), 10L)
+
+  # Requesting more colours than a single palette holds is capped, not an error.
+  expect_length(select_palette(50, palette_name = "Accent"), 8L)
 })

@@ -27,11 +27,13 @@ a vector of colors from selected palette
 }
 \description{
 allows to select contrasting colors from 8 different palettes
-contributing a total of 75 colors
+contributing a total of 74 colors
 }
 \details{
 select_palette is particularly useful as individual palette from
-many color brewer packages contain less than 10 colors
+many color palettes contain less than 10 colors. The palettes themselves
+come from \code{\link[grDevices:palette.colors]{grDevices::palette.colors()}}, which ships with R, so no colour
+package is needed.
 }
 \examples{
 \dontrun{

@@ -16,10 +16,9 @@
 #' @param custom_colors Optional character vector of colours. When supplied,
 #'   these user-defined colours are used instead of the selected palette.
 #'
-#' @return A `ggplot2` object. Requires the suggested packages `ggplot2` and
-#'   `RColorBrewer`.
+#' @return A `ggplot2` object. Requires the suggested package `ggplot2`.
 #'
-#' @examplesIf requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("RColorBrewer", quietly = TRUE)
+#' @examplesIf requireNamespace("ggplot2", quietly = TRUE)
 #' data(yeast_growth_data)
 #' plot_growth_curve(
 #'   yeast_growth_data,
@@ -34,7 +33,7 @@ plot_growth_curve <- function(data,
                               facet_col = NULL,
                               palette_name = "all_colors",
                               custom_colors = NULL) {
-  growkar_require_graphics("plot_growth_curve")
+  growkar_require_graphics()
 
   se <- growkar_as_se(data)
   tidy_data <- as_tidy_growth_data(se)
@@ -126,10 +125,9 @@ plot_growth_curve <- function(data,
 #' @param custom_colors Optional character vector of colours. When supplied,
 #'   these user-defined colours are used instead of the selected palette.
 #'
-#' @return A `ggplot2` object. Requires the suggested packages `ggplot2` and
-#'   `RColorBrewer`.
+#' @return A `ggplot2` object. Requires the suggested package `ggplot2`.
 #'
-#' @examplesIf requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("RColorBrewer", quietly = TRUE)
+#' @examplesIf requireNamespace("ggplot2", quietly = TRUE)
 #' data(yeast_growth_data)
 #' plot_growth_curve_facets(
 #'   yeast_growth_data,
@@ -140,7 +138,7 @@ plot_growth_curve_facets <- function(data,
                                      colour_col = NULL,
                                      palette_name = "all_colors",
                                      custom_colors = NULL) {
-  growkar_require_graphics("plot_growth_curve_facets")
+  growkar_require_graphics()
 
   se <- growkar_as_se(data)
   tidy_data <- as_tidy_growth_data(se)

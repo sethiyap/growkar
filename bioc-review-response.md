@@ -1,11 +1,138 @@
 Hi @lshep / Marcel,
 
-Thank you very much for the detailed review. I have addressed all of the
-comments; the changes are in version 0.99.2. A point-by-point response follows,
-grouped as in your review.
+Thanks for taking another look. All three points are addressed in version
+0.99.3, with a point-by-point response below. My response to the first round of
+review (version 0.99.2) is retained further down for reference.
 
 `R CMD check` is clean (Status: OK) and `BiocCheck` reports 0 ERRORS and
 0 WARNINGS.
+
+---
+
+## Reusing existing functionality: `BiocBaseUtils`
+
+> Please make sure that you are re-using functionality already available, such
+> as BiocBaseUtils::checkInstalled() instead of growkar_require_suggested() and
+> BiocBaseUtils::isScalarNumber() instead of growkar_numeric_or_na() and avoid
+> coercing for the user.
+
+Adopted. `BiocBaseUtils` is now in `Imports`, and both custom helpers have been
+**deleted**:
+
+- `growkar_require_suggested()` is gone. The optional graphics dependencies are
+  checked with `BiocBaseUtils::checkInstalled()`, which also produces a better
+  error message than the hand-written one (it lists all missing packages and
+  the `BiocManager::install()` call that fixes them). The four `plot_*()`
+  functions go through a one-line internal wrapper,
+  `growkar_require_graphics()`, which is just
+  `checkInstalled(c("ggplot2", "RColorBrewer"))`; `select_palette()` calls
+  `checkInstalled()` directly.
+- `growkar_numeric_or_na()` is gone, and with it the coercion it was doing on
+  the user's behalf. Argument validation now uses
+  `BiocBaseUtils::isScalarNumber()`, `isScalarCharacter()`, and
+  `isTRUEorFALSE()` (in `as_tidy_growth_data()` and
+  `detect_exponential_phase()`).
+
+On *not coercing for the user*: `SummarizedExperiment` input previously fell
+back to coercing assay row names (or the `.feature` labels) to numeric when
+`rowData(se)$time` was absent. That guessed at the user's intent, so it has been
+removed — a numeric `time` column is now required, and the error says how to set
+it:
+
+```
+`SummarizedExperiment` input must provide numeric time values in
+`rowData(se)$time`. If the row names hold the time points, set them explicitly
+with `rowData(se)$time <- as.numeric(rownames(se))`.
+```
+
+Character-to-numeric coercion is now confined to `as_tidy_growth_data()`, the
+import adapter for vendor plate-reader exports, where non-numeric entries
+(instrument headers, blanks, `"OVRFLW"` markers) are expected in the raw file
+and dropped rows are reported to the user with a warning.
+
+---
+
+## `loadNamespace()` on an `Imports` package
+
+> Avoid using loadNamespace() on a package that is already in Imports:.
+
+Removed. The call was there to make `tidySummarizedExperiment`'s `as_tibble()`
+method available for dispatch. That is now handled the ordinary way, with an
+`importFrom(tidySummarizedExperiment, unnest_summarized_experiment)` directive
+in `NAMESPACE`, so the namespace (and its method registrations) loads with
+`growkar`. The reason for the import is documented in the package-level help
+page so it is not mistaken for a stray import later.
+
+---
+
+## Following the tidySummarizedExperiment conventions
+
+> It seems growkar_tidy_from_summarized_experiment would not be needed if
+> following the tidySummarizedExperiment conventions e.g., .sample, .feature
+> labels etc.
+
+Agreed, and the function has been **deleted**. What is left is a short branch in
+`as_tidy_growth_data()` that takes `tidySummarizedExperiment`'s `as_tibble()`
+output as-is and reads the `.sample` and `.feature` labels directly; no
+reshaping, no column guessing, and no separate converter. The checks that
+remain are the two the container genuinely requires (an assay to read, and a
+numeric `rowData(data)$time`), and both now error rather than repair the input.
+
+The conventions are also honoured on the way *in*: `.sample` and `.feature` are
+recognised column aliases, so a tibble obtained from a `SummarizedExperiment`
+with the tidyomics verbs can be passed straight back to `growkar` without
+renaming anything.
+
+The one thing I have deliberately not done is rename `growkar`'s own canonical
+columns to `.sample`/`.feature`. Those labels identify rows and columns of a
+`SummarizedExperiment`, whereas `growkar`'s tidy schema carries the domain
+quantities `sample`, `time`, and `od` — `time` comes from `rowData()` and is not
+the same thing as the feature identifier. Renaming would also change every
+metrics tibble the package returns. Happy to revisit if you would prefer the
+tidyomics labels throughout.
+
+---
+
+## Sweeping the rest of the package for the same pattern
+
+Taking the comments above as a pattern rather than three isolated cases, I went
+through the rest of the package looking for anything else that reimplements or
+duplicates functionality that already exists. Four further changes came out of
+that:
+
+- **`RColorBrewer` has been dropped entirely.** The internal `select_palette()`
+  assembled its eight qualitative palettes from `RColorBrewer::brewer.pal()`.
+  Those palettes ship with base R in `grDevices::palette.colors()`, with
+  identical colour values (verified for all eight, at every palette size), so
+  the helper now calls `grDevices` and the package no longer suggests
+  `RColorBrewer`. `ggplot2` is the only remaining optional dependency, and the
+  `palette_name` argument still takes the same names.
+- **One metadata key per result.** `fit_growth_models()` stored its fits and
+  parameters under two names each (`model_fits`/`growth_model_fits`,
+  `model_parameters`/`growth_model_parameters`), and every analysis wrote its
+  settings into both `analysis_params` and its own `*_parameters` entry — so
+  `growth_model_fits()` had to look in two places. The duplicates are gone,
+  which also reduced the metadata-writing helper to two lines.
+- **`validate_growth_experiment()` now calls `methods::validObject()`** rather
+  than repeating the four checks the `GrowthExperiment` validity method already
+  performs. Only the finiteness requirement, which the class deliberately does
+  not impose, remains in the function.
+- **`purrr::map_dfr()` → `purrr::list_rbind()`** at all six call sites;
+  `map_dfr()` has been superseded since purrr 1.0.
+
+One candidate I have deliberately left alone: the `GrowthFit` class caches
+`coefficients`, `residuals`, `rss`, `aic`, `bic`, and `n_points` in slots, all
+of which the `stats` accessors could derive from the stored `nls` object on
+demand. Removing that duplication is a larger change to the class and its
+methods, and the cached values are also what make failed fits representable as
+valid objects. Happy to do it if you would like the class to delegate instead.
+
+---
+
+# First review round (version 0.99.2)
+
+The response below was written for the first set of review comments and is kept
+for reference.
 
 ---
 
@@ -126,12 +253,13 @@ it is not a re-implementation of tidy transformations.
 The blanket `suppressWarnings()` calls have been replaced with targeted handling
 throughout, each documented at the call site:
 
-- **Numeric coercion of plate-reader fields** (`growkar_numeric_or_na()`): raw
-  exports interleave non-numeric rows (headers, blanks, overflow markers) with
-  measurements. The helper muffles only the `"NAs introduced by coercion"`
-  warning via `withCallingHandlers()` and lets every other condition propagate;
-  the caller then inspects the resulting `NA`s and either drops those rows with
-  its own count-reporting warning or raises a specific error.
+- **Numeric coercion of plate-reader fields** (in the import adapter; the
+  helper this bullet originally described was removed in 0.99.3): raw exports
+  interleave non-numeric rows (headers, blanks, overflow markers) with
+  measurements. Only the `"NAs introduced by coercion"` warning is muffled, via
+  `withCallingHandlers()`, and every other condition propagates; the caller then
+  inspects the resulting `NA`s and either drops those rows with its own
+  count-reporting warning or raises a specific error.
 - **`nls()` in `fit_growth_curve()`**: the previous code suppressed and
   discarded convergence warnings. It now captures the warning message and
   surfaces it in the fit's `message` field, so diagnostics for difficult curves

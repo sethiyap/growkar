@@ -51,3 +51,20 @@ test_that("detect_exponential_phase supports averaged multi-sample input", {
   expect_s3_class(windows, "tbl_df")
   expect_true(all(c("Cg", "CgFlu", "YPD") %in% unique(windows$sample)))
 })
+
+test_that("detect_exponential_phase validates its scalar arguments", {
+  tidy_data <- as_tidy_growth_data(yeast_growth_data)
+
+  expect_error(
+    detect_exponential_phase(tidy_data, window_size = c(3, 4)),
+    "`window_size` must be a single"
+  )
+  expect_error(
+    detect_exponential_phase(tidy_data, min_od = "0.02"),
+    "`min_od` must be a single"
+  )
+  expect_error(
+    detect_exponential_phase(tidy_data, average_replicates = NA),
+    "`average_replicates` must be"
+  )
+})

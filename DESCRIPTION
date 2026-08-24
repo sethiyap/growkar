@@ -1,6 +1,6 @@
 Package: growkar
 Title: SummarizedExperiment Infrastructure for Microbial Growth Phenotyping
-Version: 0.99.2
+Version: 0.99.3
 Authors@R: 
     person("Pooja", "Sethiya", 
            email = "poojasethiya24@gmail.com", 
@@ -20,7 +20,7 @@ Description: growkar provides Bioconductor-native infrastructure for
     Bioconductor analyses in microbial systems biology and multi-omics
     studies. The data-structure and analysis layers depend only on core
     Bioconductor infrastructure; graphing is optional and provided by
-    'plot_*' functions that are enabled when suggested graphics packages are
+    'plot_*' functions that are enabled when the suggested graphics package is
     installed.
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -29,6 +29,8 @@ Depends:
     R (>= 4.6.0)
 Imports:
     methods,
+    BiocBaseUtils,
+    grDevices,
     S4Vectors,
     SummarizedExperiment,
     tidySummarizedExperiment,
@@ -41,7 +43,6 @@ Imports:
     utils
 Suggests:
     ggplot2,
-    RColorBrewer,
     knitr,
     remotes,
     rmarkdown,

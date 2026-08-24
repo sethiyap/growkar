@@ -13,9 +13,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-has_graphics <- requireNamespace("ggplot2", quietly = TRUE) &&
-  requireNamespace("RColorBrewer", quietly = TRUE)
-has_tidy_se <- requireNamespace("tidySummarizedExperiment", quietly = TRUE)
+has_graphics <- requireNamespace("ggplot2", quietly = TRUE)
 ```
 
 ```{r setup}
@@ -155,13 +153,14 @@ GrowthExperiment(yeast_growth_data)
 ## Interoperability with tidyomics
 
 `growkar` does not reimplement tidy verbs or a tidy display layer for
-`SummarizedExperiment`. Install the optional
+`SummarizedExperiment`. It depends on
 [tidySummarizedExperiment](https://bioconductor.org/packages/tidySummarizedExperiment)
-package to filter, mutate, summarize, and plot `growkar` objects with the
-standard tidyverse grammar, while the underlying object remains a
+and follows its conventions, including the `.feature` and `.sample` labels, so
+`growkar` objects can be filtered, mutated, summarized, and plotted with the
+standard tidyverse grammar while the underlying object remains a
 `SummarizedExperiment` usable by any other Bioconductor package.
 
-```{r tidyomics, eval = has_tidy_se}
+```{r tidyomics}
 library(tidySummarizedExperiment)
 
 # The SE prints and behaves as a tibble abstraction, without being converted.
@@ -182,10 +181,11 @@ directly into the same downstream workflow.
 
 ## Exploratory plotting and quality control
 
-Graphing is optional in `growkar`: `ggplot2` and `RColorBrewer` are declared in
-`Suggests`, so the data-structure and analysis layers install without a
-graphics stack. The `plot_*()` functions check for these packages at call time
-and return standard `ggplot` objects that can be customized further.
+Graphing is optional in `growkar`: `ggplot2` is declared in `Suggests`, so the
+data-structure and analysis layers install without a graphics stack. The
+`plot_*()` functions check for it at call time and return standard `ggplot`
+objects that can be customized further. Qualitative palettes come from
+`grDevices::palette.colors()` in base R.
 
 ```{r plot-averaged-curves, eval = has_graphics}
 plot_growth_curve(

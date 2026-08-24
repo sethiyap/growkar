@@ -28,6 +28,10 @@ growth_metrics <- function(data,
                            pvalue_method = c("t_test", "wilcox"),
                            store_metadata = TRUE,
                            ...) {
+  if (!BiocBaseUtils::isTRUEorFALSE(store_metadata)) {
+    stop("`store_metadata` must be `TRUE` or `FALSE`.", call. = FALSE)
+  }
+
   metrics_tbl <- summarize_growth_metrics(
     data = data,
     method = match.arg(method),
@@ -47,18 +51,6 @@ growth_metrics <- function(data,
   growkar_store_se_metadata(
     data,
     growth_metrics = metrics_tbl,
-    analysis_params = list(
-      growth_metrics = list(
-        method = method,
-        average_replicates = average_replicates,
-        select_replicates = select_replicates,
-        comparison_col = comparison_col,
-        compare_to = compare_to,
-        error = error,
-        pvalue_method = pvalue_method,
-        extra_args = list(...)
-      )
-    ),
     growth_metrics_parameters = list(
       method = method,
       average_replicates = average_replicates,
@@ -99,6 +91,10 @@ phase_windows <- function(data,
                           average_replicates = FALSE,
                           select_replicates = NULL,
                           store_metadata = TRUE) {
+  if (!BiocBaseUtils::isTRUEorFALSE(store_metadata)) {
+    stop("`store_metadata` must be `TRUE` or `FALSE`.", call. = FALSE)
+  }
+
   windows_tbl <- detect_exponential_phase(
     data = data,
     window_size = window_size,
@@ -114,14 +110,6 @@ phase_windows <- function(data,
   growkar_store_se_metadata(
     data,
     exponential_phase_windows = windows_tbl,
-    analysis_params = list(
-      exponential_phase_windows = list(
-        window_size = window_size,
-        min_od = min_od,
-        average_replicates = average_replicates,
-        select_replicates = select_replicates
-      )
-    ),
     exponential_phase_parameters = list(
       window_size = window_size,
       min_od = min_od,
@@ -157,6 +145,10 @@ phase_windows <- function(data,
 fit_growth_models <- function(data,
                               model = c("logistic", "gompertz"),
                               store_metadata = TRUE) {
+  if (!BiocBaseUtils::isTRUEorFALSE(store_metadata)) {
+    stop("`store_metadata` must be `TRUE` or `FALSE`.", call. = FALSE)
+  }
+
   model <- match.arg(model)
   fit_tbl <- fit_growth_plate(data = data, model = model)
 
@@ -164,35 +156,20 @@ fit_growth_models <- function(data,
     return(fit_tbl)
   }
 
-  param_tbl <- purrr::map_dfr(fit_tbl$fit, extract_params)
+  param_tbl <- purrr::list_rbind(purrr::map(fit_tbl$fit, extract_params))
 
   growkar_store_se_metadata(
     data,
-    model_fits = fit_tbl,
-    model_parameters = param_tbl,
-    analysis_params = list(
-      model_fits = list(model = model)
-    ),
     growth_model_fits = fit_tbl,
     growth_model_parameters = param_tbl,
     growth_model_settings = list(model = model)
   )
 }
 
+# Each analysis writes its results and the parameters that produced them under
+# one key apiece; `modifyList()` replaces those entries and leaves the rest of
+# `metadata()` untouched.
 growkar_store_se_metadata <- function(data, ...) {
-  meta <- S4Vectors::metadata(data)
-  additions <- list(...)
-
-  for (name in names(additions)) {
-    if (identical(name, "analysis_params") &&
-        is.list(meta[[name]]) &&
-        is.list(additions[[name]])) {
-      meta[[name]] <- utils::modifyList(meta[[name]], additions[[name]])
-    } else {
-      meta[[name]] <- additions[[name]]
-    }
-  }
-
-  S4Vectors::metadata(data) <- meta
+  S4Vectors::metadata(data) <- utils::modifyList(S4Vectors::metadata(data), list(...))
   data
 }

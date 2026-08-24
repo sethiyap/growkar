@@ -40,6 +40,18 @@ detect_exponential_phase <- function(data,
                                      average_replicates = FALSE,
                                      window_size = 5,
                                      min_od = 0.02) {
+  if (!BiocBaseUtils::isScalarNumber(window_size)) {
+    stop("`window_size` must be a single, finite number.", call. = FALSE)
+  }
+
+  if (!BiocBaseUtils::isScalarNumber(min_od)) {
+    stop("`min_od` must be a single, finite number.", call. = FALSE)
+  }
+
+  if (!BiocBaseUtils::isTRUEorFALSE(average_replicates)) {
+    stop("`average_replicates` must be `TRUE` or `FALSE`.", call. = FALSE)
+  }
+
   se <- growkar_as_se(data)
   data <- as_tidy_growth_data(se)
   data <- validate_growth_data(data, warn_zero_od = TRUE)
@@ -67,7 +79,12 @@ detect_exponential_phase <- function(data,
 
   sample_levels <- unique(as.character(data$sample))
   sample_list <- split(data, factor(data$sample, levels = sample_levels))
-  purrr::map_dfr(sample_list, detect_exponential_phase_single_sample, window_size = window_size, min_od = min_od)
+  purrr::list_rbind(purrr::map(
+    sample_list,
+    detect_exponential_phase_single_sample,
+    window_size = window_size,
+    min_od = min_od
+  ))
 }
 
 detect_exponential_phase_single_sample <- function(data, window_size = 5, min_od = 0.02) {
@@ -92,7 +109,7 @@ detect_exponential_phase_single_sample <- function(data, window_size = 5, min_od
     "rolling_window_ranked"
   }
 
-  windows <- purrr::map_dfr(seq_len(nrow(data) - effective_window_size + 1L), function(i) {
+  windows <- purrr::list_rbind(purrr::map(seq_len(nrow(data) - effective_window_size + 1L), function(i) {
     indices <- i:(i + effective_window_size - 1L)
     window_data <- data[indices, , drop = FALSE]
     fit_summary <- growkar_fit_log_linear(window_data)
@@ -115,7 +132,7 @@ detect_exponential_phase_single_sample <- function(data, window_size = 5, min_od
       selection_reason = selection_reason,
       degraded = selection_reason != "rolling_window_ranked"
     )
-  })
+  }))
 
   windows |>
     dplyr::arrange(dplyr::desc(.data$slope > 0), dplyr::desc(.data$slope), dplyr::desc(.data$r_squared)) |>

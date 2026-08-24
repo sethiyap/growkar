@@ -48,8 +48,66 @@ as_tidy_growth_data <- function(data,
                                 time_col = "time",
                                 od_col = "od",
                                 sample_sep = "_") {
+  for (arg in c("sample_col", "time_col", "od_col", "sample_sep")) {
+    if (!BiocBaseUtils::isScalarCharacter(get(arg))) {
+      stop("`", arg, "` must be a single, non-missing string.", call. = FALSE)
+    }
+  }
+
   if (inherits(data, "SummarizedExperiment")) {
-    return(growkar_tidy_from_summarized_experiment(data))
+    # The SummarizedExperiment -> long transformation is tidySummarizedExperiment's
+    # `as_tibble()` method: it returns one row per feature/sample pair with
+    # `rowData()` and `colData()` columns joined on, identified by the tidyomics
+    # `.feature` and `.sample` labels. Nothing is reimplemented here; the
+    # tidyomics labels are simply mapped onto the canonical `sample`/`time`/`od`
+    # columns that the rest of growkar and its import adapter use.
+    #
+    # tidySummarizedExperiment calls purrr::when(), which is lifecycle-deprecated
+    # upstream. Muffle only that specific upstream deprecation; all other
+    # conditions propagate normally.
+    tidy_data <- withCallingHandlers(
+      tibble::as_tibble(data),
+      warning = function(w) {
+        if (grepl("when()", conditionMessage(w), fixed = TRUE)) {
+          invokeRestart("muffleWarning")
+        }
+      }
+    )
+
+    assay_names <- SummarizedExperiment::assayNames(data)
+    if (length(assay_names) == 0L) {
+      stop("`data` must contain at least one assay.", call. = FALSE)
+    }
+    assay_name <- if ("od" %in% assay_names) "od" else assay_names[[1]]
+
+    if (!"time" %in% names(tidy_data) || !is.numeric(tidy_data$time)) {
+      stop(
+        "`SummarizedExperiment` input must provide numeric time values in ",
+        "`rowData(data)$time`.",
+        call. = FALSE
+      )
+    }
+
+    out <- tibble::tibble(
+      time = tidy_data$time,
+      sample = as.character(tidy_data$.sample),
+      od = as.numeric(tidy_data[[assay_name]])
+    )
+
+    extra_cols <- setdiff(
+      names(tidy_data),
+      c(".feature", ".sample", "sample", "time", assay_names)
+    )
+    for (column_name in extra_cols) {
+      column <- tidy_data[[column_name]]
+      out[[column_name]] <- if (is.factor(column)) as.character(column) else column
+    }
+
+    # tidyomics returns sample-major rows; growkar's import adapter returns
+    # time-major rows. Reorder so both entry points agree.
+    sample_levels <- colnames(data) %||% unique(out$sample)
+
+    return(out[order(out$time, match(out$sample, sample_levels)), , drop = FALSE])
   }
 
   data <- tibble::as_tibble(data)
@@ -121,12 +179,19 @@ growkar_time_aliases <- function() {
   c(
     "time", "Time", "TIME", "Time [s]", "Time [sec]", "Time (s)",
     "Time [h]", "Time [hr]", "Time (h)", "Elapsed Time", "Elapsed time",
-    "Kinetic Time", "Kinetic Time [s]", "Hours", "hours"
+    "Kinetic Time", "Kinetic Time [s]", "Hours", "hours",
+    # tidySummarizedExperiment row identifier, for tibbles obtained with
+    # `as_tibble()` on a SummarizedExperiment and then manipulated with dplyr.
+    ".feature"
   )
 }
 
 growkar_sample_aliases <- function() {
-  c("sample", "Sample", "SAMPLE", "well", "Well", "WELL", "Well ID", "well_id")
+  c(
+    "sample", "Sample", "SAMPLE", "well", "Well", "WELL", "Well ID", "well_id",
+    # tidySummarizedExperiment column identifier.
+    ".sample"
+  )
 }
 
 growkar_od_aliases <- function() {
@@ -189,9 +254,19 @@ growkar_parse_numeric_values <- function(x) {
   x[x == ""] <- NA_character_
   x <- sub(",", ".", x, fixed = TRUE)
 
-  # Non-numeric entries are expected in instrument exports; the caller reports
-  # and drops the resulting NAs. See `growkar_numeric_or_na()`.
-  growkar_numeric_or_na(x)
+  # Plate-reader exports interleave non-numeric entries (instrument headers,
+  # "OVRFLW" markers) with measurements. Those become NA here and are reported
+  # and dropped by the caller, so only the coercion warning is muffled; every
+  # other condition propagates. This is confined to the import adapter: the
+  # container and analysis layers validate rather than coerce.
+  withCallingHandlers(
+    as.numeric(x),
+    warning = function(w) {
+      if (grepl("NAs introduced by coercion", conditionMessage(w), fixed = TRUE)) {
+        invokeRestart("muffleWarning")
+      }
+    }
+  )
 }
 
 growkar_infer_sample_metadata <- function(sample, sample_sep = "_") {

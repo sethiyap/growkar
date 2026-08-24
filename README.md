@@ -1,35 +1,63 @@
+---
+output:
+  github_document:
+    pandoc_args: ["--wrap=none"]
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+
+
 # growkar <a href="https://sethiyap.github.io/growkar"><img src="man/figures/logo.svg" align="right" height="220" alt="growkar hex sticker" /></a>
 
-<p>
+<p><em>A toolkit for high-throughput growth curve analysis</em></p>
 
-<em>A toolkit for high-throughput growth curve analysis</em>
-</p>
+[![R-CMD-check](https://github.com/sethiyap/growkar/actions/workflows/R-CMD-check.yaml/badge.svg?branch=master)](https://github.com/sethiyap/growkar/actions/workflows/R-CMD-check.yaml)
+[![BiocCheck](https://github.com/sethiyap/growkar/actions/workflows/bioccheck.yaml/badge.svg?branch=master)](https://github.com/sethiyap/growkar/actions/workflows/bioccheck.yaml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[![R-CMD-check](https://github.com/sethiyap/growkar/actions/workflows/R-CMD-check.yaml/badge.svg?branch=master)](https://github.com/sethiyap/growkar/actions/workflows/R-CMD-check.yaml) [![BiocCheck](https://github.com/sethiyap/growkar/actions/workflows/bioccheck.yaml/badge.svg?branch=master)](https://github.com/sethiyap/growkar/actions/workflows/bioccheck.yaml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+`growkar` is a Bioconductor-oriented R package for the analysis of
+high-throughput microbial growth experiments, such as plate-based optical
+density assays. It provides infrastructure for extracting quantitative growth
+phenotypes, including lag time, growth rate, doubling time, and carrying
+capacity, from time-series measurements, and for representing assay data and
+derived phenotypes in Bioconductor containers such as
+`SummarizedExperiment`. This makes it possible to integrate growth-based
+phenotyping with genomic, transcriptomic, and other omics data in broader
+functional genomics and microbial systems biology workflows.
 
-`growkar` is a Bioconductor-oriented R package for the analysis of high-throughput microbial growth experiments, such as plate-based optical density assays. It provides infrastructure for extracting quantitative growth phenotypes, including lag time, growth rate, doubling time, and carrying capacity, from time-series measurements, and for representing assay data and derived phenotypes in Bioconductor containers such as `SummarizedExperiment`. This makes it possible to integrate growth-based phenotyping with genomic, transcriptomic, and other omics data in broader functional genomics and microbial systems biology workflows.
+Data generated from Agilent microplate readers, BioTek Cytation instruments,
+and other OD600-based microbial growth measurement platforms can be directly
+analysed using `growkar`.
 
-Data generated from Agilent microplate readers, BioTek Cytation instruments, and other OD600-based microbial growth measurement platforms can be directly analysed using `growkar`.
+`growkar` is built around `SummarizedExperiment` as its only data model. Tidy
+tables using the canonical columns `sample`, `time`, and `od`, and wide
+plate-reader exports, are accepted as import adapters and converted into the SE
+representation early in the workflow. SE-aware helpers store derived results in
+`metadata()` for downstream analysis. Core analysis functions accept tidy
+tables, wide plate-reader exports, and `SummarizedExperiment` input.
 
-`growkar` is built around `SummarizedExperiment` as its only data model. Tidy tables using the canonical columns `sample`, `time`, and `od`, and wide plate-reader exports, are accepted as import adapters and converted into the SE representation early in the workflow. SE-aware helpers store derived results in `metadata()` for downstream analysis. Core analysis functions accept tidy tables, wide plate-reader exports, and `SummarizedExperiment` input.
-
-Graphing is optional: `ggplot2` and `RColorBrewer` are declared in `Suggests`, so the data-structure and analysis layers install without a graphics stack. The `plot_*()` functions check for them at call time and return standard `ggplot` objects that can be customized into publication-ready figures.
+Graphing is optional: `ggplot2` is declared in `Suggests`, so the
+data-structure and analysis layers install without a graphics stack. The
+`plot_*()` functions check for it at call time and return standard `ggplot`
+objects that can be customized into publication-ready figures. Qualitative
+palettes come from `grDevices::palette.colors()` in base R.
 
 ## Input formats
 
 Input data can be supplied in either:
 
 - tidy format with columns `sample`, `time`, and `od`
-- wide format with time in the first column and sample names in the remaining column names
+- wide format with time in the first column and sample names in the remaining
+  column names
 
-If replicate identifiers are encoded in sample names, use a consistent suffix such as `_R1` or `_1` so `growkar` can infer replicate metadata reliably.
+If replicate identifiers are encoded in sample names, use a consistent suffix
+such as `_R1` or `_1` so `growkar` can infer replicate metadata reliably.
 
 ## Data model
 
-- primary object: `GrowthExperiment`, an S4 extension of `SummarizedExperiment` and the only data container in the package
+- primary object: `GrowthExperiment`, an S4 extension of `SummarizedExperiment`
+  and the only data container in the package
 - assay layout: rows are timepoints and columns are samples in `assay(se, "od")`
 - sample annotations live in `colData(se)`
 - timepoint annotations live in `rowData(se)`
@@ -40,18 +68,31 @@ If replicate identifiers are encoded in sample names, use a consistent suffix su
 
 `growkar` defines two S4 classes and no S3 classes:
 
-- **`GrowthExperiment`** is the data container: an S4 class that extends `SummarizedExperiment` with a validity method enforcing the canonical growth-assay layout. Build it with the `GrowthExperiment()` constructor or with standard coercion, `as(x, "GrowthExperiment")`. Because it *is* a `SummarizedExperiment`, `as(x, "SummarizedExperiment")` and every Bioconductor method are always available.
-- **`GrowthFit`** is a parametric model *result* for a single sample, stored in `metadata()` alongside the experiment it was derived from. It supports `show()`, `summary()`, `coef()`, `fitted()`, `residuals()`, `nobs()`, `extract_params()`, and `augment_growth_fit()`.
+- **`GrowthExperiment`** is the data container: an S4 class that extends
+  `SummarizedExperiment` with a validity method enforcing the canonical
+  growth-assay layout. Build it with the `GrowthExperiment()` constructor or
+  with standard coercion, `as(x, "GrowthExperiment")`. Because it *is* a
+  `SummarizedExperiment`, `as(x, "SummarizedExperiment")` and every
+  Bioconductor method are always available.
+- **`GrowthFit`** is a parametric model *result* for a single sample, stored in
+  `metadata()` alongside the experiment it was derived from. It supports
+  `show()`, `summary()`, `coef()`, `fitted()`, `residuals()`, `nobs()`,
+  `extract_params()`, and `augment_growth_fit()`.
 
-Tidy manipulation and display of these objects are not reimplemented here. `growkar` uses [tidySummarizedExperiment](https://bioconductor.org/packages/tidySummarizedExperiment) for tidy verbs, so `dplyr`, `tidyr`, and `ggplot2` grammar works directly on `growkar` objects.
+Tidy manipulation and display of these objects are not reimplemented here.
+`growkar` uses
+[tidySummarizedExperiment](https://bioconductor.org/packages/tidySummarizedExperiment)
+for tidy verbs, so `dplyr`, `tidyr`, and `ggplot2` grammar works directly on
+`growkar` objects.
 
 ## Installation
 
-``` r
+```r
 remotes::install_github("sethiyap/growkar")
 ```
 
 ## Example dataset
+
 
 ``` r
 library(growkar)
@@ -71,11 +112,15 @@ head(yeast_growth_data)
 
 ## Import and validate data
 
-**What it does:** `as_tidy_growth_data()` converts growth data into a tidy inspection/export format with core columns `sample`, `time`, and `od`.
+**What it does:** `as_tidy_growth_data()` converts growth data into a tidy
+inspection/export format with core columns `sample`, `time`, and `od`.
 
-**Why use it:** It is the import layer for user-supplied assay tables. Once the data have been standardized and checked, the primary workflow should continue with a `SummarizedExperiment`.
+**Why use it:** It is the import layer for user-supplied assay tables. Once the
+data have been standardized and checked, the primary workflow should continue
+with a `SummarizedExperiment`.
 
 **Minimal example:**
+
 
 ``` r
 tidy_data <- as_tidy_growth_data(yeast_growth_data)
@@ -108,11 +153,17 @@ head(tidy_data)
 
 ## Create the canonical GrowthExperiment
 
-**What it does:** `GrowthExperiment()` converts growth data directly into a `GrowthExperiment` — an S4 extension of `SummarizedExperiment` with an `od` assay, time in `rowData()`, and sample metadata in `colData()`. Standard coercion, `as(data, "GrowthExperiment")`, is equivalent.
+**What it does:** `GrowthExperiment()` converts growth data directly into a
+`GrowthExperiment` — an S4 extension of `SummarizedExperiment` with an `od`
+assay, time in `rowData()`, and sample metadata in `colData()`. Standard
+coercion, `as(data, "GrowthExperiment")`, is equivalent.
 
-**Why use it:** This is the primary data object for analysis, plotting, and Bioconductor integration. `as(ge, "SummarizedExperiment")` hands it off to any other Bioconductor package.
+**Why use it:** This is the primary data object for analysis, plotting, and
+Bioconductor integration. `as(ge, "SummarizedExperiment")` hands it off to any
+other Bioconductor package.
 
 **Minimal example:**
+
 
 ``` r
 se <- GrowthExperiment(tidy_data)
@@ -131,15 +182,21 @@ identical(se, as(tidy_data, "GrowthExperiment"))
 #> [1] TRUE
 ```
 
-Useful accessors for SE-based workflows include `growth_assay()`, `timepoints()`, `sample_data()`, and `growth_model_fits()`.
+Useful accessors for SE-based workflows include `growth_assay()`,
+`timepoints()`, `sample_data()`, and `growth_model_fits()`.
 
 ## SE-native workflow
 
-**What it does:** `growth_metrics()` computes derived phenotype summaries and stores them in `metadata()` of the same `SummarizedExperiment`.
+**What it does:** `growth_metrics()` computes derived phenotype summaries and
+stores them in `metadata()` of the same `SummarizedExperiment`.
 
-**Why use it:** This is the preferred path when growth phenotypes need to be kept alongside sample metadata and reused in larger Bioconductor workflows. `phase_windows()` and `fit_growth_models()` behave the same way for exponential-phase windows and model fits.
+**Why use it:** This is the preferred path when growth phenotypes need to be
+kept alongside sample metadata and reused in larger Bioconductor workflows.
+`phase_windows()` and `fit_growth_models()` behave the same way for
+exponential-phase windows and model fits.
 
 **Minimal example:**
+
 
 ``` r
 se <- growth_metrics(
@@ -159,11 +216,15 @@ S4Vectors::metadata(se)$growth_metrics
 
 ## Plot growth curves
 
-**What it does:** `plot_growth_curve()` visualizes OD over time and returns a `ggplot` object.
+**What it does:** `plot_growth_curve()` visualizes OD over time and returns a
+`ggplot` object.
 
-**Why use it:** It is useful for quick quality control and for comparing growth patterns across samples. Because the output is a `ggplot` object, users can further customize it with `ggplot2`.
+**Why use it:** It is useful for quick quality control and for comparing growth
+patterns across samples. Because the output is a `ggplot` object, users can
+further customize it with `ggplot2`.
 
 **Minimal example:**
+
 
 ``` r
 p <- plot_growth_curve(
@@ -175,9 +236,14 @@ p <- plot_growth_curve(
 p
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" alt="" width="100%" />
+<div class="figure">
+<img src="man/figures/README-unnamed-chunk-6-1.png" alt="plot of chunk unnamed-chunk-6" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-6</p>
+</div>
 
-To view individual replicates as separate panels, use `facet_col = "replicate"` with `average_replicates = FALSE`.
+To view individual replicates as separate panels, use `facet_col = "replicate"`
+with `average_replicates = FALSE`.
+
 
 ``` r
 p_rep <- plot_growth_curve(
@@ -191,9 +257,14 @@ p_rep <- plot_growth_curve(
 p_rep
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" alt="" width="100%" />
+<div class="figure">
+<img src="man/figures/README-unnamed-chunk-7-1.png" alt="plot of chunk unnamed-chunk-7" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-7</p>
+</div>
 
-To average replicates first and facet by sample family automatically, use `plot_growth_curve_facets()`.
+To average replicates first and facet by sample family automatically, use
+`plot_growth_curve_facets()`.
+
 
 ``` r
 p_facet <- plot_growth_curve_facets(
@@ -204,15 +275,23 @@ p_facet <- plot_growth_curve_facets(
 p_facet
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" alt="" width="100%" />
+<div class="figure">
+<img src="man/figures/README-unnamed-chunk-8-1.png" alt="plot of chunk unnamed-chunk-8" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-8</p>
+</div>
 
 ## Detect exponential phase
 
-**What it does:** `detect_exponential_phase()` identifies likely exponential-phase windows automatically.
+**What it does:** `detect_exponential_phase()` identifies likely
+exponential-phase windows automatically.
 
-**Why use it:** It is a diagnostic and explanatory function. Use it when you want to inspect which time interval appears most consistent with exponential growth before moving to final summary metrics.
+**Why use it:** It is a diagnostic and explanatory function. Use it when you
+want to inspect which time interval appears most consistent with exponential
+growth before moving to final summary metrics.
 
-This schematic shows how the candidate interval is chosen on a mock growth curve for each empirical method.
+This schematic shows how the candidate interval is chosen on a mock growth
+curve for each empirical method.
+
 
 ``` r
 mock_curve <- tibble::tibble(
@@ -254,9 +333,13 @@ ggplot2::ggplot(method_plot_data, ggplot2::aes(time, od)) +
   ggplot2::theme_minimal(base_size = 11)
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" alt="" width="100%" />
+<div class="figure">
+<img src="man/figures/README-unnamed-chunk-9-1.png" alt="plot of chunk unnamed-chunk-9" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-9</p>
+</div>
 
 **Minimal example:**
+
 
 ``` r
 library(dplyr)
@@ -275,30 +358,45 @@ phase_tbl <- detect_exponential_phase(se)
 knitr::kable(head(phase_tbl), digits = 3)
 ```
 
-| sample | rank | start_time | end_time | slope | r_squared | n_points | selection_reason | degraded |
-|:---|---:|---:|---:|---:|---:|---:|:---|:---|
-| Cg_R1 | 1 | 4.5 | 6.5 | 0.576 | 1.000 | 5 | rolling_window_ranked | FALSE |
-| Cg_R1 | 2 | 4.0 | 6.0 | 0.551 | 0.997 | 5 | rolling_window_ranked | FALSE |
-| Cg_R1 | 3 | 5.0 | 7.0 | 0.551 | 0.997 | 5 | rolling_window_ranked | FALSE |
-| Cg_R1 | 4 | 3.5 | 5.5 | 0.490 | 0.990 | 5 | rolling_window_ranked | FALSE |
-| Cg_R1 | 5 | 5.5 | 7.5 | 0.490 | 0.991 | 5 | rolling_window_ranked | FALSE |
-| Cg_R1 | 6 | 6.0 | 8.0 | 0.414 | 0.987 | 5 | rolling_window_ranked | FALSE |
+
+
+|sample | rank| start_time| end_time| slope| r_squared| n_points|selection_reason      |degraded |
+|:------|----:|----------:|--------:|-----:|---------:|--------:|:---------------------|:--------|
+|Cg_R1  |    1|        4.5|      6.5| 0.576|     1.000|        5|rolling_window_ranked |FALSE    |
+|Cg_R1  |    2|        4.0|      6.0| 0.551|     0.997|        5|rolling_window_ranked |FALSE    |
+|Cg_R1  |    3|        5.0|      7.0| 0.551|     0.997|        5|rolling_window_ranked |FALSE    |
+|Cg_R1  |    4|        3.5|      5.5| 0.490|     0.990|        5|rolling_window_ranked |FALSE    |
+|Cg_R1  |    5|        5.5|      7.5| 0.490|     0.991|        5|rolling_window_ranked |FALSE    |
+|Cg_R1  |    6|        6.0|      8.0| 0.414|     0.987|        5|rolling_window_ranked |FALSE    |
+
+
 
 ## Estimate growth rate
 
-**What it does:** `compute_growth_rate()` estimates the specific growth rate from `log(od)` versus time. In the returned table, `mu` is the estimated growth rate.
+**What it does:** `compute_growth_rate()` estimates the specific growth rate
+from `log(od)` versus time. In the returned table, `mu` is the estimated growth
+rate.
 
-**Why use it:** It is useful for estimating exponential growth directly from observed data, using methods such as `"rolling_window"`, `"defined_interval"`, and `"rule_based"`.
+**Why use it:** It is useful for estimating exponential growth directly from
+observed data, using methods such as `"rolling_window"`, `"defined_interval"`,
+and `"rule_based"`.
 
-Briefly, growth rate is estimated as the slope of `log(OD)` versus time over the selected interval, and doubling time is then calculated as `log(2) / mu`.
+Briefly, growth rate is estimated as the slope of `log(OD)` versus time over
+the selected interval, and doubling time is then calculated as `log(2) / mu`.
 
 Method options:
 
-- `"rolling_window"` scans rolling windows across the time series and selects the window with the strongest positive log-linear slope.
-- `"defined_interval"` fits the growth rate over a user-supplied start and end time interval. You can provide one interval for all samples or a per-sample interval table.
-- `"rule_based"` starts from a reference OD, finds the nearest successive OD doublings, and uses the interval between those doubling anchors to estimate growth.
+- `"rolling_window"` scans rolling windows across the time series and selects
+  the window with the strongest positive log-linear slope.
+- `"defined_interval"` fits the growth rate over a user-supplied start and end
+  time interval. You can provide one interval for all samples or a per-sample
+  interval table.
+- `"rule_based"` starts from a reference OD, finds the nearest successive OD
+  doublings, and uses the interval between those doubling anchors to estimate
+  growth.
 
 **Minimal example:**
+
 
 ``` r
 gr <- compute_growth_rate(se, method = "rolling_window")
@@ -310,16 +408,21 @@ gr <- compute_growth_rate(se, method = "rolling_window")
 knitr::kable(head(gr), digits = 3)
 ```
 
-| sample | mu | start_time | end_time | r_squared | method | n_points | degraded | note |
-|:---|---:|---:|---:|---:|:---|---:|:---|:---|
-| Cg_R1 | 0.576 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked |
-| Cg_R2 | 0.560 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked |
-| Cg_R3 | 0.571 | 4.5 | 6.5 | 0.999 | rolling_window | 5 | FALSE | rolling_window_ranked |
-| CgFlu_R1 | 0.403 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked |
-| CgFlu_R2 | 0.407 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked |
-| CgFlu_R3 | 0.403 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked |
+
+
+|sample   |    mu| start_time| end_time| r_squared|method         | n_points|degraded |note                  |
+|:--------|-----:|----------:|--------:|---------:|:--------------|--------:|:--------|:---------------------|
+|Cg_R1    | 0.576|        4.5|      6.5|     1.000|rolling_window |        5|FALSE    |rolling_window_ranked |
+|Cg_R2    | 0.560|        4.5|      6.5|     1.000|rolling_window |        5|FALSE    |rolling_window_ranked |
+|Cg_R3    | 0.571|        4.5|      6.5|     0.999|rolling_window |        5|FALSE    |rolling_window_ranked |
+|CgFlu_R1 | 0.403|        4.5|      6.5|     1.000|rolling_window |        5|FALSE    |rolling_window_ranked |
+|CgFlu_R2 | 0.407|        4.5|      6.5|     1.000|rolling_window |        5|FALSE    |rolling_window_ranked |
+|CgFlu_R3 | 0.403|        4.5|      6.5|     1.000|rolling_window |        5|FALSE    |rolling_window_ranked |
+
+
 
 Use the same interval for all samples:
+
 
 ``` r
 gr_defined_all <- compute_growth_rate(
@@ -337,16 +440,21 @@ gr_defined_all <- compute_growth_rate(
 knitr::kable(head(gr_defined_all), digits = 3)
 ```
 
-| sample | mu | start_time | end_time | r_squared | method | n_points | degraded | note |
-|:---|---:|---:|---:|---:|:---|---:|:---|:---|
-| Cg_R1 | 0.400 | 2 | 6 | 0.956 | defined_interval | 9 | FALSE | defined_interval_fit |
-| Cg_R2 | 0.394 | 2 | 6 | 0.959 | defined_interval | 9 | FALSE | defined_interval_fit |
-| Cg_R3 | 0.386 | 2 | 6 | 0.953 | defined_interval | 9 | FALSE | defined_interval_fit |
-| CgFlu_R1 | 0.339 | 2 | 6 | 0.990 | defined_interval | 9 | FALSE | defined_interval_fit |
-| CgFlu_R2 | 0.342 | 2 | 6 | 0.989 | defined_interval | 9 | FALSE | defined_interval_fit |
-| CgFlu_R3 | 0.345 | 2 | 6 | 0.988 | defined_interval | 9 | FALSE | defined_interval_fit |
+
+
+|sample   |    mu| start_time| end_time| r_squared|method           | n_points|degraded |note                 |
+|:--------|-----:|----------:|--------:|---------:|:----------------|--------:|:--------|:--------------------|
+|Cg_R1    | 0.400|          2|        6|     0.956|defined_interval |        9|FALSE    |defined_interval_fit |
+|Cg_R2    | 0.394|          2|        6|     0.959|defined_interval |        9|FALSE    |defined_interval_fit |
+|Cg_R3    | 0.386|          2|        6|     0.953|defined_interval |        9|FALSE    |defined_interval_fit |
+|CgFlu_R1 | 0.339|          2|        6|     0.990|defined_interval |        9|FALSE    |defined_interval_fit |
+|CgFlu_R2 | 0.342|          2|        6|     0.989|defined_interval |        9|FALSE    |defined_interval_fit |
+|CgFlu_R3 | 0.345|          2|        6|     0.988|defined_interval |        9|FALSE    |defined_interval_fit |
+
+
 
 Use different intervals for different samples:
+
 
 ``` r
 interval_tbl <- tibble::tibble(
@@ -366,18 +474,27 @@ gr_defined_by_sample <- compute_growth_rate(
 knitr::kable(gr_defined_by_sample, digits = 3)
 ```
 
-| sample | mu | start_time | end_time | r_squared | method | n_points | degraded | note |
-|:---|---:|---:|---:|---:|:---|---:|:---|:---|
-| Cg_R1 | 0.326 | 2 | 5 | 0.955 | defined_interval | 7 | FALSE | defined_interval_fit |
-| Cg_R2 | 0.468 | 3 | 6 | 0.985 | defined_interval | 7 | FALSE | defined_interval_fit |
+
+
+|sample |    mu| start_time| end_time| r_squared|method           | n_points|degraded |note                 |
+|:------|-----:|----------:|--------:|---------:|:----------------|--------:|:--------|:--------------------|
+|Cg_R1  | 0.326|          2|        5|     0.955|defined_interval |        7|FALSE    |defined_interval_fit |
+|Cg_R2  | 0.468|          3|        6|     0.985|defined_interval |        7|FALSE    |defined_interval_fit |
+
+
 
 ## Compute doubling time
 
-**What it does:** `compute_doubling_time()` calculates doubling time from growth rate as `log(2) / mu`.
+**What it does:** `compute_doubling_time()` calculates doubling time from
+growth rate as `log(2) / mu`.
 
-**Why use it:** It converts the estimated growth rate into a more biologically interpretable measure of growth kinetics. This is the low-level helper when you already have one or more growth-rate estimates. For a combined table across all samples, use `summarize_growth_metrics()`.
+**Why use it:** It converts the estimated growth rate into a more biologically
+interpretable measure of growth kinetics. This is the low-level helper when you
+already have one or more growth-rate estimates. For a combined table across all
+samples, use `summarize_growth_metrics()`.
 
 **Minimal example:**
+
 
 ``` r
 doubling_time_tbl <- tibble::tibble(
@@ -389,25 +506,34 @@ doubling_time_tbl <- tibble::tibble(
 knitr::kable(doubling_time_tbl, digits = 3)
 ```
 
-| sample   | growth_rate | doubling_time |
-|:---------|------------:|--------------:|
-| Cg_R1    |       0.576 |         1.204 |
-| Cg_R2    |       0.560 |         1.238 |
-| Cg_R3    |       0.571 |         1.214 |
-| CgFlu_R1 |       0.403 |         1.719 |
-| CgFlu_R2 |       0.407 |         1.702 |
-| CgFlu_R3 |       0.403 |         1.721 |
-| YPD_R1   |          NA |            NA |
-| YPD_R2   |          NA |            NA |
-| YPD_R3   |       0.004 |       179.350 |
+
+
+|sample   | growth_rate| doubling_time|
+|:--------|-----------:|-------------:|
+|Cg_R1    |       0.576|         1.204|
+|Cg_R2    |       0.560|         1.238|
+|Cg_R3    |       0.571|         1.214|
+|CgFlu_R1 |       0.403|         1.719|
+|CgFlu_R2 |       0.407|         1.702|
+|CgFlu_R3 |       0.403|         1.721|
+|YPD_R1   |          NA|            NA|
+|YPD_R2   |          NA|            NA|
+|YPD_R3   |       0.004|       179.350|
+
+
 
 ## Summarize growth metrics across samples
 
-**What it does:** `summarize_growth_metrics()` computes growth rate and doubling time across all samples.
+**What it does:** `summarize_growth_metrics()` computes growth rate and
+doubling time across all samples.
 
-**Why use it:** It is the reporting function for final sample- or group-level results. Use it when you want a tidy table for comparing strains, conditions, or replicates. Internally, it derives doubling time from the estimated growth rate using `compute_doubling_time()`.
+**Why use it:** It is the reporting function for final sample- or
+group-level results. Use it when you want a tidy table for comparing strains,
+conditions, or replicates. Internally, it derives doubling time from the
+estimated growth rate using `compute_doubling_time()`.
 
 **Minimal example:**
+
 
 ``` r
 metrics <- summarize_growth_metrics(se)
@@ -418,19 +544,25 @@ metrics <- summarize_growth_metrics(se)
 knitr::kable(metrics, digits = 3)
 ```
 
-| sample | mu | start_time | end_time | r_squared | method | n_points | degraded | note | doubling_time |
-|:---|---:|---:|---:|---:|:---|---:|:---|:---|---:|
-| Cg_R1 | 0.576 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked | 1.204 |
-| Cg_R2 | 0.560 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked | 1.238 |
-| Cg_R3 | 0.571 | 4.5 | 6.5 | 0.999 | rolling_window | 5 | FALSE | rolling_window_ranked | 1.214 |
-| CgFlu_R1 | 0.403 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked | 1.719 |
-| CgFlu_R2 | 0.407 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked | 1.702 |
-| CgFlu_R3 | 0.403 | 4.5 | 6.5 | 1.000 | rolling_window | 5 | FALSE | rolling_window_ranked | 1.721 |
-| YPD_R1 | NA | NA | NA | NA | rolling_window | 5 | FALSE | rolling_window_ranked | NA |
-| YPD_R2 | NA | NA | NA | NA | rolling_window | 5 | FALSE | rolling_window_ranked | NA |
-| YPD_R3 | 0.004 | 12.5 | 14.5 | 0.500 | rolling_window | 5 | FALSE | rolling_window_ranked | 179.350 |
 
-To summarize replicate-level doubling time by condition and compare each group to a reference condition, supply `comparison_col` and `compare_to`.
+
+|sample   |    mu| start_time| end_time| r_squared|method         | n_points|degraded |note                  | doubling_time|
+|:--------|-----:|----------:|--------:|---------:|:--------------|--------:|:--------|:---------------------|-------------:|
+|Cg_R1    | 0.576|        4.5|      6.5|     1.000|rolling_window |        5|FALSE    |rolling_window_ranked |         1.204|
+|Cg_R2    | 0.560|        4.5|      6.5|     1.000|rolling_window |        5|FALSE    |rolling_window_ranked |         1.238|
+|Cg_R3    | 0.571|        4.5|      6.5|     0.999|rolling_window |        5|FALSE    |rolling_window_ranked |         1.214|
+|CgFlu_R1 | 0.403|        4.5|      6.5|     1.000|rolling_window |        5|FALSE    |rolling_window_ranked |         1.719|
+|CgFlu_R2 | 0.407|        4.5|      6.5|     1.000|rolling_window |        5|FALSE    |rolling_window_ranked |         1.702|
+|CgFlu_R3 | 0.403|        4.5|      6.5|     1.000|rolling_window |        5|FALSE    |rolling_window_ranked |         1.721|
+|YPD_R1   |    NA|         NA|       NA|        NA|rolling_window |        5|FALSE    |rolling_window_ranked |            NA|
+|YPD_R2   |    NA|         NA|       NA|        NA|rolling_window |        5|FALSE    |rolling_window_ranked |            NA|
+|YPD_R3   | 0.004|       12.5|     14.5|     0.500|rolling_window |        5|FALSE    |rolling_window_ranked |       179.350|
+
+
+
+To summarize replicate-level doubling time by condition and compare each group
+to a reference condition, supply `comparison_col` and `compare_to`.
+
 
 ``` r
 dt_stats <- summarize_growth_metrics(
@@ -448,21 +580,31 @@ dt_stats <- summarize_growth_metrics(
 knitr::kable(dt_stats, digits = 3)
 ```
 
-| condition | mean_mu | mean_doubling_time | sd_doubling_time | n_replicates | error_bar | p_value | p_value_label |
-|:---|---:|---:|---:|---:|---:|---:|:---|
-| Cg | 0.569 | 1.219 | 0.017 | 3 | 0.010 | NA | ref |
-| CgFlu | 0.404 | 1.714 | 0.010 | 3 | 0.006 | 0 | \*\*\*\* |
-| YPD | 0.004 | 179.350 | NA | 1 | NA | NA | NA |
 
-This summary includes numeric p-values in `p_value` and asterisk-form significance labels in `p_value_label`.
+
+|condition | mean_mu| mean_doubling_time| sd_doubling_time| n_replicates| error_bar| p_value|p_value_label |
+|:---------|-------:|------------------:|----------------:|------------:|---------:|-------:|:-------------|
+|Cg        |   0.569|              1.219|            0.017|            3|     0.010|      NA|ref           |
+|CgFlu     |   0.404|              1.714|            0.010|            3|     0.006|       0|****          |
+|YPD       |   0.004|            179.350|               NA|            1|        NA|      NA|NA            |
+
+
+
+This summary includes numeric p-values in `p_value` and asterisk-form
+significance labels in `p_value_label`.
 
 ## Plot doubling time
 
-**What it does:** `plot_doubling_time()` summarizes replicate-level doubling times as a bar plot with error bars and optional comparison brackets annotated with significance asterisks.
+**What it does:** `plot_doubling_time()` summarizes replicate-level doubling
+times as a bar plot with error bars and optional comparison brackets annotated
+with significance asterisks.
 
-**Why use it:** It is useful for comparing conditions or strains at the doubling-time level while showing replicate variability and a reference-group comparison.
+**Why use it:** It is useful for comparing conditions or strains at the
+doubling-time level while showing replicate variability and a reference-group
+comparison.
 
 **Minimal example:**
+
 
 ``` r
 plot_doubling_time(
@@ -479,15 +621,23 @@ plot_doubling_time(
 #> growth slope (rolling_window_ranked).
 ```
 
-<img src="man/figures/README-unnamed-chunk-17-1.png" alt="" width="100%" />
+<div class="figure">
+<img src="man/figures/README-unnamed-chunk-17-1.png" alt="plot of chunk unnamed-chunk-17" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-17</p>
+</div>
 
 ## Fit a growth model
 
-**What it does:** `fit_growth_curve()` fits a logistic or Gompertz growth model to one sample.
+**What it does:** `fit_growth_curve()` fits a logistic or Gompertz growth model
+to one sample.
 
-**Why use it:** It is useful when a smooth model-based summary of the full growth curve is preferred over a purely empirical estimate. The result is a `GrowthFit` S4 object supporting `show()`, `summary()`, `coef()`, `fitted()`, `residuals()`, and `nobs()`.
+**Why use it:** It is useful when a smooth model-based summary of the full
+growth curve is preferred over a purely empirical estimate. The result is a
+`GrowthFit` S4 object supporting `show()`, `summary()`, `coef()`, `fitted()`,
+`residuals()`, and `nobs()`.
 
 **Minimal example:**
+
 
 ``` r
 sample_id <- unique(gr$sample)[1]
@@ -505,11 +655,15 @@ coef(fit)
 
 ## Extract fitted parameters
 
-**What it does:** `extract_params()` extracts fitted coefficients and model-derived quantities such as the asymptote and model-based doubling time.
+**What it does:** `extract_params()` extracts fitted coefficients and
+model-derived quantities such as the asymptote and model-based doubling time.
 
-**Why use it:** It is useful for reporting fitted summaries in a tidy format. Here, the asymptote is the fitted upper plateau of the growth curve, often interpreted as the model-predicted maximum OD reached at late time points.
+**Why use it:** It is useful for reporting fitted summaries in a tidy format.
+Here, the asymptote is the fitted upper plateau of the growth curve, often
+interpreted as the model-predicted maximum OD reached at late time points.
 
 **Minimal example:**
+
 
 ``` r
 params <- extract_params(fit)
@@ -522,20 +676,28 @@ params
 
 ## Plot fitted curves
 
-**What it does:** `plot_fitted_curve()` overlays observed OD points and the fitted growth model, and returns a `ggplot` object.
+**What it does:** `plot_fitted_curve()` overlays observed OD points and the
+fitted growth model, and returns a `ggplot` object.
 
-**Why use it:** It is useful for visually checking model fit quality. Because the output is a `ggplot` object, users can further customize it with `ggplot2`.
+**Why use it:** It is useful for visually checking model fit quality. Because
+the output is a `ggplot` object, users can further customize it with `ggplot2`.
 
 **Minimal example:**
+
 
 ``` r
 pf <- plot_fitted_curve(fit)
 pf
 ```
 
-<img src="man/figures/README-unnamed-chunk-20-1.png" alt="" width="100%" />
+<div class="figure">
+<img src="man/figures/README-unnamed-chunk-20-1.png" alt="plot of chunk unnamed-chunk-20" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-20</p>
+</div>
 
-To fit and view individual replicates as separate panels from raw data, use `facet_col = "replicate"` with `average_replicates = FALSE`.
+To fit and view individual replicates as separate panels from raw data, use
+`facet_col = "replicate"` with `average_replicates = FALSE`.
+
 
 ``` r
 pf_rep <- plot_fitted_curve(
@@ -550,7 +712,10 @@ pf_rep <- plot_fitted_curve(
 pf_rep
 ```
 
-<img src="man/figures/README-unnamed-chunk-21-1.png" alt="" width="100%" />
+<div class="figure">
+<img src="man/figures/README-unnamed-chunk-21-1.png" alt="plot of chunk unnamed-chunk-21" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-21</p>
+</div>
 
 ## Supported API
 
@@ -565,7 +730,7 @@ The supported SE-native interface includes:
 - `detect_exponential_phase()`
 - `fit_growth_curve()`
 
-Optional graphing interface (requires `ggplot2` and `RColorBrewer`):
+Optional graphing interface (requires `ggplot2`):
 
 - `plot_growth_curve()`
 - `plot_growth_curve_facets()`
@@ -576,8 +741,8 @@ Optional graphing interface (requires `ggplot2` and `RColorBrewer`):
 
 Complete worked examples can be found at:
 
-1.  [KN99 CDK7 growkar workflow example](inst/extdata/dd-growkar-workflow.md)
-2.  [ScBS181 growkar workflow example](inst/extdata/scbs181-growkar-workflow.md)
+1. [KN99 CDK7 growkar workflow example](inst/extdata/dd-growkar-workflow.md)
+2. [ScBS181 growkar workflow example](inst/extdata/scbs181-growkar-workflow.md)
 
 ## Contributing and issues
 

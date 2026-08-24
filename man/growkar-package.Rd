@@ -13,6 +13,15 @@ class, \link[=GrowthFit-class]{GrowthFit}. Tidy manipulation and display of thes
 delegated to \code{tidySummarizedExperiment} rather than reimplemented, and
 graphing is provided by optional \verb{plot_*()} helpers.
 }
+\details{
+Scalar argument checks and optional-package checks are taken from
+\code{BiocBaseUtils} rather than reimplemented.
+
+The import from \code{tidySummarizedExperiment} is deliberate: that package
+registers the \code{as_tibble()} method used to convert a \code{GrowthExperiment} to
+long form, and importing one of its exports loads its namespace (and hence
+registers those methods) whenever \code{growkar} is loaded.
+}
 \seealso{
 Useful links:
 \itemize{

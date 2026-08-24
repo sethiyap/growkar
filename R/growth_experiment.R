@@ -67,13 +67,7 @@ sample_data <- function(x) {
 #' growth_model_fits(se)
 #' @export
 growth_model_fits <- function(x) {
-  se <- growkar_as_se(x)
-  meta <- S4Vectors::metadata(se)
-  if ("model_fits" %in% names(meta)) {
-    meta$model_fits
-  } else {
-    meta$growth_model_fits
-  }
+  S4Vectors::metadata(growkar_as_se(x))$growth_model_fits
 }
 
 # Internal: normalize any accepted input to a validated GrowthExperiment.
@@ -105,19 +99,17 @@ growkar_normalize_se <- function(se) {
     )
   }
 
+  # Time is read, not inferred: row names are character by definition, and
+  # silently coercing them would guess at the user's intent. Ask for an
+  # explicit numeric `time` column instead.
   time_df <- as.data.frame(SummarizedExperiment::rowData(se))
-  if (!"time" %in% names(time_df)) {
-    # Row names are the documented fallback for time; uncoercible names are
-    # reported as a specific error below rather than a coercion warning.
-    time_values <- growkar_numeric_or_na(rownames(SummarizedExperiment::assay(se, "od")))
-    if (anyNA(time_values)) {
-      stop(
-        "`SummarizedExperiment` input must provide numeric time values in `rowData(se)$time` or assay row names.",
-        call. = FALSE
-      )
-    }
-
-    SummarizedExperiment::rowData(se)$time <- time_values
+  if (!"time" %in% names(time_df) || !is.numeric(time_df$time)) {
+    stop(
+      "`SummarizedExperiment` input must provide numeric time values in ",
+      "`rowData(se)$time`. If the row names hold the time points, set them ",
+      "explicitly with `rowData(se)$time <- as.numeric(rownames(se))`.",
+      call. = FALSE
+    )
   }
 
   meta <- S4Vectors::metadata(se)
@@ -135,6 +127,11 @@ growkar_normalize_se <- function(se) {
 #'
 #' Check that a `SummarizedExperiment` follows the canonical `growkar` layout.
 #'
+#' The layout itself (an `od` assay, a numeric `rowData(x)$time` of matching
+#' length) is enforced by the [GrowthExperiment-class] validity method, which
+#' this function calls rather than re-checking. Only the finiteness
+#' requirement, which the class deliberately does not impose, is checked here.
+#'
 #' @param x A `SummarizedExperiment`.
 #' @param require_finite Logical; if `TRUE`, reject non-finite assay values and
 #'   time values.
@@ -151,32 +148,22 @@ validate_growth_experiment <- function(x, require_finite = TRUE) {
     stop("`x` must be a `SummarizedExperiment`.", call. = FALSE)
   }
 
-  assay_names <- SummarizedExperiment::assayNames(x)
-  if (!"od" %in% assay_names) {
-    stop("`x` must contain an assay named `od`.", call. = FALSE)
+  if (!BiocBaseUtils::isTRUEorFALSE(require_finite)) {
+    stop("`require_finite` must be `TRUE` or `FALSE`.", call. = FALSE)
   }
 
-  od <- SummarizedExperiment::assay(x, "od")
-  time_values <- SummarizedExperiment::rowData(x)$time
+  methods::validObject(
+    if (methods::is(x, "GrowthExperiment")) x else methods::new("GrowthExperiment", x)
+  )
 
-  if (!is.numeric(time_values)) {
-    stop("`rowData(x)$time` must be numeric.", call. = FALSE)
-  }
+  if (isTRUE(require_finite)) {
+    if (any(!is.finite(SummarizedExperiment::rowData(x)$time))) {
+      stop("`rowData(x)$time` must contain only finite numeric values.", call. = FALSE)
+    }
 
-  if (isTRUE(require_finite) && any(!is.finite(time_values))) {
-    stop("`rowData(x)$time` must contain only finite numeric values.", call. = FALSE)
-  }
-
-  if (!is.numeric(od)) {
-    stop("`assay(x, \"od\")` must be numeric.", call. = FALSE)
-  }
-
-  if (nrow(od) != length(time_values)) {
-    stop("`assay(x, \"od\")` rows must match the length of `rowData(x)$time`.", call. = FALSE)
-  }
-
-  if (isTRUE(require_finite) && any(!is.finite(od))) {
-    stop("`assay(x, \"od\")` must contain only finite numeric values.", call. = FALSE)
+    if (any(!is.finite(SummarizedExperiment::assay(x, "od")))) {
+      stop("`assay(x, \"od\")` must contain only finite numeric values.", call. = FALSE)
+    }
   }
 
   x

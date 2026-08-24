@@ -21,10 +21,9 @@
 #' @param custom_colors Optional character vector of colours. When supplied,
 #'   these user-defined colours are used instead of the selected palette.
 #'
-#' @return A `ggplot2` object. Requires the suggested packages `ggplot2` and
-#'   `RColorBrewer`.
+#' @return A `ggplot2` object. Requires the suggested package `ggplot2`.
 #'
-#' @examplesIf requireNamespace("ggplot2", quietly = TRUE) && requireNamespace("RColorBrewer", quietly = TRUE)
+#' @examplesIf requireNamespace("ggplot2", quietly = TRUE)
 #' data(yeast_growth_data)
 #' tidy_growth <- as_tidy_growth_data(yeast_growth_data)
 #' sample_id <- unique(tidy_growth$sample)[1]
@@ -39,7 +38,7 @@ plot_fitted_curve <- function(fit,
                               facet_col = NULL,
                               palette_name = "all_colors",
                               custom_colors = NULL) {
-  growkar_require_graphics("plot_fitted_curve")
+  growkar_require_graphics()
 
   if (methods::is(fit, "GrowthFit")) {
     augmented <- augment_growth_fit(fit)
@@ -102,7 +101,7 @@ plot_fitted_curve <- function(fit,
   }
 
   fits <- fit_growth_plate(data, model = model)
-  augmented <- purrr::map_dfr(fits$fit, augment_growth_fit)
+  augmented <- purrr::list_rbind(purrr::map(fits$fit, augment_growth_fit))
 
   p <- ggplot2::ggplot(
     augmented,

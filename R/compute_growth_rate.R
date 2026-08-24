@@ -74,6 +74,23 @@ compute_growth_rate <- function(data,
                                 min_od = 0.02,
                                 first_timepoint = NULL) {
   method <- match.arg(method)
+
+  if (!BiocBaseUtils::isScalarNumber(window_size)) {
+    stop("`window_size` must be a single, finite number.", call. = FALSE)
+  }
+
+  if (!BiocBaseUtils::isScalarNumber(min_od)) {
+    stop("`min_od` must be a single, finite number.", call. = FALSE)
+  }
+
+  if (!BiocBaseUtils::isTRUEorFALSE(average_replicates)) {
+    stop("`average_replicates` must be `TRUE` or `FALSE`.", call. = FALSE)
+  }
+
+  if (!is.null(first_timepoint) && !BiocBaseUtils::isScalarNumber(first_timepoint)) {
+    stop("`first_timepoint` must be `NULL` or a single, finite number.", call. = FALSE)
+  }
+
   se <- growkar_as_se(data)
   tidy_data <- as_tidy_growth_data(se)
   tidy_data <- validate_growth_data(tidy_data, warn_zero_od = TRUE)
@@ -101,7 +118,7 @@ compute_growth_rate <- function(data,
 
   sample_levels <- unique(as.character(tidy_data$sample))
   sample_list <- split(tidy_data, factor(tidy_data$sample, levels = sample_levels))
-  results <- purrr::map_dfr(sample_list, function(sample_data) {
+  results <- purrr::list_rbind(purrr::map(sample_list, function(sample_data) {
     switch(
       method,
       rolling_window = compute_growth_rate_rolling_window(
@@ -119,7 +136,7 @@ compute_growth_rate <- function(data,
         first_timepoint = first_timepoint
       )
     )
-  })
+  }))
 
   tibble::as_tibble(results)
 }

@@ -48,10 +48,11 @@ representation early in the workflow. SE-aware helpers store derived results in
 `metadata()` for downstream analysis. Core analysis functions accept tidy
 tables, wide plate-reader exports, and `SummarizedExperiment` input.
 
-Graphing is optional: `ggplot2` and `RColorBrewer` are declared in `Suggests`,
-so the data-structure and analysis layers install without a graphics stack. The
-`plot_*()` functions check for them at call time and return standard `ggplot`
-objects that can be customized into publication-ready figures.
+Graphing is optional: `ggplot2` is declared in `Suggests`, so the
+data-structure and analysis layers install without a graphics stack. The
+`plot_*()` functions check for it at call time and return standard `ggplot`
+objects that can be customized into publication-ready figures. Qualitative
+palettes come from `grDevices::palette.colors()` in base R.
 
 ## Input formats
 
@@ -510,7 +511,7 @@ The supported SE-native interface includes:
 - `detect_exponential_phase()`
 - `fit_growth_curve()`
 
-Optional graphing interface (requires `ggplot2` and `RColorBrewer`):
+Optional graphing interface (requires `ggplot2`):
 
 - `plot_growth_curve()`
 - `plot_growth_curve_facets()`

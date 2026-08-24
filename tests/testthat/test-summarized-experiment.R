@@ -175,3 +175,61 @@ test_that("GrowthExperiment rejects conflicting sample metadata", {
     "Sample metadata must be unique per `sample`"
   )
 })
+
+test_that("SummarizedExperiment input requires an explicit numeric time column", {
+  se <- SummarizedExperiment::SummarizedExperiment(
+    assays = list(od = matrix(c(0.1, 0.2), nrow = 2, ncol = 1,
+                              dimnames = list(c("0", "1"), "A")))
+  )
+
+  expect_error(as(se, "GrowthExperiment"), "rowData\\(se\\)\\$time")
+
+  SummarizedExperiment::rowData(se)$time <- as.numeric(rownames(se))
+  expect_s4_class(as(se, "GrowthExperiment"), "GrowthExperiment")
+})
+
+test_that("SummarizedExperiment input rejects a non-numeric time column", {
+  se <- SummarizedExperiment::SummarizedExperiment(
+    assays = list(od = matrix(c(0.1, 0.2), nrow = 2, ncol = 1)),
+    rowData = S4Vectors::DataFrame(time = c("0", "1"))
+  )
+
+  expect_error(as(se, "GrowthExperiment"), "rowData\\(se\\)\\$time")
+})
+
+test_that("as_tidy_growth_data reads tidySummarizedExperiment column labels", {
+  se <- GrowthExperiment(yeast_growth_data)
+  tidy_se <- tibble::as_tibble(se) |>
+    dplyr::select(".feature", ".sample", "od")
+
+  tidy_data <- as_tidy_growth_data(tidy_se)
+
+  expect_true(all(c("sample", "time", "od") %in% names(tidy_data)))
+  expect_equal(sort(unique(tidy_data$time)), sort(unique(yeast_growth_data$Time)))
+  expect_setequal(unique(tidy_data$sample), colnames(se))
+})
+
+test_that("each analysis result is stored under exactly one metadata key", {
+  se <- GrowthExperiment(yeast_growth_data)
+  se <- growth_metrics(se, method = "rolling_window", average_replicates = TRUE)
+  se <- suppressWarnings(phase_windows(se, average_replicates = TRUE))
+  se <- fit_growth_models(se, model = "logistic")
+
+  meta_names <- names(S4Vectors::metadata(se))
+
+  expect_true(all(c(
+    "growth_metrics", "growth_metrics_parameters",
+    "exponential_phase_windows", "exponential_phase_parameters",
+    "growth_model_fits", "growth_model_parameters", "growth_model_settings"
+  ) %in% meta_names))
+
+  # The former duplicate keys are gone.
+  expect_false(any(c("model_fits", "model_parameters", "analysis_params") %in% meta_names))
+})
+
+test_that("store_metadata is validated as a scalar logical", {
+  se <- GrowthExperiment(yeast_growth_data)
+
+  expect_error(fit_growth_models(se, store_metadata = NA), "`store_metadata` must be")
+  expect_error(phase_windows(se, store_metadata = "yes"), "`store_metadata` must be")
+})

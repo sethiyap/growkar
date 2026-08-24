@@ -18,6 +18,12 @@ The validated \code{SummarizedExperiment}.
 \description{
 Check that a \code{SummarizedExperiment} follows the canonical \code{growkar} layout.
 }
+\details{
+The layout itself (an \code{od} assay, a numeric \code{rowData(x)$time} of matching
+length) is enforced by the \link[=GrowthExperiment-class]{GrowthExperiment} validity method, which
+this function calls rather than re-checking. Only the finiteness
+requirement, which the class deliberately does not impose, is checked here.
+}
 \examples{
 data(yeast_growth_data)
 se <- GrowthExperiment(yeast_growth_data)

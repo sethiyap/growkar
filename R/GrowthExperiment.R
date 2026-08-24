@@ -84,17 +84,16 @@ GrowthExperiment <- function(data,
 #' as(se, "GrowthExperiment")
 NULL
 
-#' @rdname GrowthExperiment-coerce
+# The coercion methods below are documented by the `GrowthExperiment-coerce`
+# topic above; `setAs()` calls carry no object for roxygen2 to attach a block to.
 methods::setAs("data.frame", "GrowthExperiment", function(from) {
   GrowthExperiment(from)
 })
 
-#' @rdname GrowthExperiment-coerce
 methods::setAs("matrix", "GrowthExperiment", function(from) {
   GrowthExperiment(as.data.frame(from))
 })
 
-#' @rdname GrowthExperiment-coerce
 methods::setAs("SummarizedExperiment", "GrowthExperiment", function(from) {
   methods::new("GrowthExperiment", growkar_normalize_se(from))
 })
@@ -179,85 +178,4 @@ growkar_sample_metadata <- function(data) {
   }
 
   metadata
-}
-
-# Long-form representation of a SummarizedExperiment.
-#
-# The transformation itself is delegated to tidySummarizedExperiment, whose
-# `as_tibble()` method returns one row per feature/sample pair with rowData and
-# colData columns joined on. This function only renames the tidyomics
-# `.feature`/`.sample` columns to the canonical `time`/`sample`/`od` schema
-# used by growkar's import adapter, so no tidy transformation logic is
-# reimplemented here.
-growkar_tidy_from_summarized_experiment <- function(data) {
-  assay_names <- SummarizedExperiment::assayNames(data)
-  if (length(assay_names) == 0L) {
-    stop("`data` must contain at least one assay.", call. = FALSE)
-  }
-
-  assay_name <- if ("od" %in% assay_names) "od" else assay_names[[1]]
-
-  # tidySummarizedExperiment registers the `as_tibble()` method that performs
-  # the SE -> long transformation; loading its namespace makes that method
-  # available for dispatch below.
-  loadNamespace("tidySummarizedExperiment")
-
-  # tidySummarizedExperiment internally calls purrr::when(), which is
-  # lifecycle-deprecated upstream. Muffle only that specific upstream
-  # deprecation so it does not surface on every conversion; all other
-  # conditions propagate normally.
-  tidy_data <- withCallingHandlers(
-    tibble::as_tibble(data),
-    warning = function(w) {
-      if (grepl("when()", conditionMessage(w), fixed = TRUE)) {
-        invokeRestart("muffleWarning")
-      }
-    }
-  )
-
-  # `.feature` and `.sample` are the tidyomics row and column identifiers.
-  time_values <- if ("time" %in% names(tidy_data)) {
-    tidy_data$time
-  } else {
-    growkar_numeric_or_na(tidy_data$.feature)
-  }
-
-  if (anyNA(time_values)) {
-    stop(
-      "`SummarizedExperiment` input must provide numeric time values in ",
-      "`rowData(data)$time` or row names.",
-      call. = FALSE
-    )
-  }
-
-  sample_values <- if ("sample" %in% names(tidy_data)) {
-    as.character(tidy_data$sample)
-  } else {
-    as.character(tidy_data$.sample)
-  }
-
-  extra_cols <- setdiff(
-    names(tidy_data),
-    c(".feature", ".sample", "sample", "time", assay_names)
-  )
-
-  out <- tibble::tibble(
-    time = as.numeric(time_values),
-    sample = sample_values,
-    od = as.numeric(tidy_data[[assay_name]])
-  )
-
-  for (column_name in extra_cols) {
-    column <- tidy_data[[column_name]]
-    out[[column_name]] <- if (is.factor(column)) as.character(column) else column
-  }
-
-  # tidyomics returns sample-major rows; growkar's import adapter returns
-  # time-major rows. Reorder so both entry points agree.
-  sample_levels <- colnames(data)
-  if (is.null(sample_levels)) {
-    sample_levels <- unique(out$sample)
-  }
-
-  out[order(out$time, match(out$sample, sample_levels)), , drop = FALSE]
 }

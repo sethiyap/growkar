@@ -27,6 +27,12 @@ validate_growth_data <- function(data,
                                  min_points_per_sample = 2L,
                                  warn_zero_od = FALSE,
                                  require_finite = TRUE) {
+  for (arg in c("allow_negative_od", "require_increasing_time", "warn_zero_od", "require_finite")) {
+    if (!BiocBaseUtils::isTRUEorFALSE(get(arg))) {
+      stop("`", arg, "` must be `TRUE` or `FALSE`.", call. = FALSE)
+    }
+  }
+
   data <- tibble::as_tibble(data)
   validate_required_columns(data)
   validate_column_types(data)
@@ -150,9 +156,8 @@ validate_time_order <- function(data, require_increasing_time) {
 }
 
 validate_min_points_per_sample <- function(data, min_points_per_sample) {
-  min_points_per_sample <- as.integer(min_points_per_sample)
-  if (is.na(min_points_per_sample) || min_points_per_sample < 1L) {
-    stop("`min_points_per_sample` must be a positive integer.", call. = FALSE)
+  if (!BiocBaseUtils::isScalarNumber(min_points_per_sample) || min_points_per_sample < 1) {
+    stop("`min_points_per_sample` must be a single positive number.", call. = FALSE)
   }
 
   bad_samples <- data |>
