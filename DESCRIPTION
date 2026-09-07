@@ -1,6 +1,6 @@
 Package: growkar
 Title: SummarizedExperiment Infrastructure for Microbial Growth Phenotyping
-Version: 0.99.3
+Version: 0.99.4
 Authors@R: 
     person("Pooja", "Sethiya", 
            email = "poojasethiya24@gmail.com", 

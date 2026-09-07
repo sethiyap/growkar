@@ -1,3 +1,12 @@
+# growkar 0.99.4
+
+* The introductory vignette no longer guards its plotting chunks with a flag
+  defined in an earlier chunk. `R CMD build` also tangles each vignette, and
+  during tangling the chunk code is not evaluated, so `eval = has_graphics`
+  could not be resolved and reported an error for every guarded chunk. The
+  `ggplot2` availability check is now written inline in the chunk options,
+  which resolves both when the vignette is woven and when it is tangled.
+
 # growkar 0.99.3
 
 Changes made in response to the second round of Bioconductor package review

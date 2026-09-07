@@ -12,8 +12,6 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-
-has_graphics <- requireNamespace("ggplot2", quietly = TRUE)
 ```
 
 ```{r setup}
@@ -187,7 +185,7 @@ data-structure and analysis layers install without a graphics stack. The
 objects that can be customized further. Qualitative palettes come from
 `grDevices::palette.colors()` in base R.
 
-```{r plot-averaged-curves, eval = has_graphics}
+```{r plot-averaged-curves, eval = requireNamespace("ggplot2", quietly = TRUE)}
 plot_growth_curve(
   se,
   average_replicates = TRUE,
@@ -198,7 +196,7 @@ plot_growth_curve(
 
 Replicate-level faceting remains available when averaging is disabled:
 
-```{r plot-replicate-facets, eval = has_graphics}
+```{r plot-replicate-facets, eval = requireNamespace("ggplot2", quietly = TRUE)}
 plot_growth_curve(
   se,
   average_replicates = FALSE,
@@ -310,7 +308,7 @@ S4Vectors::metadata(se)$growth_model_parameters
 
 Observed and fitted values can be visualized together:
 
-```{r plot-fitted-curve, eval = has_graphics}
+```{r plot-fitted-curve, eval = requireNamespace("ggplot2", quietly = TRUE)}
 plot_fitted_curve(cg_fit)
 ```
 
